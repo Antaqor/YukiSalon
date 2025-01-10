@@ -1,18 +1,24 @@
-import type { Config } from "tailwindcss";
+// tailwind.config.js
 
-export default {
+module.exports = {
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    './src/**/*.{js,ts,jsx,tsx}', // Adjust based on your project structure
+    './public/**/*.html',
   ],
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        dark: '#080808', // Custom dark color for the background
+        light: '#ffffff', // Light color for text
+        brandPink: '#FF577F'
+      },
+      fontFamily: {
+        sans: ['Inter', 'Helvetica', 'Arial', 'sans-serif'], // Minimalistic and clean font stack
       },
     },
   },
-  plugins: [],
-} satisfies Config;
+  plugins: [
+    require('tailwind-scrollbar-hide'),
+    // other plugins...
+  ],
+};
