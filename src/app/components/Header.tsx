@@ -81,7 +81,7 @@ export default function Header() {
             -translate-x-1/2
           "
                 >
-                    <span className="text-xl font-bold text-blue-600">Foru</span>
+                    <span className="text-xl font-bold text-blue-600">Salon</span>
                 </Link>
 
                 {/* Right: Burger Menu */}
