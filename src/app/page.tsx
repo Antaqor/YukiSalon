@@ -1,165 +1,488 @@
 "use client";
 
-import React from "react";
-import Chart from "react-apexcharts";
-import type { ApexOptions } from "apexcharts";
-import Sidebar from "@/app/components/Sidebar";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import Link from "next/link";
+import { IconType } from "react-icons";
+import { FaCut, FaSpa, FaBroom, FaUserNinja } from "react-icons/fa";
 
-// Example top-level stats data
-const statsData = [
-    {
-        label: "Product Revenue",
-        value: "₮4,300,000",
-        change: "+8%",
-        subValue: "+₮1,245 Revenue",
-        changeColor: "text-green-500",
-    },
-    {
-        label: "Total Deals",
-        value: "1,625",
-        change: "-5%",
-        subValue: "+842 Deals",
-        changeColor: "text-red-500",
-    },
-    {
-        label: "Created Tickets",
-        value: "3,452",
-        change: "+16%",
-        subValue: "+1,023 Tickets",
-        changeColor: "text-green-500",
-    },
-    {
-        label: "Average Reply",
-        value: "8:02",
-        change: "+4%",
-        subValue: "+0:40 Faster",
-        changeColor: "text-green-500",
-    },
-];
+/* === Swiper Imports (v10+ / v11+) === */
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Mousewheel } from "swiper/modules";
 
-// Sample data for the chart
-const sampleData = [
-    { date: "2023-12-25", amount: 10000 },
-    { date: "2023-12-26", amount: 2000 },
-    { date: "2023-12-27", amount: 4000 },
-    { date: "2023-12-28", amount: 3500 },
-    { date: "2023-12-29", amount: 5000 },
-    { date: "2023-12-30", amount: 4500 },
-    { date: "2023-12-31", amount: 20000 },
-];
+/* === Swiper Styles === */
+import "swiper/css";
 
-export default function Dashboard() {
-    const categories = sampleData.map((d) => d.date);
-    const seriesData = sampleData.map((d) => d.amount);
+/* === Interfaces === */
+interface Category {
+    _id: string;
+    name: string;
+    subServices: string[];
+}
 
-    const options: ApexOptions = {
-        chart: {
-            type: "line",
-            toolbar: { show: false },
-            dropShadow: {
-                enabled: true,
-                top: 5,
-                left: 0,
-                blur: 4,
-                opacity: 0.1,
-            },
-        },
-        stroke: {
-            curve: "smooth",
-            width: 3,
-        },
-        markers: {
-            size: 4,
-            hover: {
-                size: 6,
-            },
-        },
-        fill: {
-            type: "gradient",
-            gradient: {
-                shadeIntensity: 1,
-                opacityFrom: 0.1,
-                opacityTo: 0.3,
-                stops: [0, 90, 100],
-            },
-        },
-        dataLabels: {
-            enabled: false,
-        },
-        xaxis: {
-            categories,
-            labels: {
-                rotate: -45,
-            },
-        },
-        yaxis: {
-            labels: {
-                formatter: (val) => `${val} ₮`,
-            },
-        },
-        tooltip: {
-            theme: "light",
-            y: {
-                formatter: (val) => `${val} ₮`,
-            },
-        },
-    };
+interface SalonRef {
+    _id: string;
+    name: string;
+}
 
-    const series = [
-        {
-            name: "Өдрийн орлого",
-            data: seriesData,
-        },
+interface Service {
+    _id: string;
+    name: string;
+    price: number;
+    durationMinutes: number;
+    salon?: SalonRef;
+    category?: string | { _id: string };
+    averageRating?: number;
+    reviewCount?: number;
+}
+
+interface SearchParams {
+    term?: string;
+    categoryId?: string;
+}
+
+/* === Icons for Categories === */
+const categoryIcons: Record<string, IconType> = {
+    Hair: FaCut,
+    Barber: FaUserNinja,
+    Nail: FaSpa,
+    Beauty: FaBroom,
+};
+
+/* =========================================================================
+   1) Skeleton Components
+   ========================================================================= */
+function CategorySkeletonRow() {
+    return (
+        <div className="flex flex-wrap justify-center gap-4 mb-8">
+            {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                    key={i}
+                    className="w-20 h-8 bg-gray-200 rounded-full animate-pulse"
+                />
+            ))}
+        </div>
+    );
+}
+
+function ServiceSkeletonGrid() {
+    return (
+        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-8">
+            {Array.from({ length: 8 }).map((_, i) => (
+                <li
+                    key={i}
+                    className="bg-white p-4 rounded-md shadow-sm animate-pulse flex flex-col gap-2"
+                >
+                    <div className="h-4 bg-gray-200 w-2/3 rounded" />
+                    <div className="h-3 bg-gray-200 w-1/2 rounded" />
+                    <div className="h-3 bg-gray-200 w-1/3 rounded" />
+                </li>
+            ))}
+        </ul>
+    );
+}
+
+/* =========================================================================
+   2) Hero Slider
+   ========================================================================= */
+function HeroSlider() {
+    const slides = [
+        { id: 1, text: "Banner / Slide 1", bg: "bg-gray-300" },
+        { id: 2, text: "Banner / Slide 2", bg: "bg-gray-400" },
+        { id: 3, text: "Banner / Slide 3", bg: "bg-gray-500" },
     ];
 
     return (
-        <div className="flex w-full min-h-screen">
-            {/* Fixed-width sidebar */}
-            <div className="w-64 bg-white shadow">
-                <Sidebar />
-            </div>
-
-            {/* Main content */}
-            <div className="flex-1 p-6 bg-gray-100">
-                {/* Top Stats Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                    {statsData.map((stat, idx) => (
-                        <div key={idx} className="bg-white p-4 rounded shadow">
-                            <div className="text-sm text-gray-500">{stat.label}</div>
-                            <div className="flex items-center justify-between mt-1">
-                                <div className="text-2xl font-semibold text-gray-800">
-                                    {stat.value}
-                                </div>
-                                <div className={`text-sm font-medium ${stat.changeColor}`}>
-                                    {stat.change}
-                                </div>
-                            </div>
-                            <div className="text-xs text-gray-400 mt-1">{stat.subValue}</div>
+        <section className="mb-8">
+            <Swiper
+                modules={[Autoplay, Mousewheel]}
+                slidesPerView={1.1}
+                spaceBetween={16}
+                loop={true}
+                speed={1000}
+                autoplay={{ delay: 5000, disableOnInteraction: false }}
+                mousewheel={{ forceToAxis: true }}
+                pagination={false}
+                navigation={false}
+            >
+                {slides.map((slide) => (
+                    <SwiperSlide key={slide.id}>
+                        <div
+                            className={`relative h-48 sm:h-64 md:h-72 flex items-center justify-center ${slide.bg} rounded-md`}
+                        >
+                            {/*
+                Text:
+                - mobile: text-base (16px)
+                - sm: text-lg (18px)
+                - md: text-xl (20px)
+              */}
+                            <p className="text-base sm:text-lg md:text-xl font-semibold text-black">
+                                {slide.text}
+                            </p>
                         </div>
-                    ))}
-                </div>
+                    </SwiperSlide>
+                ))}
+            </Swiper>
+        </section>
+    );
+}
 
-                {/* Date Range + Filter row (just a placeholder) */}
-                <div className="flex flex-wrap justify-between items-center mb-4">
-                    <h2 className="text-lg font-bold text-gray-800">Total Revenue</h2>
-                    <div className="flex items-center gap-3">
-                        <button className="px-3 py-1 border border-gray-200 rounded-md text-sm text-gray-600 hover:bg-gray-200">
-                            21 Oct - 21 Nov
-                        </button>
-                        <button className="px-3 py-1 border border-gray-200 rounded-md text-sm text-gray-600 hover:bg-gray-200">
-                            Daily
-                        </button>
-                        <button className="px-3 py-1 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600">
-                            Export CSV
-                        </button>
-                    </div>
-                </div>
+/* =========================================================================
+   3) CategoriesCarousel
+   ========================================================================= */
+interface CategoriesCarouselProps {
+    categories: Category[];
+    loading: boolean;
+    selectedCategoryId: string | null;
+    setSelectedCategoryId: React.Dispatch<React.SetStateAction<string | null>>;
+}
 
-                {/* Line Chart Card */}
-                <div className="bg-white p-4 rounded shadow w-full">
-                    <Chart options={options} series={series} type="line" height={320} />
-                </div>
+function CategoriesCarousel({
+                                categories,
+                                loading,
+                                selectedCategoryId,
+                                setSelectedCategoryId,
+                            }: CategoriesCarouselProps) {
+    if (loading) {
+        return <CategorySkeletonRow />;
+    }
+
+    if (!loading && categories.length === 0) {
+        return (
+            <p className="text-gray-500 text-center mb-8">
+                Ямар нэг категори олдсонгүй.
+            </p>
+        );
+    }
+
+    return (
+        <section className="mb-8">
+            <Swiper
+                modules={[Mousewheel]}
+                slidesPerView={2.2}
+                spaceBetween={12}
+                mousewheel={{ forceToAxis: true }}
+                speed={600}
+                breakpoints={{
+                    480: { slidesPerView: 2.5 },
+                    640: { slidesPerView: 3.2 },
+                    768: { slidesPerView: 3.5 },
+                    1024: { slidesPerView: 4.2 },
+                }}
+                pagination={false}
+                navigation={false}
+            >
+                {categories.map((cat) => {
+                    const isSelected = selectedCategoryId === cat._id;
+                    const Icon = categoryIcons[cat.name] || null;
+
+                    return (
+                        <SwiperSlide key={cat._id}>
+                            <button
+                                onClick={() =>
+                                    setSelectedCategoryId(isSelected ? null : cat._id)
+                                }
+                                className={`
+                  w-full h-14 flex items-center justify-center px-4 py-2 
+                  rounded-md border font-medium transition-colors
+                  text-sm sm:text-base
+                  ${
+                                    isSelected
+                                        ? "bg-gray-900 text-white border-gray-900"
+                                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                                }
+                `}
+                            >
+                                {Icon && <Icon className="mr-1 text-base" />}
+                                <span>{cat.name}</span>
+                            </button>
+                        </SwiperSlide>
+                    );
+                })}
+            </Swiper>
+        </section>
+    );
+}
+
+/* =========================================================================
+   4) Featured Services Carousel
+   ========================================================================= */
+interface ServicesCarouselProps {
+    services: Service[];
+    loading: boolean;
+    error: string;
+}
+
+function ServicesCarousel({ services, loading, error }: ServicesCarouselProps) {
+    // Show nothing if loading, error, or empty
+    if (loading || error || services.length === 0) return null;
+
+    return (
+        <section className="mb-8">
+            {/*
+        Title:
+        - mobile: text-xl (20px)
+        - sm: text-2xl (24px)
+      */}
+            <h2 className="text-xl sm:text-2xl font-semibold mb-4">
+                Онцлох үйлчилгээ
+            </h2>
+            <Swiper
+                modules={[Mousewheel]}
+                slidesPerView={1.2}
+                spaceBetween={16}
+                speed={700}
+                mousewheel={{ forceToAxis: true }}
+                breakpoints={{
+                    640: { slidesPerView: 1.5 },
+                    768: { slidesPerView: 2.2 },
+                    1024: { slidesPerView: 2.8 },
+                }}
+                pagination={false}
+                navigation={false}
+            >
+                {services.map((svc) => {
+                    const salonId = svc.salon?._id;
+                    const targetHref = salonId ? `/salons/${salonId}` : "#";
+
+                    return (
+                        <SwiperSlide key={svc._id}>
+                            <Link
+                                href={targetHref}
+                                className="block bg-white rounded-md shadow-sm border p-4 hover:shadow-md transition"
+                            >
+                                {/*
+                  Service Title:
+                  - mobile: text-sm (14px)
+                  - sm: text-base (16px)
+                */}
+                                <h3 className="text-sm sm:text-base font-semibold text-gray-800 mb-1">
+                                    {svc.name}
+                                </h3>
+                                <p className="text-xs sm:text-sm text-gray-500 mb-1">
+                                    {svc.salon ? svc.salon.name : "No salon"}
+                                </p>
+                                <p className="text-sm sm:text-base text-gray-700">
+                                    Үнэ: {svc.price.toLocaleString()}₮
+                                </p>
+                                <p className="text-sm sm:text-base text-gray-700">
+                                    Үргэлжлэх хугацаа: {svc.durationMinutes} мин
+                                </p>
+                                <div className="mt-1 text-xs sm:text-sm text-yellow-700">
+                                    Үнэлгээ:{" "}
+                                    {svc.averageRating && svc.averageRating > 0
+                                        ? `${svc.averageRating.toFixed(1)} ★`
+                                        : "N/A"}
+                                    {svc.reviewCount && svc.reviewCount > 0
+                                        ? ` (${svc.reviewCount} сэтгэгдэл${
+                                            svc.reviewCount > 1 ? "" : ""
+                                        })`
+                                        : ""}
+                                </div>
+                            </Link>
+                        </SwiperSlide>
+                    );
+                })}
+            </Swiper>
+        </section>
+    );
+}
+
+/* =========================================================================
+   5) All Services Carousel
+   ========================================================================= */
+interface AllServicesCarouselProps {
+    services: Service[];
+    loading: boolean;
+    error: string;
+}
+
+function AllServicesCarousel({
+                                 services,
+                                 loading,
+                                 error,
+                             }: AllServicesCarouselProps) {
+    if (loading && !error) {
+        return <ServiceSkeletonGrid />;
+    }
+
+    if (!loading && !error && services.length === 0) {
+        return (
+            <p className="text-gray-500 text-center mt-6">
+                Ямар нэг үйлчилгээ олдсонгүй.
+            </p>
+        );
+    }
+
+    if (!loading && !error && services.length > 0) {
+        return (
+            <section className="mb-8">
+                <h2 className="text-xl sm:text-2xl font-semibold mb-4">
+                    Бүх үйлчилгээ
+                </h2>
+                <Swiper
+                    modules={[Mousewheel]}
+                    slidesPerView={1.2}
+                    spaceBetween={16}
+                    speed={700}
+                    mousewheel={{ forceToAxis: true }}
+                    breakpoints={{
+                        640: { slidesPerView: 2 },
+                        768: { slidesPerView: 2.5 },
+                        1024: { slidesPerView: 3.2 },
+                        1280: { slidesPerView: 3.5 },
+                    }}
+                    pagination={false}
+                    navigation={false}
+                >
+                    {services.map((svc) => {
+                        const salonId = svc.salon?._id;
+                        const targetHref = salonId ? `/salons/${salonId}` : "#";
+
+                        return (
+                            <SwiperSlide key={svc._id}>
+                                <Link
+                                    href={targetHref}
+                                    className="block bg-white p-4 rounded-md shadow-sm border transition hover:shadow-lg"
+                                >
+                                    <h3 className="text-sm sm:text-base font-semibold text-gray-800 mb-1">
+                                        {svc.name}
+                                    </h3>
+                                    <p className="text-xs sm:text-sm text-gray-500 mb-1">
+                                        {svc.salon ? svc.salon.name : "No salon"}
+                                    </p>
+                                    <p className="text-sm sm:text-base text-gray-700">
+                                        Үнэ: {svc.price.toLocaleString()}₮
+                                    </p>
+                                    <p className="text-sm sm:text-base text-gray-700">
+                                        Үргэлжлэх хугацаа: {svc.durationMinutes} мин
+                                    </p>
+                                    <div className="mt-1 text-xs sm:text-sm text-yellow-700">
+                                        Үнэлгээ:{" "}
+                                        {svc.averageRating && svc.averageRating > 0
+                                            ? `${svc.averageRating.toFixed(1)} ★`
+                                            : "N/A"}
+                                        {svc.reviewCount && svc.reviewCount > 0
+                                            ? ` (${svc.reviewCount} сэтгэгдэл${
+                                                svc.reviewCount > 1 ? "" : ""
+                                            })`
+                                            : ""}
+                                    </div>
+                                </Link>
+                            </SwiperSlide>
+                        );
+                    })}
+                </Swiper>
+            </section>
+        );
+    }
+
+    return null;
+}
+
+/* =========================================================================
+   6) Main HomePage Component
+   ========================================================================= */
+export default function HomePage() {
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [services, setServices] = useState<Service[]>([]);
+    const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+        null
+    );
+    const [searchTerm, setSearchTerm] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(true);
+
+    // 1) Fetch Categories
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                setLoading(true);
+                setError("");
+                const catRes = await axios.get<Category[]>(
+                    "http://152.42.243.146/api/categories"
+                );
+                const sorted = catRes.data.sort((a, b) => a.name.localeCompare(b.name));
+                setCategories(sorted);
+            } catch (err) {
+                console.error("Error fetching categories:", err);
+                setError("Категори ачаалж чадсангүй.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    // 2) Fetch / Search Services
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                setLoading(true);
+                setError("");
+
+                const params: SearchParams = {};
+                if (searchTerm) params.term = searchTerm;
+                if (selectedCategoryId) params.categoryId = selectedCategoryId;
+
+                const res = await axios.get<Service[]>(
+                    "http://152.42.243.146/api/search",
+                    { params }
+                );
+                setServices(res.data);
+            } catch (err) {
+                console.error("Error searching services:", err);
+                setError("Үйлчилгээ хайлт амжилтгүй.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchServices();
+    }, [searchTerm, selectedCategoryId]);
+
+    return (
+        <main className="max-w-6xl mx-auto px-4 py-10 font-sans bg-white">
+            {/* 1) Hero Slider */}
+            <HeroSlider />
+
+            {/* 2) Search Bar */}
+            <div className="max-w-lg mx-auto mb-8">
+                <label
+                    htmlFor="serviceSearch"
+                    className="block mb-2 text-sm sm:text-base font-semibold text-gray-700"
+                >
+                    Хайлт
+                </label>
+                <input
+                    id="serviceSearch"
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Жишээ: 'үс', 'сахал'..."
+                    className="w-full rounded border border-gray-300 py-3 px-4 text-sm sm:text-base focus:outline-none focus:border-gray-700 transition-colors"
+                />
             </div>
-        </div>
+
+            {/* 3) Categories Carousel */}
+            <CategoriesCarousel
+                categories={categories}
+                loading={loading}
+                selectedCategoryId={selectedCategoryId}
+                setSelectedCategoryId={setSelectedCategoryId}
+            />
+
+            {/* 4) Error Messages */}
+            {error && (
+                <p className="text-red-600 mb-8 text-center text-sm sm:text-base font-medium">
+                    {error}
+                </p>
+            )}
+
+            {/* 5) Featured Services Carousel */}
+            <ServicesCarousel services={services} loading={loading} error={error} />
+
+            {/* 6) All Services Carousel */}
+            <AllServicesCarousel services={services} loading={loading} error={error} />
+        </main>
     );
 }

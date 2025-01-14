@@ -1,26 +1,25 @@
-// app/layout.tsx
 import "./globals.css";
 import { Inter } from "next/font/google";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import ClientWrapper from "./components/ClientWrapper";
+import type { Metadata } from "next";
+import AdaptiveUserInterface from "./AdaptiveUserInterface";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata = {
-    title: "Salon Booking App",
-    description: "Modern salon booking system",
+// Server-only metadata
+export const metadata: Metadata = {
+    title: "Salon Booking System",
+    description: "A next-generation scheduling and booking platform",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en" className={inter.className}>
-        <body className="min-h-screen flex flex-col">
-        <ClientWrapper>
-            <Header />
-            <main className="flex-1 pt-16 bg-gray-50">{children}</main>
-            <Footer />
-        </ClientWrapper>
+        <html lang="en">
+        <body className={`min-h-screen bg-gray-50 ${inter.className}`}>
+        {/* Client layout for mobile vs. desktop */}
+        <AdaptiveUserInterface>{children}</AdaptiveUserInterface>
         </body>
         </html>
     );
