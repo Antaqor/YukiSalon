@@ -13,7 +13,7 @@ export const authOptions: NextAuthOptions = {
             async authorize(credentials) {
                 try {
                     // Hardcode the IP for login:
-                    const res = await axios.post("http://152.42.243.146/api/auth/login", {
+                    const res = await axios.post("http://localhost:5001/api/auth/login", {
                         username: credentials?.username,
                         password: credentials?.password
                     });

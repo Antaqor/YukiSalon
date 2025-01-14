@@ -24,7 +24,7 @@ export default function CategoriesPage() {
             setLoading(true);
             try {
                 // Fetch categories from backend
-                const res = await axios.get("http://152.42.243.146/api/categories");
+                const res = await axios.get("http://localhost:5001/api/categories");
                 setCategories(res.data);
                 setFilteredCategories(res.data); // Initialize the filtered list
             } catch (err) {

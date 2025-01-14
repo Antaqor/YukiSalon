@@ -8,5 +8,5 @@ export default withAuth({
 });
 
 export const config = {
-    matcher: ['/profile', '/dashboard', '/newsfeed', '/services', '/events', '/marketplace', '/profile'], // Specify all protected routes
+    matcher: ['/profile', '/newsfeed', '/services', '/events', '/marketplace', '/profile'], // Specify all protected routes
 };

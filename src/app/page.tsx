@@ -1,306 +1,165 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import Link from "next/link";
-import { IconType } from "react-icons";
-import { FaCut, FaSpa, FaBroom, FaUserNinja } from "react-icons/fa";
+import React from "react";
+import Chart from "react-apexcharts";
+import type { ApexOptions } from "apexcharts";
+import Sidebar from "@/app/components/Sidebar";
 
-interface Category {
-    _id: string;
-    name: string;
-    subServices: string[];
-}
+// Example top-level stats data
+const statsData = [
+    {
+        label: "Product Revenue",
+        value: "₮4,300,000",
+        change: "+8%",
+        subValue: "+₮1,245 Revenue",
+        changeColor: "text-green-500",
+    },
+    {
+        label: "Total Deals",
+        value: "1,625",
+        change: "-5%",
+        subValue: "+842 Deals",
+        changeColor: "text-red-500",
+    },
+    {
+        label: "Created Tickets",
+        value: "3,452",
+        change: "+16%",
+        subValue: "+1,023 Tickets",
+        changeColor: "text-green-500",
+    },
+    {
+        label: "Average Reply",
+        value: "8:02",
+        change: "+4%",
+        subValue: "+0:40 Faster",
+        changeColor: "text-green-500",
+    },
+];
 
-interface SalonRef {
-    _id: string;
-    name: string;
-}
+// Sample data for the chart
+const sampleData = [
+    { date: "2023-12-25", amount: 10000 },
+    { date: "2023-12-26", amount: 2000 },
+    { date: "2023-12-27", amount: 4000 },
+    { date: "2023-12-28", amount: 3500 },
+    { date: "2023-12-29", amount: 5000 },
+    { date: "2023-12-30", amount: 4500 },
+    { date: "2023-12-31", amount: 20000 },
+];
 
-interface Service {
-    _id: string;
-    name: string;
-    price: number;
-    durationMinutes: number;
-    salon?: SalonRef;
-    category?: string | { _id: string };
-    averageRating?: number;
-    reviewCount?: number;
-}
+export default function Dashboard() {
+    const categories = sampleData.map((d) => d.date);
+    const seriesData = sampleData.map((d) => d.amount);
 
-interface SearchParams {
-    term?: string;
-    categoryId?: string;
-}
+    const options: ApexOptions = {
+        chart: {
+            type: "line",
+            toolbar: { show: false },
+            dropShadow: {
+                enabled: true,
+                top: 5,
+                left: 0,
+                blur: 4,
+                opacity: 0.1,
+            },
+        },
+        stroke: {
+            curve: "smooth",
+            width: 3,
+        },
+        markers: {
+            size: 4,
+            hover: {
+                size: 6,
+            },
+        },
+        fill: {
+            type: "gradient",
+            gradient: {
+                shadeIntensity: 1,
+                opacityFrom: 0.1,
+                opacityTo: 0.3,
+                stops: [0, 90, 100],
+            },
+        },
+        dataLabels: {
+            enabled: false,
+        },
+        xaxis: {
+            categories,
+            labels: {
+                rotate: -45,
+            },
+        },
+        yaxis: {
+            labels: {
+                formatter: (val) => `${val} ₮`,
+            },
+        },
+        tooltip: {
+            theme: "light",
+            y: {
+                formatter: (val) => `${val} ₮`,
+            },
+        },
+    };
 
-const categoryIcons: Record<string, IconType> = {
-    Hair: FaCut,
-    Barber: FaUserNinja,
-    Nail: FaSpa,
-    Beauty: FaBroom,
-};
-
-function CategorySkeletonRow() {
-    return (
-        <div className="flex flex-wrap justify-center gap-3 mb-6">
-            {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="w-20 h-8 bg-gray-200 rounded-full animate-pulse" />
-            ))}
-        </div>
-    );
-}
-
-function ServiceSkeletonGrid() {
-    return (
-        <ul className="grid sm:grid-cols-2 lg:grid-cols-4 gap-[1px] bg-gray-200">
-            {Array.from({ length: 8 }).map((_, i) => (
-                <li key={i} className="bg-white p-6 animate-pulse">
-                    <div className="h-4 bg-gray-200 w-1/2 mb-3 rounded" />
-                    <div className="h-3 bg-gray-200 w-3/4 mb-2 rounded" />
-                    <div className="h-3 bg-gray-200 w-1/2 mb-2 rounded" />
-                </li>
-            ))}
-        </ul>
-    );
-}
-
-export default function HomePage() {
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [services, setServices] = useState<Service[]>([]);
-    const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
-    const [searchTerm, setSearchTerm] = useState("");
-
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(true);
-
-    // ---------- 1) Fetch Categories ----------
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                setLoading(true);
-                setError("");
-
-                const catRes = await axios.get<Category[]>("http://152.42.243.146/api/categories");
-                const sorted = catRes.data.sort((a, b) => a.name.localeCompare(b.name));
-                setCategories(sorted);
-            } catch (err) {
-                console.error("Error fetching categories:", err);
-                setError("Категори ачаалж чадсангүй.");
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchCategories();
-    }, []);
-
-    // ---------- 2) Fetch / Search Services ----------
-    useEffect(() => {
-        const fetchServices = async () => {
-            try {
-                setLoading(true);
-                setError("");
-
-                const params: SearchParams = {};
-                if (searchTerm) params.term = searchTerm;
-                if (selectedCategoryId) params.categoryId = selectedCategoryId;
-
-                const res = await axios.get<Service[]>("http://152.42.243.146/api/search", { params });
-                setServices(res.data);
-            } catch (err) {
-                console.error("Error searching services:", err);
-                setError("Үйлчилгээ хайлт амжилтгүй.");
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchServices();
-    }, [searchTerm, selectedCategoryId]);
-
-    function getCategoryIcon(catName: string) {
-        const Icon = categoryIcons[catName] || null;
-        if (!Icon) return null;
-        return <Icon className="inline-block mr-1 text-sm" />;
-    }
+    const series = [
+        {
+            name: "Өдрийн орлого",
+            data: seriesData,
+        },
+    ];
 
     return (
-        <div className="max-w-5xl mx-auto px-4 py-10 font-sans relative bg-white">
-            {/* CSS for typed text with extra space */}
-            <style jsx>{`
-        .text-wrapper {
-          position: relative;
-          display: inline-block;
-        }
-        .normal-text {
-          transition: opacity 0.3s;
-        }
-        .retype-text {
-          position: absolute;
-          left: 0;
-          top: 0;
-          white-space: nowrap;
-          overflow: hidden;
-          display: inline-block;
-          width: 0;
-          box-sizing: content-box;
-          border-right: 2px solid #333;
-          opacity: 0;
-          /* extra space so last letter isn't cut off */
-          padding-right: 0.5em;
-        }
-        .group:hover .normal-text {
-          opacity: 0;
-        }
-        /* Speed up typing => ~1s, 18 steps, and final width 105% */
-        .group:hover .retype-text {
-          opacity: 1;
-          animation:
-            typing 1s steps(18, end) forwards,
-            blink 0.6s infinite step-end alternate;
-        }
-        @keyframes typing {
-          0% {
-            width: 0;
-          }
-          100% {
-            width: 105%;
-          }
-        }
-        @keyframes blink {
-          50% {
-            border-color: transparent;
-          }
-        }
-        .group:hover .salon-name {
-          color: #1d4ed8;
-        }
-        .salon-name {
-          transition: color 0.3s;
-        }
-      `}</style>
-            {/* SEARCH BAR */}
-            <div className="mb-6 max-w-lg mx-auto">
-                <label
-                    htmlFor="serviceSearch"
-                    className="block mb-2 font-medium text-gray-700 text-base"
-                >
-                    Хайлт
-                </label>
-                <input
-                    id="serviceSearch"
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Жишээ: 'үс', 'сахал'..."
-                    className="w-full rounded border border-gray-300 py-3 px-4 text-base focus:outline-none focus:border-gray-700 transition-colors"
-                />
+        <div className="flex w-full min-h-screen">
+            {/* Fixed-width sidebar */}
+            <div className="w-64 bg-white shadow">
+                <Sidebar />
             </div>
 
-            {/* Category pills */}
-            {loading ? (
-                <CategorySkeletonRow />
-            ) : (
-                <div className="flex flex-wrap justify-center gap-2 mb-8">
-                    <button
-                        onClick={() => setSelectedCategoryId(null)}
-                        className={`px-5 py-2 rounded-full border text-sm font-medium ${
-                            !selectedCategoryId
-                                ? "bg-gray-900 text-white border-gray-900"
-                                : "bg-white text-gray-700 hover:bg-gray-100"
-                        }`}
-                    >
-                        Бүх үйлчилгээ
-                    </button>
-                    {categories.map((cat) => {
-                        const isSelected = selectedCategoryId === cat._id;
-                        const Icon = getCategoryIcon(cat.name);
-
-                        return (
-                            <button
-                                key={cat._id}
-                                onClick={() => setSelectedCategoryId(isSelected ? null : cat._id)}
-                                className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors
-                ${
-                                    isSelected
-                                        ? "bg-gray-900 text-white border-gray-900"
-                                        : "bg-white text-gray-700 hover:bg-gray-100"
-                                }`}
-                            >
-                                {Icon}
-                                {cat.name}
-                            </button>
-                        );
-                    })}
+            {/* Main content */}
+            <div className="flex-1 p-6 bg-gray-100">
+                {/* Top Stats Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    {statsData.map((stat, idx) => (
+                        <div key={idx} className="bg-white p-4 rounded shadow">
+                            <div className="text-sm text-gray-500">{stat.label}</div>
+                            <div className="flex items-center justify-between mt-1">
+                                <div className="text-2xl font-semibold text-gray-800">
+                                    {stat.value}
+                                </div>
+                                <div className={`text-sm font-medium ${stat.changeColor}`}>
+                                    {stat.change}
+                                </div>
+                            </div>
+                            <div className="text-xs text-gray-400 mt-1">{stat.subValue}</div>
+                        </div>
+                    ))}
                 </div>
-            )}
 
-            {/* Errors */}
-            {error && (
-                <p className="text-red-600 mb-4 text-center font-medium">{error}</p>
-            )}
-            {loading && <ServiceSkeletonGrid />}
+                {/* Date Range + Filter row (just a placeholder) */}
+                <div className="flex flex-wrap justify-between items-center mb-4">
+                    <h2 className="text-lg font-bold text-gray-800">Total Revenue</h2>
+                    <div className="flex items-center gap-3">
+                        <button className="px-3 py-1 border border-gray-200 rounded-md text-sm text-gray-600 hover:bg-gray-200">
+                            21 Oct - 21 Nov
+                        </button>
+                        <button className="px-3 py-1 border border-gray-200 rounded-md text-sm text-gray-600 hover:bg-gray-200">
+                            Daily
+                        </button>
+                        <button className="px-3 py-1 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600">
+                            Export CSV
+                        </button>
+                    </div>
+                </div>
 
-            {!loading && !error && services.length === 0 && (
-                <p className="text-gray-500 text-center mt-6">
-                    Ямар нэг үйлчилгээ олдсонгүй.
-                </p>
-            )}
-
-            {!loading && !error && services.length > 0 && (
-                <ul className="grid sm:grid-cols-2 lg:grid-cols-4 gap-[1px] bg-gray-200">
-                    {services.map((svc) => {
-                        const salonId = svc.salon?._id;
-                        const targetHref = salonId ? `/salons/${salonId}` : "#";
-
-                        return (
-                            <li
-                                key={svc._id}
-                                className="relative group bg-white p-6 transition-all"
-                            >
-                                <Link href={targetHref} className="block h-full">
-                                    {/* Title container => normal + typed in same spot */}
-                                    <div className="text-wrapper mb-2">
-                                        <p className="normal-text text-sm text-gray-800 font-semibold">
-                                            {svc.name}
-                                        </p>
-                                        <p
-                                            className="retype-text text-sm text-gray-800 font-semibold"
-                                            data-text={svc.name}
-                                        >
-                                            {svc.name}
-                                        </p>
-                                    </div>
-
-                                    {/* Salon name fade to blue on hover */}
-                                    <p className="salon-name text-xs text-gray-500 mb-2">
-                                        {svc.salon ? svc.salon.name : "No salon"}
-                                    </p>
-
-                                    {/* Price & Duration */}
-                                    <p className="text-xs text-gray-700">
-                                        Үнэ: {svc.price.toLocaleString()}₮
-                                    </p>
-                                    <p className="text-xs text-gray-700 mb-2">
-                                        Үргэлжлэх хугацаа: {svc.durationMinutes} мин
-                                    </p>
-
-                                    {/* Rating */}
-                                    <div className="text-xs text-yellow-700">
-                                        Үнэлгээ:{" "}
-                                        {svc.averageRating && svc.averageRating > 0
-                                            ? `${svc.averageRating.toFixed(1)} ★`
-                                            : "N/A"}
-                                        {svc.reviewCount && svc.reviewCount > 0
-                                            ? ` (${svc.reviewCount} сэтгэгдэл${
-                                                svc.reviewCount > 1 ? "" : ""
-                                            })`
-                                            : ""}
-                                    </div>
-                                </Link>
-                            </li>
-                        );
-                    })}
-                </ul>
-            )}
+                {/* Line Chart Card */}
+                <div className="bg-white p-4 rounded shadow w-full">
+                    <Chart options={options} series={series} type="line" height={320} />
+                </div>
+            </div>
         </div>
     );
 }

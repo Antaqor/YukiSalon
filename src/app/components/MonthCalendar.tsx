@@ -1,5 +1,7 @@
 "use client";
-
+// =========================================
+// 1) MonthCalendar.tsx
+// =========================================
 import React from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 
@@ -9,8 +11,8 @@ export interface DayStatus {
 }
 
 export interface MonthData {
-    year: number;   // e.g. 2025
-    month: number;  // 0 => January
+    year: number; // e.g., 2025
+    month: number; // 0 => 1-р сар
     days: DayStatus[];
 }
 
@@ -23,19 +25,22 @@ interface MonthCalendarProps {
 export default function MonthCalendar({
                                           monthData,
                                           selectedDay,
-                                          onSelectDay
+                                          onSelectDay,
                                       }: MonthCalendarProps) {
     const { year, month, days } = monthData;
-    const CURRENT_DATE = new Date(2025, 0, 6); // Example: 2025-01-06 as "today"
+
+    // Тухайн өдрийг 2025-01-06 (Даваа) гэж үзье
+    const CURRENT_DATE = new Date(2025, 0, 6);
     const isCurrentMonth = year === 2025 && month === 0;
     const todayDay = isCurrentMonth ? 6 : null;
 
     const firstOfMonth = new Date(year, month, 1);
-    const dayOfWeekOffset = firstOfMonth.getDay(); // Sunday=0, Monday=1,...
-    const totalDays = 31; // e.g. January => 31 days
+    const dayOfWeekOffset = firstOfMonth.getDay(); // Ням=0, Даваа=1, ...
+    const totalDays = 31; // 1-р сар 31 хоног
 
     function isInPast(dayNum: number) {
-        return new Date(year, month, dayNum) < CURRENT_DATE;
+        const checkDate = new Date(year, month, dayNum);
+        return checkDate < CURRENT_DATE;
     }
 
     function getDayStatus(dayNum: number) {
@@ -62,8 +67,8 @@ export default function MonthCalendar({
             case "goingFast":
                 cellClasses += " hover:bg-blue-50";
                 break;
-            default: // "available"
-                cellClasses += " hover:bg-blue-50";
+            default:
+                cellClasses += " hover:bg-blue-50"; // "available"
                 break;
         }
 
@@ -91,11 +96,13 @@ export default function MonthCalendar({
         );
     }
 
+    // Эхний хэдэн хоосон нүднүүд (жишээ нь 1 сар = 0..6 blank)
     const blankCells: React.ReactNode[] = [];
     for (let i = 0; i < dayOfWeekOffset; i++) {
         blankCells.push(<div key={`blank-${i}`} className="border h-10" />);
     }
 
+    // Жинхэнэ өдрүүд
     const dayCells: React.ReactNode[] = [];
     for (let d = 1; d <= totalDays; d++) {
         dayCells.push(renderDayCell(d));

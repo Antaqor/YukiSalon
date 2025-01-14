@@ -1,3 +1,4 @@
+// app/login/page.tsx
 "use client";
 import React, { useState } from "react";
 import { signIn } from "next-auth/react";
@@ -39,7 +40,6 @@ export default function LoginPage() {
                     <p className="text-red-500 text-center font-medium">{error}</p>
                 )}
 
-                {/* Username */}
                 <div className="flex flex-col">
                     <label
                         htmlFor="username"
@@ -58,7 +58,6 @@ export default function LoginPage() {
                     />
                 </div>
 
-                {/* Password */}
                 <div className="flex flex-col">
                     <label
                         htmlFor="password"
@@ -77,7 +76,6 @@ export default function LoginPage() {
                     />
                 </div>
 
-                {/* Submit Button */}
                 <button
                     type="submit"
                     className="bg-neutral-900 text-white text-sm font-medium py-3 rounded-lg hover:bg-neutral-700 transition-colors"

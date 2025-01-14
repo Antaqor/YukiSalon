@@ -31,7 +31,7 @@ export default function CategoryServicesPage() {
         (async () => {
             try {
                 const res = await axios.get(
-                    `http://152.42.243.146/api/categories/${params.categoryId}/services`
+                    `http://localhost:5001/api/categories/${params.categoryId}/services`
                 );
                 setServices(res.data);
             } catch (err) {
