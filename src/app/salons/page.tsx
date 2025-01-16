@@ -34,7 +34,7 @@ export default function SalonsPage() {
 
             try {
                 // This endpoint should return each salon with logo, coverImage, etc.
-                const res = await axios.get("http://152.42.243.146/api/salons");
+                const res = await axios.get("http://68.183.191.149/api/salons");
                 setSalons(res.data);
                 setFilteredSalons(res.data);
             } catch (err) {

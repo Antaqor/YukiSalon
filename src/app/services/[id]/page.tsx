@@ -68,7 +68,7 @@ export default function ServiceDetailPage() {
         (async () => {
             try {
                 const res = await axios.get<ServiceData>(
-                    `http://152.42.243.146/api/services/${id}`
+                    `http://68.183.191.149/api/services/${id}`
                 );
                 setService(res.data);
             } catch (err) {
@@ -151,7 +151,7 @@ function OrderPopup({ serviceId, servicePrice, onClose }: OrderPopupProps) {
         const dateStr = `2025-01-${String(selectedDay).padStart(2, "0")}`;
         axios
             .get<{ times: string[] }[]>(
-                `http://152.42.243.146/api/services/${serviceId}/availability`,
+                `http://68.183.191.149/api/services/${serviceId}/availability`,
                 {
                     params: { date: dateStr },
                 }
@@ -185,7 +185,7 @@ function OrderPopup({ serviceId, servicePrice, onClose }: OrderPopupProps) {
         try {
             const dateStr = `2025-01-${String(selectedDay).padStart(2, "0")}`;
             const bookRes = await axios.post(
-                "http://152.42.243.146/api/appointments",
+                "http://68.183.191.149/api/appointments",
                 {
                     serviceId,
                     date: dateStr,
@@ -198,7 +198,7 @@ function OrderPopup({ serviceId, servicePrice, onClose }: OrderPopupProps) {
             );
             if (bookRes.status === 201) {
                 const invoiceRes = await axios.post<CreateInvoiceResponse>(
-                    "http://152.42.243.146/api/payments/create-invoice",
+                    "http://68.183.191.149/api/payments/create-invoice",
                     {
                         invoiceCode: "FORU_INVOICE",
                         amount: servicePrice,
@@ -234,7 +234,7 @@ function OrderPopup({ serviceId, servicePrice, onClose }: OrderPopupProps) {
         setLoading(true);
         try {
             const checkRes = await axios.post<CheckInvoiceResponse>(
-                "http://152.42.243.146/api/payments/check-invoice",
+                "http://68.183.191.149/api/payments/check-invoice",
                 {
                     invoiceId: invoiceData.invoice_id,
                 }

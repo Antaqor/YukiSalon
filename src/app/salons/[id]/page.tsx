@@ -89,7 +89,7 @@ function BookingPopup({ service, onClose }: BookingPopupProps) {
         setMessage("");
         const dateStr = `2025-01-${String(selectedDay).padStart(2, "0")}`;
         axios
-            .get<{ times: string[] }[]>(`http://152.42.243.146/api/services/${service._id}/availability`, {
+            .get<{ times: string[] }[]>(`http://68.183.191.149/api/services/${service._id}/availability`, {
                 params: { date: dateStr },
             })
             .then((res) => {
@@ -119,7 +119,7 @@ function BookingPopup({ service, onClose }: BookingPopupProps) {
         try {
             const dateStr = `2025-01-${String(selectedDay).padStart(2, "0")}`;
             const apptRes = await axios.post(
-                "http://152.42.243.146/api/appointments",
+                "http://68.183.191.149/api/appointments",
                 {
                     serviceId: service._id,
                     date: dateStr,
@@ -134,7 +134,7 @@ function BookingPopup({ service, onClose }: BookingPopupProps) {
                     success?: boolean;
                     invoiceData?: { invoice_id?: string };
                     qrDataUrl?: string;
-                }>("http://152.42.243.146/api/payments/create-invoice", {
+                }>("http://68.183.191.149/api/payments/create-invoice", {
                     invoiceCode: "FORU_INVOICE",
                     amount: service.price,
                 });
@@ -173,7 +173,7 @@ function BookingPopup({ service, onClose }: BookingPopupProps) {
                         payment_status?: string;
                     }>;
                 };
-            }>("http://152.42.243.146/api/payments/check-invoice", {
+            }>("http://68.183.191.149/api/payments/check-invoice", {
                 invoiceId,
             });
             const payRow = checkRes.data.checkResult?.rows?.[0];
@@ -317,12 +317,12 @@ export default function SalonDetailPage() {
         (async () => {
             try {
                 const salonRes = await axios.get<Salon>(
-                    `http://152.42.243.146/api/salons/${params.id}`
+                    `http://68.183.191.149/api/salons/${params.id}`
                 );
                 setSalon(salonRes.data);
 
                 const servicesRes = await axios.get<Service[]>(
-                    `http://152.42.243.146/api/services/salon/${params.id}`
+                    `http://68.183.191.149/api/services/salon/${params.id}`
                 );
                 setServices(servicesRes.data);
             } catch (err) {

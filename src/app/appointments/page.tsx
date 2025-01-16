@@ -15,7 +15,7 @@ export default function AppointmentsPage() {
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
     const backendURL: string =
-        process.env.NEXT_PUBLIC_BACKEND_URL || "http://152.42.243.146";
+        process.env.NEXT_PUBLIC_BACKEND_URL || "http://68.183.191.149";
 
     const handleBookAppointment = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();

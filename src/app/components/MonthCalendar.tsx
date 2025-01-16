@@ -27,8 +27,6 @@ export default function MonthCalendar({
                                           monthData,
                                           selectedDay,
                                           onSelectDay,
-                                          serviceName = "Sample Service",
-                                          servicePrice = "$99",
                                       }: MonthCalendarProps) {
     const { year, month, days } = monthData;
     const CURRENT_DATE = new Date(2025, 0, 6); // Example: 2025-01-06 as "today"
@@ -152,14 +150,6 @@ export default function MonthCalendar({
                 <button className="p-2 hover:bg-gray-50 rounded">
                     <ChevronRightIcon className="w-5 h-5 text-gray-600" />
                 </button>
-            </div>
-
-            {/* Service name and price (centered) */}
-            <div className="text-center mb-4">
-                <h3 className="text-lg font-bold text-gray-700">{serviceName}</h3>
-                <p className="text-blue-600 font-medium">
-                    {servicePrice}
-                </p>
             </div>
 
             {/* Weekday labels */}
