@@ -3,12 +3,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import {
-    FolderPlusIcon,
-    ClockIcon,
-    CurrencyDollarIcon,
-    TagIcon,
-} from "@heroicons/react/24/outline";
 
 interface Category {
     _id: string;
@@ -27,206 +21,172 @@ export default function CreateServicePage() {
     const [message, setMessage] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    /** Fetch categories on component mount */
     useEffect(() => {
-        const fetchCategories = async () => {
+        async function fetchCategories() {
             try {
-                const catRes = await axios.get("http://68.183.191.149/api/categories");
-                setCategories(catRes.data);
+                const res = await axios.get("http://68.183.191.149/api/categories");
+                setCategories(res.data);
             } catch (err) {
-                console.error("Ангиллыг татаж чадсангүй:", err);
+                console.error("Failed to load categories:", err);
             }
-        };
+        }
         fetchCategories();
     }, []);
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    /** Handle form submission */
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        setMessage(""); // reset any old message
+        setMessage("");
 
-        // 1) Check if we have a session token
+        // 1) Check session token
         if (!session?.user?.accessToken) {
-            setMessage(
-                "Нэвтэрсэн хэрэглэгчийн токен алга байна. Та нэвтэрч ороод дахин оролдоно уу."
-            );
+            setMessage("Please log in before creating a service.");
             return;
         }
 
-        // 2) Validate form data
+        // 2) Basic validation
         if (!name.trim()) {
-            setMessage("Үйлчилгээний нэр оруулна уу.");
+            setMessage("Please enter a service name.");
             return;
         }
         if (duration <= 0) {
-            setMessage("Үргэлжлэх хугацаа эерэг тоо байх ёстой.");
+            setMessage("Duration must be a positive number.");
             return;
         }
         if (price < 0) {
-            setMessage("Үнэ сөрөг байж болохгүй.");
+            setMessage("Price cannot be negative.");
             return;
         }
         if (!selectedCategoryId) {
-            setMessage("Ангилал сонгоно уу.");
+            setMessage("Please select a category.");
             return;
         }
 
-        // 3) Submit to backend
+        // 3) Submit to the backend
         setIsSubmitting(true);
         try {
             const token = session.user.accessToken;
+            const payload = {
+                name: name.trim(),
+                durationMinutes: duration,
+                price,
+                categoryId: selectedCategoryId,
+            };
 
             const response = await axios.post(
                 "http://68.183.191.149/api/services/my-service",
-                {
-                    name: name.trim(),
-                    durationMinutes: duration,
-                    price,
-                    categoryId: selectedCategoryId,
-                },
+                payload,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
 
             if (response.status === 201) {
-                setMessage("Шинэ үйлчилгээ амжилттай үүслээ!");
+                setMessage("Successfully created a new service!");
+                // Reset form
                 setName("");
                 setDuration(30);
                 setPrice(50);
                 setSelectedCategoryId("");
             } else {
-                setMessage("Үйлчилгээ үүсгэхэд алдаа гарлаа. Дахин оролдоно уу.");
+                setMessage("Failed to create service. Please try again.");
             }
         } catch (error) {
-            console.error("Алдаа гарлаа:", error);
-            setMessage("Үйлчилгээ үүсгэх явцад алдаа гарлаа.");
+            console.error("Creation error:", error);
+            setMessage("An error occurred while creating the service.");
         } finally {
             setIsSubmitting(false);
         }
-    };
+    }
 
     return (
-        <div className="flex min-h-screen w-full">
-            <div className="flex-1 p-6">
-                <div className="max-w-lg mx-auto">
-                    <h1 className="flex items-center space-x-2 text-xl font-semibold mb-4 text-neutral-800">
-                        <FolderPlusIcon className="w-5 h-5 text-blue-600" />
-                        <span>Шинэ Үйлчилгээ Нэмэх</span>
-                    </h1>
+        <div className="p-4">
+            <h1 className="text-lg font-bold mb-3">Create a New Service</h1>
 
-                    {/* Message / Error Handling */}
-                    {message && (
-                        <p className="mb-3 text-sm font-medium text-red-600 bg-red-50 p-2 rounded border border-red-200">
-                            {message}
-                        </p>
-                    )}
-
-                    {/* Form */}
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        {/* Service Name */}
-                        <div>
-                            <label
-                                htmlFor="serviceName"
-                                className="block mb-1 text-sm font-semibold text-gray-700"
-                            >
-                                <div className="flex items-center gap-1">
-                                    <TagIcon className="w-4 h-4 text-gray-500" />
-                                    Үйлчилгээний нэр
-                                </div>
-                            </label>
-                            <input
-                                id="serviceName"
-                                type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className="border border-neutral-300 focus:border-blue-500 focus:outline-none rounded px-3 py-2 w-full text-sm"
-                                placeholder="Жишээ: Машины тос солих"
-                                required
-                            />
-                        </div>
-
-                        {/* Duration */}
-                        <div>
-                            <label
-                                htmlFor="duration"
-                                className="block mb-1 text-sm font-semibold text-gray-700"
-                            >
-                                <div className="flex items-center gap-1">
-                                    <ClockIcon className="w-4 h-4 text-gray-500" />
-                                    Үргэлжлэх хугацаа (минут)
-                                </div>
-                            </label>
-                            <input
-                                id="duration"
-                                type="number"
-                                value={duration}
-                                onChange={(e) => setDuration(parseInt(e.target.value, 10))}
-                                className="border border-neutral-300 focus:border-blue-500 focus:outline-none rounded px-3 py-2 w-full text-sm"
-                                min={1}
-                                placeholder="30"
-                                required
-                            />
-                        </div>
-
-                        {/* Price */}
-                        <div>
-                            <label
-                                htmlFor="price"
-                                className="block mb-1 text-sm font-semibold text-gray-700"
-                            >
-                                <div className="flex items-center gap-1">
-                                    <CurrencyDollarIcon className="w-4 h-4 text-gray-500" />
-                                    Үнэ (₮)
-                                </div>
-                            </label>
-                            <input
-                                id="price"
-                                type="number"
-                                value={price}
-                                onChange={(e) => setPrice(parseInt(e.target.value, 10))}
-                                className="border border-neutral-300 focus:border-blue-500 focus:outline-none rounded px-3 py-2 w-full text-sm"
-                                min={0}
-                                placeholder="50"
-                                required
-                            />
-                        </div>
-
-                        {/* Category */}
-                        <div>
-                            <label
-                                htmlFor="category"
-                                className="block mb-1 text-sm font-semibold text-gray-700"
-                            >
-                                Ангилал
-                            </label>
-                            <select
-                                id="category"
-                                value={selectedCategoryId}
-                                onChange={(e) => setSelectedCategoryId(e.target.value)}
-                                className="border border-neutral-300 focus:border-blue-500 focus:outline-none rounded px-3 py-2 w-full text-sm"
-                                required
-                            >
-                                <option value="">-- Ангилал сонгох --</option>
-                                {categories.map((cat) => (
-                                    <option key={cat._id} value={cat._id}>
-                                        {cat.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        {/* Submit Button */}
-                        <button
-                            type="submit"
-                            className={`flex items-center justify-center bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-blue-700 transition ${
-                                isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                            }`}
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? "Үүсгэж байна..." : "Үйлчилгээ үүсгэх"}
-                        </button>
-                    </form>
+            {/* Message / Error */}
+            {message && (
+                <div className="mb-4 text-sm text-red-600 border border-red-200 p-2 rounded">
+                    {message}
                 </div>
-            </div>
+            )}
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
+                {/* Service Name */}
+                <div>
+                    <label className="block text-sm font-medium mb-1">
+                        Service Name
+                    </label>
+                    <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="border p-2 w-full"
+                        placeholder="e.g. Engine Oil Change"
+                        required
+                    />
+                </div>
+
+                {/* Duration */}
+                <div>
+                    <label className="block text-sm font-medium mb-1">
+                        Duration (minutes)
+                    </label>
+                    <input
+                        type="number"
+                        value={duration}
+                        onChange={(e) => setDuration(Number(e.target.value))}
+                        className="border p-2 w-full"
+                        min={1}
+                        required
+                    />
+                </div>
+
+                {/* Price */}
+                <div>
+                    <label className="block text-sm font-medium mb-1">
+                        Price (₮)
+                    </label>
+                    <input
+                        type="number"
+                        value={price}
+                        onChange={(e) => setPrice(Number(e.target.value))}
+                        className="border p-2 w-full"
+                        min={0}
+                        required
+                    />
+                </div>
+
+                {/* Category */}
+                <div>
+                    <label className="block text-sm font-medium mb-1">
+                        Category
+                    </label>
+                    <select
+                        value={selectedCategoryId}
+                        onChange={(e) => setSelectedCategoryId(e.target.value)}
+                        className="border p-2 w-full"
+                        required
+                    >
+                        <option value="">-- Select Category --</option>
+                        {categories.map((cat) => (
+                            <option key={cat._id} value={cat._id}>
+                                {cat.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* Submit Button */}
+                <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+                >
+                    {isSubmitting ? "Creating..." : "Create Service"}
+                </button>
+            </form>
         </div>
     );
 }

@@ -27,23 +27,22 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-neutral-100 px-4">
-            <h1 className="text-3xl font-semibold mb-8 text-center tracking-wide">
-                Login
-            </h1>
+        <div className="flex w-full min-h-screen items-center justify-center bg-gradient-to-br from-neutral-200 to-neutral-50 px-4 py-8">
             <form
                 onSubmit={handleSubmit}
-                className="w-full max-w-md bg-white rounded-lg shadow-md p-8 flex flex-col space-y-6"
+                className="w-full max-w-md space-y-6 rounded-xl border border-gray-200 bg-white p-8 shadow-md"
             >
                 {error && (
-                    <p className="text-red-500 text-center font-medium">{error}</p>
+                    <p className="text-center text-sm font-medium text-red-500">
+                        {error}
+                    </p>
                 )}
 
                 {/* Username */}
-                <div className="flex flex-col">
+                <div className="flex flex-col space-y-1">
                     <label
                         htmlFor="username"
-                        className="text-sm font-medium text-gray-700 mb-2"
+                        className="text-sm font-medium text-gray-700"
                     >
                         Username
                     </label>
@@ -51,7 +50,7 @@ export default function LoginPage() {
                         id="username"
                         type="text"
                         placeholder="Enter your username"
-                        className="rounded-lg bg-gray-100 border-0 p-3 focus:ring-2 focus:ring-neutral-800 transition-colors"
+                        className="w-full rounded-md border border-gray-300 bg-neutral-100 p-3 text-sm focus:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-neutral-700 transition-colors"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
@@ -59,10 +58,10 @@ export default function LoginPage() {
                 </div>
 
                 {/* Password */}
-                <div className="flex flex-col">
+                <div className="flex flex-col space-y-1">
                     <label
                         htmlFor="password"
-                        className="text-sm font-medium text-gray-700 mb-2"
+                        className="text-sm font-medium text-gray-700"
                     >
                         Password
                     </label>
@@ -70,7 +69,7 @@ export default function LoginPage() {
                         id="password"
                         type="password"
                         placeholder="Enter your password"
-                        className="rounded-lg bg-gray-100 border-0 p-3 focus:ring-2 focus:ring-neutral-800 transition-colors"
+                        className="w-full rounded-md border border-gray-300 bg-neutral-100 p-3 text-sm focus:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-neutral-700 transition-colors"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
@@ -80,7 +79,7 @@ export default function LoginPage() {
                 {/* Submit Button */}
                 <button
                     type="submit"
-                    className="bg-neutral-900 text-white text-sm font-medium py-3 rounded-lg hover:bg-neutral-700 transition-colors"
+                    className="w-full rounded-md bg-neutral-900 py-3 text-sm font-medium tracking-wide text-white transition-colors hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-neutral-700"
                 >
                     Sign In
                 </button>

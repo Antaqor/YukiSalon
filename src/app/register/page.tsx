@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 
-// Types
 interface Category {
     _id: string;
     name: string;
@@ -45,18 +44,16 @@ export default function RegisterPage() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [error, setError] = useState("");
 
-    /**
-     * Fetch categories & salons
-     */
     useEffect(() => {
         async function fetchInitialData() {
             try {
+                // Production domain for your API
                 const [catRes, salonsRes] = await Promise.all([
                     axios.get<Category[]>("http://68.183.191.149/api/categories"),
                     axios.get<Salon[]>("http://68.183.191.149/api/salons"),
                 ]);
                 setCategories(catRes.data);
-                setAllSalons(salonsRes.data); // existing salons
+                setAllSalons(salonsRes.data);
             } catch (err) {
                 console.error("Error fetching data:", err);
             }
@@ -64,9 +61,6 @@ export default function RegisterPage() {
         fetchInitialData();
     }, []);
 
-    /**
-     * Handle registration
-     */
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("");
@@ -85,7 +79,7 @@ export default function RegisterPage() {
                 payload.salonLogo = salonLogo;
                 payload.categoryId = selectedCategoryId || "";
             } else {
-                // If stylist, attach the existing salon
+                // if stylist, attach the selected existing salon
                 payload.selectedSalonId = selectedSalonId;
             }
 
@@ -112,25 +106,27 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-neutral-100 px-4">
+        <div className="flex w-full min-h-screen items-center justify-center bg-neutral-100 px-4">
             <form
                 onSubmit={handleSubmit}
-                className="w-full max-w-md bg-white rounded-lg shadow-md p-8 flex flex-col space-y-6"
+                className="w-full max-w-md space-y-6 rounded-lg bg-white p-8 shadow-md"
             >
-                {error && <p className="text-red-500 text-center font-medium">{error}</p>}
+                {error && (
+                    <p className="text-center text-sm font-medium text-red-500">{error}</p>
+                )}
 
                 {/* Username */}
                 <div className="flex flex-col">
                     <label
                         htmlFor="username"
-                        className="text-sm font-medium text-gray-700 mb-2"
+                        className="mb-2 text-sm font-medium text-gray-700"
                     >
                         Хэрэглэгчийн нэр
                     </label>
                     <input
                         id="username"
                         type="text"
-                        className="rounded-lg bg-gray-100 border-0 p-3"
+                        className="rounded-lg bg-gray-100 p-3 focus:outline-none"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
@@ -141,14 +137,14 @@ export default function RegisterPage() {
                 <div className="flex flex-col">
                     <label
                         htmlFor="phoneNumber"
-                        className="text-sm font-medium text-gray-700 mb-2"
+                        className="mb-2 text-sm font-medium text-gray-700"
                     >
                         Утасны дугаар
                     </label>
                     <input
                         id="phoneNumber"
                         type="text"
-                        className="rounded-lg bg-gray-100 border-0 p-3"
+                        className="rounded-lg bg-gray-100 p-3 focus:outline-none"
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
                         required
@@ -159,14 +155,14 @@ export default function RegisterPage() {
                 <div className="flex flex-col">
                     <label
                         htmlFor="email"
-                        className="text-sm font-medium text-gray-700 mb-2"
+                        className="mb-2 text-sm font-medium text-gray-700"
                     >
                         Имэйл
                     </label>
                     <input
                         id="email"
                         type="email"
-                        className="rounded-lg bg-gray-100 border-0 p-3"
+                        className="rounded-lg bg-gray-100 p-3 focus:outline-none"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
@@ -177,14 +173,14 @@ export default function RegisterPage() {
                 <div className="flex flex-col">
                     <label
                         htmlFor="password"
-                        className="text-sm font-medium text-gray-700 mb-2"
+                        className="mb-2 text-sm font-medium text-gray-700"
                     >
                         Нууц үг
                     </label>
                     <input
                         id="password"
                         type="password"
-                        className="rounded-lg bg-gray-100 border-0 p-3"
+                        className="rounded-lg bg-gray-100 p-3 focus:outline-none"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
@@ -195,13 +191,13 @@ export default function RegisterPage() {
                 <div className="flex flex-col">
                     <label
                         htmlFor="role"
-                        className="text-sm font-medium text-gray-700 mb-2"
+                        className="mb-2 text-sm font-medium text-gray-700"
                     >
                         Роль
                     </label>
                     <select
                         id="role"
-                        className="rounded-lg bg-gray-100 border-0 p-3"
+                        className="rounded-lg bg-gray-100 p-3 focus:outline-none"
                         value={role}
                         onChange={(e) => setRole(e.target.value as "owner" | "stylist")}
                     >
@@ -210,20 +206,20 @@ export default function RegisterPage() {
                     </select>
                 </div>
 
-                {/** Owner Fields */}
+                {/* Owner Fields */}
                 {role === "owner" && (
                     <>
                         <div className="flex flex-col">
                             <label
                                 htmlFor="salonName"
-                                className="text-sm font-medium text-gray-700 mb-2"
+                                className="mb-2 text-sm font-medium text-gray-700"
                             >
                                 Салоны нэр
                             </label>
                             <input
                                 id="salonName"
                                 type="text"
-                                className="rounded-lg bg-gray-100 border-0 p-3"
+                                className="rounded-lg bg-gray-100 p-3 focus:outline-none"
                                 value={salonName}
                                 onChange={(e) => setSalonName(e.target.value)}
                             />
@@ -232,13 +228,13 @@ export default function RegisterPage() {
                         <div className="flex flex-col">
                             <label
                                 htmlFor="category"
-                                className="text-sm font-medium text-gray-700 mb-2"
+                                className="mb-2 text-sm font-medium text-gray-700"
                             >
                                 Үндсэн ангилал (Сонголт)
                             </label>
                             <select
                                 id="category"
-                                className="rounded-lg bg-gray-100 border-0 p-3"
+                                className="rounded-lg bg-gray-100 p-3 focus:outline-none"
                                 value={selectedCategoryId}
                                 onChange={(e) => setSelectedCategoryId(e.target.value)}
                             >
@@ -253,18 +249,18 @@ export default function RegisterPage() {
                     </>
                 )}
 
-                {/** Stylist Fields */}
+                {/* Stylist Fields */}
                 {role === "stylist" && (
                     <div className="flex flex-col">
                         <label
                             htmlFor="assignedSalon"
-                            className="text-sm font-medium text-gray-700 mb-2"
+                            className="mb-2 text-sm font-medium text-gray-700"
                         >
                             Салон сонгох
                         </label>
                         <select
                             id="assignedSalon"
-                            className="rounded-lg bg-gray-100 border-0 p-3"
+                            className="rounded-lg bg-gray-100 p-3 focus:outline-none"
                             value={selectedSalonId}
                             onChange={(e) => setSelectedSalonId(e.target.value)}
                             required
@@ -281,7 +277,7 @@ export default function RegisterPage() {
 
                 <button
                     type="submit"
-                    className="bg-neutral-900 text-white text-sm font-medium py-3 rounded-lg hover:bg-neutral-700 transition-colors"
+                    className="rounded-lg bg-neutral-900 py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-700"
                 >
                     Бүртгэл үүсгэх
                 </button>

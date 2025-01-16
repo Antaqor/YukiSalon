@@ -3,8 +3,6 @@
 import React, { useEffect, useState } from "react";
 import ClientWrapper from "./components/ClientWrapper";
 import Header from "./components/Header";
-import SidebarLeft from "./components/SidebarLeft";
-import SidebarRight from "./components/SidebarRight";
 import BottomNav from "./components/BottomNav";
 
 const MOBILE_BREAKPOINT = 768;
@@ -48,8 +46,6 @@ export default function AdaptiveUserInterface({ children }: AdaptiveUserInterfac
                 /* --------------- DESKTOP / TABLET LAYOUT --------------- */
                 <section>
                     <Header />
-                    <SidebarLeft />
-                    <SidebarRight />
                     <main className="pt-16 md:ml-64 md:mr-64 min-h-screen">{children}</main>
                 </section>
             )}

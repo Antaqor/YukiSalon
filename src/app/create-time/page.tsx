@@ -5,28 +5,27 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import MonthCalendar, { MonthData, DayStatus } from "@/app/components/MonthCalendar";
 
-/**
- * Interface definitions
- */
+/** Service interface */
 interface Service {
     _id: string;
     name: string;
-    durationMinutes: number; // Үргэлжлэх хугацаа
+    durationMinutes: number;
 }
+
+/** Approved Stylist interface */
 interface Stylist {
     _id: string;
-    name: string;
+    username: string; // or "name" if you prefer
 }
+
+/** Minimal salon response */
 interface SalonResponse {
     _id: string;
     name: string;
 }
 
 /**
- * Utility: add `duration` minutes to `startTime`
- * @param startTime - e.g. "09:00"
- * @param duration - e.g. 30
- * @returns new time string, e.g. "09:30"
+ * Add `duration` minutes to `startTime` in "HH:MM" format.
  */
 function addMinutesToTime(startTime: string, duration: number): string {
     const [sh, sm] = startTime.split(":");
@@ -40,6 +39,10 @@ function addMinutesToTime(startTime: string, duration: number): string {
     return `${String(endH).padStart(2, "0")}:${String(endM).padStart(2, "0")}`;
 }
 
+/**
+ * CreateTimeBlockPage:
+ * Owners can add custom time-blocks (date + startTime) for a chosen Service & optional Stylist.
+ */
 export default function CreateTimeBlockPage() {
     const { data: session } = useSession();
 
@@ -49,7 +52,7 @@ export default function CreateTimeBlockPage() {
     const [serviceId, setServiceId] = useState("");
     const [stylistId, setStylistId] = useState("");
 
-    // Month calendar data
+    // MonthCalendar data
     const [monthData, setMonthData] = useState<MonthData | null>(null);
     const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
@@ -57,132 +60,145 @@ export default function CreateTimeBlockPage() {
     const [startTime, setStartTime] = useState("12:00");
     const [endTime, setEndTime] = useState("12:30");
 
-    // UI states
+    // UI / feedback states
     const [message, setMessage] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     /**
-     * Fetch data for the owner (salon, services, stylists)
+     * 1) If user is NOT owner => immediately show error
      */
     useEffect(() => {
-        const fetchOwnerData = async () => {
-            try {
-                setMessage("");
+        if (session?.user?.role !== "owner") {
+            setMessage("Only owners can create time blocks.");
+        }
+    }, [session]);
 
+    /**
+     * 2) Fetch data for the owner:
+     *    - /api/salons/my-salon => get _id
+     *    - /api/services/salon/:id => get services
+     *    - /api/stylists/team => get approved stylists
+     *    - Hard-code or fetch month data for the calendar
+     */
+    useEffect(() => {
+        async function fetchOwnerData() {
+            try {
                 if (!session?.user?.accessToken) {
-                    setMessage("Та нэвтэрч ороод дахин оролдоно уу.");
+                    setMessage("Please log in with an owner account.");
                     return;
                 }
+                setMessage("");
+
                 const token = session.user.accessToken;
 
-                // 1) Fetch the owner's salon
+                // 1) GET /api/salons/my-salon
                 const salonRes = await axios.get<SalonResponse>(
                     "http://68.183.191.149/api/salons/my-salon",
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     }
                 );
-                const salonId = salonRes.data._id;
+                const salonId = salonRes.data?._id;
+                if (!salonId) {
+                    setMessage("No salon found for this owner. Please create one first.");
+                    return;
+                }
 
-                // 2) Fetch services from that salon
+                // 2) GET /api/services/salon/:id => to load the services
                 const servRes = await axios.get<Service[]>(
                     `http://68.183.191.149/api/services/salon/${salonId}`,
-                    { headers: { Authorization: `Bearer ${token}` } }
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
                 );
                 setServices(servRes.data);
 
-                // 3) Fetch stylists for that salon
-                const styRes = await axios.get<Stylist[]>(
-                    `http://68.183.191.149/api/stylists/salon/${salonId}`,
-                    { headers: { Authorization: `Bearer ${token}` } }
+                // 3) GET /api/stylists/team => only returns approved stylists
+                const teamRes = await axios.get<Stylist[]>(
+                    "http://68.183.191.149/api/stylists/team",
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
                 );
-                setStylists(styRes.data);
+                setStylists(teamRes.data);
 
-                // 4) Simulate retrieving month data (Jan 2025) - example only
+                // 4) Hard-coded month data (example: Jan 2025)
                 const januaryDays: DayStatus[] = [
                     { day: 3, status: "fullyBooked" },
                     { day: 6, status: "goingFast" },
                     { day: 7, status: "goingFast" },
                     { day: 10, status: "fullyBooked" },
                 ];
-                const january2025: MonthData = {
-                    year: 2025,
-                    month: 0,
-                    days: januaryDays,
-                };
-                setMonthData(january2025);
+                setMonthData({ year: 2025, month: 0, days: januaryDays });
             } catch (error) {
-                console.error("Алдаа (fetchOwnerData):", error);
-                setMessage("Өгөгдөл ачаалж чадсангүй.");
+                console.error("Error (fetchOwnerData):", error);
+                setMessage("Could not load your salon, services, or stylists.");
             }
-        };
+        }
 
-        fetchOwnerData();
+        if (session?.user?.role === "owner") {
+            void fetchOwnerData();
+        }
     }, [session]);
 
     /**
-     * Whenever serviceId or startTime changes, recalc endTime
+     * 3) Whenever serviceId or startTime changes, recalc endTime
      */
     useEffect(() => {
         const chosenService = services.find((s) => s._id === serviceId);
         if (chosenService) {
-            const newEnd = addMinutesToTime(startTime, chosenService.durationMinutes);
-            setEndTime(newEnd);
+            setEndTime(addMinutesToTime(startTime, chosenService.durationMinutes));
         }
     }, [serviceId, startTime, services]);
 
     /**
-     * Handler for changing the startTime (recalculate endTime)
+     * 4) Handler for changing the startTime => recalc endTime if service known
      */
-    const handleStartTimeChange = (val: string) => {
+    function handleStartTimeChange(val: string) {
         setStartTime(val);
         const chosenService = services.find((s) => s._id === serviceId);
         if (chosenService) {
-            const newEnd = addMinutesToTime(val, chosenService.durationMinutes);
-            setEndTime(newEnd);
+            setEndTime(addMinutesToTime(val, chosenService.durationMinutes));
         } else {
             setEndTime("12:30");
         }
-    };
+    }
 
     /**
-     * Submit a single time-block for the selected date
+     * 5) Submit => POST /api/services/my-service/time-block
      */
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setMessage("");
 
-        // Basic checks
         if (!session?.user?.accessToken) {
-            setMessage("Нэвтэрч орсны дараа оролдоно уу.");
+            setMessage("You must be logged in as owner to proceed.");
             return;
         }
         if (!serviceId) {
-            setMessage("Үйлчилгээ сонгоно уу.");
+            setMessage("Please select a service.");
             return;
         }
         if (!monthData || selectedDay === null) {
-            setMessage("Календараас өдөр сонгоно уу.");
+            setMessage("Please select a day from the calendar.");
             return;
         }
         if (!startTime) {
-            setMessage("Эхлэх цаг буруу байна.");
+            setMessage("Invalid start time.");
             return;
         }
 
-        // Build date as "YYYY-MM-DD" for January 2025
         const dayStr = String(selectedDay).padStart(2, "0");
-        const dateStr = `2025-01-${dayStr}`;
+        const dateStr = `2025-01-${dayStr}`; // example year/month
 
         setIsSubmitting(true);
         try {
             const token = session.user.accessToken;
-
             const payload = {
                 serviceId,
-                stylistId: stylistId || null,
+                stylistId: stylistId || null, // optional
                 date: dateStr,
-                times: [startTime], // Send only the startTime
+                times: [startTime],
             };
 
             const res = await axios.post(
@@ -192,7 +208,7 @@ export default function CreateTimeBlockPage() {
             );
 
             if (res.status === 201) {
-                setMessage("Нэг удаагийн цагийн блок амжилттай нэмлээ!");
+                setMessage("Time block added successfully!");
                 // reset form
                 setServiceId("");
                 setStylistId("");
@@ -200,20 +216,20 @@ export default function CreateTimeBlockPage() {
                 setStartTime("12:00");
                 setEndTime("12:30");
             } else {
-                setMessage("Цагийн блок үүсгэх үед алдаа гарлаа.");
+                setMessage("Error creating time block. Please try again.");
             }
         } catch (err) {
-            console.error("TimeBlock POST алдаа:", err);
-            setMessage("Сервер алдаа гарлаа.");
+            console.error("TimeBlock POST error:", err);
+            setMessage("Server error. Check console for details.");
         } finally {
             setIsSubmitting(false);
         }
-    };
+    }
 
+    // 6) Render
     return (
         <div className="flex w-full min-h-screen bg-gray-50">
-            <div className="flex-1 px-6 py-8">
-
+            <main className="flex-1 px-6 py-8">
                 {message && (
                     <div className="mb-4 p-3 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded">
                         {message}
@@ -228,10 +244,9 @@ export default function CreateTimeBlockPage() {
                                 Үйлчилгээ
                             </label>
                             <select
-                                className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none"
                                 value={serviceId}
                                 onChange={(e) => setServiceId(e.target.value)}
-                                required
                             >
                                 <option value="">-- Үйлчилгээ сонгох --</option>
                                 {services.map((srv) => (
@@ -242,20 +257,20 @@ export default function CreateTimeBlockPage() {
                             </select>
                         </div>
 
-                        {/* Stylist (optional) */}
+                        {/* Stylist (optional) - showing "approved" stylists/team */}
                         <div>
                             <label className="block text-sm font-medium text-neutral-700 mb-1">
                                 Стилист (Нэмэлт)
                             </label>
                             <select
-                                className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none"
                                 value={stylistId}
                                 onChange={(e) => setStylistId(e.target.value)}
                             >
                                 <option value="">Стилист сонгоогүй</option>
                                 {stylists.map((sty) => (
                                     <option key={sty._id} value={sty._id}>
-                                        {sty.name}
+                                        {sty.username}
                                     </option>
                                 ))}
                             </select>
@@ -271,12 +286,12 @@ export default function CreateTimeBlockPage() {
                                 />
                             ) : (
                                 <p className="text-sm text-neutral-500">
-                                    Календарын дата ачаалж байна...
+                                    Loading calendar data...
                                 </p>
                             )}
                         </div>
 
-                        {/* Start Time / End Time (display only) */}
+                        {/* Start Time / End Time */}
                         <div className="flex gap-6">
                             <div className="flex-1">
                                 <label className="block text-sm font-medium text-neutral-700 mb-1">
@@ -286,40 +301,36 @@ export default function CreateTimeBlockPage() {
                                     type="time"
                                     value={startTime}
                                     onChange={(e) => handleStartTimeChange(e.target.value)}
-                                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
-                                    required
+                                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
                                 />
                             </div>
                             <div className="flex-1">
                                 <label className="block text-sm font-medium text-neutral-700 mb-1">
-                                    Дуусах цаг (урьдчилсан)
+                                    Дуусах цаг
                                 </label>
                                 <input
                                     type="text"
                                     value={endTime}
                                     readOnly
-                                    className="w-full border border-gray-300 bg-gray-50 rounded px-3 py-2 text-sm text-gray-500 cursor-not-allowed"
+                                    className="w-full border border-gray-300 bg-gray-50 rounded px-3 py-2 text-sm text-gray-500"
                                 />
                             </div>
                         </div>
 
-                        {/* Submit */}
                         <div className="pt-4">
                             <button
                                 type="submit"
                                 className={`bg-neutral-800 text-white px-4 py-2 rounded text-sm font-medium transition-colors ${
-                                    isSubmitting
-                                        ? "opacity-50 cursor-not-allowed"
-                                        : "hover:bg-neutral-700"
+                                    isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-neutral-700"
                                 }`}
                                 disabled={isSubmitting}
                             >
-                                {isSubmitting ? "Нэмэж байна..." : "Блок үүсгэх"}
+                                {isSubmitting ? "Saving..." : "Цаг нэмэх"}
                             </button>
                         </div>
                     </form>
                 </div>
-            </div>
+            </main>
         </div>
     );
 }

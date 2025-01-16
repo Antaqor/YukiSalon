@@ -3,10 +3,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 
 export default function Header() {
     const router = useRouter();
+    const { data: session } = useSession();
 
     // Controls whether the popup overlay is visible
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -37,6 +39,12 @@ export default function Header() {
         };
     }, [isMenuOpen]);
 
+    // Logout
+    const handleLogout = async () => {
+        await signOut({ redirect: false });
+        router.push("/login");
+    };
+
     return (
         <>
             <header
@@ -56,20 +64,38 @@ export default function Header() {
           px-4
         "
             >
-                {/* Left: Profile Placeholder */}
-                <div
-                    className="
-            w-8
-            h-8
-            bg-gray-200
-            rounded-md
-            cursor-pointer
-            hover:bg-gray-300
-            transition
-          "
-                    onClick={() => router.push("/profile")}
-                    aria-label="Profile Placeholder"
-                />
+                {/* Left: If user is logged in => profile placeholder, else link to /login */}
+                {session?.user ? (
+                    <div
+                        className="
+              w-8
+              h-8
+              bg-gray-200
+              rounded-md
+              cursor-pointer
+              hover:bg-gray-300
+              transition
+            "
+                        onClick={() => router.push("/profile")}
+                        aria-label="Profile Placeholder"
+                    />
+                ) : (
+                    <button
+                        className="
+              bg-neutral-800
+              text-white
+              px-3
+              py-2
+              rounded
+              text-sm
+              hover:bg-neutral-700
+              transition
+            "
+                        onClick={() => router.push("/login")}
+                    >
+                        Login
+                    </button>
+                )}
 
                 {/* Center: Logo */}
                 <Link
@@ -84,19 +110,30 @@ export default function Header() {
                     <span className="text-xl font-bold text-black">Salon</span>
                 </Link>
 
-                {/* Right: Burger Menu */}
-                <button
-                    onClick={handleMenuToggle}
-                    className="
-            text-black
-            hover:text-gray-600
-            transition
-            p-2
-          "
-                    aria-label="Open Menu"
-                >
-                    <Bars3Icon className="h-6 w-6" />
-                </button>
+                {/* Right: Burger Menu and Logout if logged in */}
+                <div className="flex items-center gap-4">
+                    {session?.user && (
+                        <button
+                            onClick={handleLogout}
+                            className="text-sm text-red-600 hover:text-red-800 transition"
+                        >
+                            Logout
+                        </button>
+                    )}
+
+                    <button
+                        onClick={handleMenuToggle}
+                        className="
+              text-black
+              hover:text-gray-600
+              transition
+              p-2
+            "
+                        aria-label="Open Menu"
+                    >
+                        <Bars3Icon className="h-6 w-6" />
+                    </button>
+                </div>
             </header>
 
             {/* Spacer below the header so the main content isn't hidden underneath */}
@@ -118,7 +155,6 @@ export default function Header() {
             overflow-y-auto
           "
                 >
-                    {/* Centered white popup container, larger than before */}
                     <div
                         ref={menuRef}
                         className="
@@ -149,22 +185,12 @@ export default function Header() {
                             &times;
                         </button>
 
-                        {/* Sample Text Content */}
+                        {/* Some Popup Content */}
                         <h2 className="text-2xl font-semibold mb-4">Welcome to the Modal</h2>
                         <p className="text-gray-600 mb-4">
-                            This is a larger, modern-styled popup. Below are some links and
-                            sample text to demonstrate how your modal might look with real
-                            content.
+                            Below are some links and sample text to demonstrate how your
+                            modal might look with real content.
                         </p>
-                        <p className="text-gray-600 mb-4">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
-                            feugiat ultricies elit, a finibus dui semper et. Duis feugiat
-                            consequat felis, eu dictum nibh maximus vel. Sed scelerisque porta
-                            est, in convallis lectus consectetur quis. Morbi lorem libero,
-                            facilisis non erat in, luctus dictum ipsum.
-                        </p>
-
-                        {/* Social Links */}
                         <div className="mt-8 flex flex-col space-y-2">
                             <a
                                 href="https://www.facebook.com/"
