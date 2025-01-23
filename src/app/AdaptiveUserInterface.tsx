@@ -1,7 +1,6 @@
+// File: /app/AdaptiveUserInterface.tsx
 "use client";
-
 import React, { useEffect, useState } from "react";
-import ClientWrapper from "./components/ClientWrapper";
 import Header from "./components/Header";
 import BottomNav from "./components/BottomNav";
 
@@ -24,7 +23,6 @@ export default function AdaptiveUserInterface({ children }: AdaptiveUserInterfac
         return () => window.removeEventListener("resize", updateIsMobile);
     }, []);
 
-    // Show a loader until we know the screen size
     if (isMobile === null) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-white">
@@ -34,21 +32,10 @@ export default function AdaptiveUserInterface({ children }: AdaptiveUserInterfac
     }
 
     return (
-        <ClientWrapper>
-            {isMobile ? (
-                /* ---------------- MOBILE LAYOUT ---------------- */
-                <section>
-                    <Header />
-                    <main className="w-full flex-grow">{children}</main>
-                    <BottomNav />
-                </section>
-            ) : (
-                /* --------------- DESKTOP / TABLET LAYOUT --------------- */
-                <section>
-                    <Header />
-                    <main className="pt-16 md:ml-64 md:mr-64 min-h-screen">{children}</main>
-                </section>
-            )}
-        </ClientWrapper>
+        <section>
+            <Header />
+            <main className="w-full flex-grow">{children}</main>
+            {isMobile && <BottomNav />}
+        </section>
     );
 }
