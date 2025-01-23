@@ -77,7 +77,7 @@ export default function LoginPage() {
                         htmlFor="password"
                         className="text-sm font-medium text-gray-700"
                     >
-                        Нууц үг
+                        Нууц үгn
                     </label>
                     <input
                         id="password"
