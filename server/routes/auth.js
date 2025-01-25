@@ -45,11 +45,15 @@ router.post("/register", async (req, res) => {
         });
         await newUser.save();
 
-        return res.status(201).json({ message: "User registered!", user: {
+        return res.status(201).json({
+            message: "User registered!",
+            user: {
                 username: newUser.username,
                 age: newUser.age,
-                mbti: newUser.mbti, // Return MBTI
-            }});
+                mbti: newUser.mbti,
+                subscriptionExpiresAt: newUser.subscriptionExpiresAt, // ЭНЭ МӨРИЙГ НЭМНЭ
+            }
+        });
     } catch (err) {
         console.error("Register error:", err);
         return res.status(500).json({ error: "Server error" });
@@ -89,7 +93,8 @@ router.post("/login", async (req, res) => {
                 id: user._id,
                 username: user.username,
                 age: user.age,
-                mbti: user.mbti, // Return MBTI
+                mbti: user.mbti,
+                subscriptionExpiresAt: user.subscriptionExpiresAt, // ЭНЭ МӨРИЙГ НЭМНЭ
             },
             token,
         });

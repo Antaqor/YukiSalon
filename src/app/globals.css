@@ -1,14 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* globals.css */
 
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+/* Custom Geometric Background (Хэрэв хэрэгтэй бол нэмэх) */
+.square-card {
+    border-radius: 0; /* Rounded байхгүй */
+}
 
+/* Font family override */
 html,
 body {
     padding: 0;
     margin: 0;
-    font-family: inherit; /* Tailwind-д шингээж удирдах */
+    font-family: 'Poppins', sans-serif; /* Tailwind-д шингээж удирдах */
     background-color: inherit; /* Tailwind-д удирдах */
 }

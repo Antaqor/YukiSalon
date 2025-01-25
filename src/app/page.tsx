@@ -2,18 +2,15 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useAuth } from "./context/AuthContext";
-import Skeleton from "react-loading-skeleton"; // Skeleton UI component
+import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { FaHeart, FaRegHeart } from "react-icons/fa"; // Import heart icons
+import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { motion } from "framer-motion";
+import FAQSection from "./components/FAQSection";
 
 interface PostCategory {
     _id: string;
     name: string;
-}
-
-interface LikedUser {
-    _id: string;
-    username: string;
 }
 
 interface Post {
@@ -21,68 +18,111 @@ interface Post {
     title: string;
     content: string;
     createdAt: string;
+    likes: string[];
     user?: {
         username: string;
         age?: number;
     };
     category?: PostCategory;
-    likes: LikedUser[];
 }
+
+const PostSkeletonLoader = () => (
+    <motion.div
+        initial={{ opacity: 0.5 }}
+        animate={{ opacity: 1 }}
+        transition={{
+            duration: 0.8,
+            repeat: Infinity,
+            repeatType: "reverse"
+        }}
+        className="border-b border-gray-200 pb-4"
+    >
+        <div className="flex justify-between items-start">
+            <div className="w-full">
+                <Skeleton
+                    width={150}
+                    height={24}
+                    className="mb-2"
+                    baseColor="#f3f4f6"
+                    highlightColor="#e5e7eb"
+                />
+                <Skeleton
+                    count={3}
+                    className="mb-1"
+                    baseColor="#f3f4f6"
+                    highlightColor="#e5e7eb"
+                />
+                <div className="flex items-center gap-2 mt-2">
+                    <Skeleton
+                        circle
+                        width={24}
+                        height={24}
+                        baseColor="#f3f4f6"
+                        highlightColor="#e5e7eb"
+                    />
+                    <Skeleton
+                        width={100}
+                        height={16}
+                        baseColor="#f3f4f6"
+                        highlightColor="#e5e7eb"
+                    />
+                </div>
+            </div>
+            <div className="flex items-center gap-2">
+                <Skeleton
+                    width={30}
+                    height={16}
+                    baseColor="#f3f4f6"
+                    highlightColor="#e5e7eb"
+                />
+            </div>
+        </div>
+    </motion.div>
+);
 
 export default function HomePage() {
     const { user, loggedIn } = useAuth();
     const [posts, setPosts] = useState<Post[]>([]);
-    const [categories, setCategories] = useState<PostCategory[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState("");
-    const [filterCategory, setFilterCategory] = useState("");
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [error, setError] = useState("");
-    const [loadingPosts, setLoadingPosts] = useState(true); // Loading state for posts
-    const [loadingCategories, setLoadingCategories] = useState(true); // Loading state for categories
+    const [categories, setCategories] = useState<PostCategory[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState("");
+    const [filterCategory, setFilterCategory] = useState("");
 
-    const BASE_URL =
-        process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:5001";
+    const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:5001";
+    const latestPost = posts[0];
+    const isSubscribed = user?.subscriptionExpiresAt ? new Date(user.subscriptionExpiresAt) > new Date() : false;
 
-    // Fetch categories
     const fetchCategories = useCallback(async () => {
-        setLoadingCategories(true);
         try {
             const res = await axios.get(`${BASE_URL}/api/post-categories`);
             setCategories(res.data);
         } catch (err) {
             console.error("Fetch categories error:", err);
-        } finally {
-            setLoadingCategories(false);
         }
     }, [BASE_URL]);
 
-    // Fetch posts
     const fetchPosts = useCallback(async (categoryId?: string) => {
-        setLoadingPosts(true);
         try {
-            let url = `${BASE_URL}/api/posts`;
-            if (categoryId) {
-                url += `?category=${categoryId}`;
-            }
+            const url = categoryId
+                ? `${BASE_URL}/api/posts?category=${categoryId}`
+                : `${BASE_URL}/api/posts`;
             const res = await axios.get(url);
             setPosts(res.data);
         } catch (err) {
             console.error("Fetch posts error:", err);
-        } finally {
-            setLoadingPosts(false);
         }
     }, [BASE_URL]);
 
-    // Create a new post
     const createPost = async () => {
         setError("");
         if (!title.trim() || !content.trim()) {
-            setError("Title & content required.");
+            setError("Гарчиг болон контентыг бөглөнө үү");
             return;
         }
         if (!user?.accessToken) {
-            setError("Please login first.");
+            setError("Нэвтэрч байна уу");
             return;
         }
 
@@ -90,55 +130,44 @@ export default function HomePage() {
             const res = await axios.post(
                 `${BASE_URL}/api/posts`,
                 { title, content, category: selectedCategory },
-                {
-                    headers: {
-                        Authorization: `Bearer ${user.accessToken}`,
-                    },
-                }
+                { headers: { Authorization: `Bearer ${user.accessToken}` } }
             );
-            setPosts((prev) => [res.data.post, ...prev]);
-            setTitle("");
-            setContent("");
-            setSelectedCategory("");
-        } catch (err: any) {
-            console.error("Create post error:", err);
-            setError(
-                axios.isAxiosError(err) && err.response?.status === 403
-                    ? "Subscription expired. Please pay first!"
-                    : "Failed to create post."
-            );
+            setPosts(prev => [res.data.post, ...prev]);
+            resetForm();
+        } catch (err) {
+            handlePostError(err);
         }
     };
 
-    // Like a post
-    const likePost = async (postId: string) => {
-        if (!user?.accessToken) {
-            setError("Please login first.");
-            return;
-        }
+    const handleLike = async (postId: string) => {
+        if (!user?.accessToken) return;
 
         try {
             const res = await axios.post(
                 `${BASE_URL}/api/posts/${postId}/like`,
                 {},
-                {
-                    headers: {
-                        Authorization: `Bearer ${user.accessToken}`,
-                    },
-                }
+                { headers: { Authorization: `Bearer ${user.accessToken}` } }
             );
-            setPosts((prevPosts) =>
-                prevPosts.map((post) =>
-                    post._id === postId ? { ...post, likes: res.data.likes } : post
-                )
-            );
-        } catch (err: any) {
-            console.error("Like post error:", err);
-            setError(
-                axios.isAxiosError(err) && err.response?.data?.error
-                    ? err.response.data.error
-                    : "Failed to like post."
-            );
+            setPosts(prev => prev.map(post =>
+                post._id === postId ? { ...post, likes: res.data.likes } : post
+            ));
+        } catch (err) {
+            console.error("Like хийхэд алдаа гарлаа:", err);
+        }
+    };
+
+    const resetForm = () => {
+        setTitle("");
+        setContent("");
+        setSelectedCategory("");
+        setError("");
+    };
+
+    const handlePostError = (err: unknown) => {
+        if (axios.isAxiosError(err)) {
+            setError(err.response?.status === 403
+                ? "Та subscription-ээ сунгана уу"
+                : "Алдаа гарлаа");
         }
     };
 
@@ -147,129 +176,197 @@ export default function HomePage() {
         fetchPosts();
     }, [fetchCategories, fetchPosts]);
 
-    const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const catId = e.target.value;
-        setFilterCategory(catId);
-        fetchPosts(catId);
-    };
-
-    // Check if user has active subscription
-    const hasActiveSubscription = () => {
-        if (!user?.subscriptionExpiresAt) return false;
-        const now = new Date();
-        const expiry = new Date(user.subscriptionExpiresAt);
-        return expiry > now;
-    };
-
-    const isSubscribed = hasActiveSubscription();
-
     return (
         <div className="min-h-screen bg-white">
             <div className="max-w-2xl mx-auto px-4 py-6">
-                {error && <p className="text-red-600 mb-3">{error}</p>}
+                <FAQSection />
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                    {error && (
+                        <motion.div
+                            initial={{ y: -20 }}
+                            animate={{ y: 0 }}
+                            className="text-red-600 mb-4 p-3 bg-red-50 rounded"
+                        >
+                            {error}
+                        </motion.div>
+                    )}
 
-                {loggedIn && isSubscribed ? (
-                    <div className="mb-6">
-                        <input
-                            placeholder="Title"
-                            className="w-full border-b border-gray-300 px-2 py-2 text-sm text-black mb-2 focus:outline-none"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                        />
-                        <textarea
-                            placeholder="Content"
-                            className="w-full border-b border-gray-300 px-2 py-2 text-sm text-black mb-2 focus:outline-none"
-                            rows={3}
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                        />
-                        {loadingCategories ? (
-                            <Skeleton height={40} width="100%" />
-                        ) : (
+                    {loggedIn && (
+                        <motion.div
+                            className={`space-y-3 mb-6 ${!isSubscribed && "opacity-50 pointer-events-none"}`}
+                            initial={{ y: -20 }}
+                            animate={{ y: 0 }}
+                        >
+                            <input
+                                placeholder="Гарчиг"
+                                className="w-full border-b border-gray-300 p-2 focus:outline-none"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                            />
+                            <textarea
+                                placeholder="Контент"
+                                className="w-full border-b border-gray-300 p-2 focus:outline-none"
+                                rows={3}
+                                value={content}
+                                onChange={(e) => setContent(e.target.value)}
+                            />
                             <select
-                                className="w-full border-b border-gray-300 px-2 py-2 text-sm text-black mb-2 focus:outline-none"
+                                className="w-full border-b border-gray-300 p-2 focus:outline-none"
                                 value={selectedCategory}
                                 onChange={(e) => setSelectedCategory(e.target.value)}
                             >
-                                <option value="">-- Choose Category --</option>
-                                {categories.map((cat) => (
-                                    <option key={cat._id} value={cat._id}>
-                                        {cat.name}
-                                    </option>
+                                <option value="">-- Ангилал сонгох --</option>
+                                {categories.map(cat => (
+                                    <option key={cat._id} value={cat._id}>{cat.name}</option>
                                 ))}
                             </select>
-                        )}
-                        <button
-                            onClick={createPost}
-                            className="bg-black text-white px-4 py-2 text-sm font-medium hover:bg-gray-900 transition"
-                        >
-                            Post
-                        </button>
-                    </div>
-                ) : loggedIn && !isSubscribed ? (
-                    <div className="mb-6 p-4 border border-gray-300 rounded">
-                        <p className="text-gray-600 mb-3">
-                            Та subscription эрхгүй байна. Постуудыг харахын тулд subscribe хийнэ үү.
-                        </p>
-                        <button
-                            onClick={() => (window.location.href = "/subscribe")}
-                            className="bg-blue-500 text-white px-4 py-2 text-sm font-medium hover:bg-blue-600 transition"
-                        >
-                            Subscribe хийх
-                        </button>
-                    </div>
-                ) : (
-                    <p className="text-gray-600 mb-4">
-                        Нэвтэрч байж пост оруулна уу. (Subscription эрхтэй байх шаардлагатай)
-                    </p>
-                )}
-
-                <div className="space-y-4">
-                    {loadingPosts ? (
-                        Array.from({ length: 5 }).map((_, index) => (
-                            <div key={index} className="border-b border-gray-300 pb-3">
-                                <Skeleton height={30} width="60%" />
-                                <Skeleton height={20} width="80%" count={2} />
-                                <Skeleton height={20} width="40%" />
-                            </div>
-                        ))
-                    ) : (
-                        posts.map((p) => {
-                            const hasLiked = user
-                                ? p.likes.some((like) => like._id === user.id)
-                                : false;
-                            return (
-                                <div key={p._id} className="border-b border-gray-300 pb-3">
-                                    <h3 className="font-semibold">{p.title}</h3>
-                                    <p className="mt-1">{p.content}</p>
-                                    <small className="text-gray-500 block mt-2">
-                                        By {p.user?.username} —{" "}
-                                        {new Date(p.createdAt).toLocaleString()}
-                                        {p.user?.age ? ` (Age: ${p.user.age})` : ""}
-                                        {p.category ? ` • Category: ${p.category.name}` : ""}
-                                    </small>
-                                    <div className="mt-2 flex items-center">
-                                        <button
-                                            onClick={() => likePost(p._id)}
-                                            className={`text-xl focus:outline-none ${
-                                                hasLiked
-                                                    ? "text-red-500"
-                                                    : "text-gray-400 hover:text-red-500 transition"
-                                            }`}
-                                            disabled={hasLiked}
-                                            aria-label={hasLiked ? "Liked" : "Like"}
-                                        >
-                                            {hasLiked ? <FaHeart /> : <FaRegHeart />}
-                                        </button>
-                                        <span className="ml-2 text-sm text-gray-700">
-                                            {p.likes.length}
-                                        </span>
-                                    </div>
-                                </div>
-                            );
-                        })
+                            <button
+                                onClick={createPost}
+                                className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition"
+                            >
+                                Нийтлэх
+                            </button>
+                        </motion.div>
                     )}
-                </div>
+
+                    {loggedIn && !isSubscribed && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="mb-6 p-4 bg-white border border-gray-300 shadow-sm"
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="p-2 bg-blue-50 border border-blue-200">
+                                    <svg
+                                        className="w-6 h-6 text-blue-600"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="square"
+                                            strokeLinejoin="miter"
+                                            strokeWidth="2"
+                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                                        />
+                                    </svg>
+                                </div>
+
+                                <div className="flex-1">
+                                    <h3 className="text-lg font-medium text-gray-900">
+                                        Гишүүнчлэлийн давуу эрх
+                                    </h3>
+                                    <p className="text-gray-600 mt-1 text-base">
+                                        Бүрэн эрхтэй үзэхийн тулд нэгдэх шаардлагатай
+                                    </p>
+                                </div>
+
+                                <button
+                                    onClick={() => window.location.href = "/subscribe"}
+                                    className="bg-blue-600 text-white px-5 py-2.5 text-base font-medium hover:bg-blue-700 transition-colors border border-blue-700"
+                                >
+                                    Нэгдэх
+                                </button>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    <motion.div
+                        className="mb-6"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                    >
+                        <select
+                            className="w-full border-b border-gray-300 p-2 focus:outline-none"
+                            value={filterCategory}
+                            onChange={(e) => {
+                                setFilterCategory(e.target.value);
+                                fetchPosts(e.target.value);
+                            }}
+                            disabled={!isSubscribed}
+                        >
+                            <option value="">Бүх ангилал</option>
+                            {categories.map(cat => (
+                                <option key={cat._id} value={cat._id}>{cat.name}</option>
+                            ))}
+                        </select>
+                    </motion.div>
+
+                    <div className="space-y-6">
+                        {isSubscribed ? (
+                            posts.map((post, index) => (
+                                <motion.div
+                                    key={post._id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.1 }}
+                                    className="border-b border-gray-200 pb-4"
+                                >
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h3 className="font-semibold text-lg mb-2">
+                                                {post.title}
+                                            </h3>
+                                            <p className="text-gray-600 line-clamp-3">
+                                                {post.content}
+                                            </p>
+                                            <div className="mt-2 text-sm text-gray-400">
+                                                <span>{post.user?.username}</span>
+                                                {post.category && <span> • {post.category.name}</span>}
+                                                <span> • {new Date(post.createdAt).toLocaleDateString()}</span>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => handleLike(post._id)}
+                                            className="flex items-center gap-1 text-gray-500 hover:text-red-500"
+                                        >
+                                            {post.likes.includes(user?.id || "") ? (
+                                                <FaHeart className="text-red-500" />
+                                            ) : (
+                                                <FaRegHeart />
+                                            )}
+                                            <span>{post.likes.length}</span>
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            ))
+                        ) : (
+                            <>
+                                {latestPost && (
+                                    <div className="relative group">
+                                        <div className="blur-sm pointer-events-none">
+                                            <div className="border-b border-gray-200 pb-4">
+                                                <h3 className="font-semibold text-lg mb-2">
+                                                    {latestPost.title}
+                                                </h3>
+                                                <p className="text-gray-600 line-clamp-3">
+                                                    {latestPost.content}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-t from-white via-white/90 to-transparent p-4">
+                                            <motion.div
+                                                initial={{ scale: 0.95 }}
+                                                animate={{ scale: 1 }}
+                                                className="text-center space-y-4"
+                                            >
+                                                <p className="text-lg font-medium text-gray-700">
+                                                    {loggedIn
+                                                        ? "Бүрэн контентыг үзэхийн тулд гишүүнчлэлд нэгдээрэй!"
+                                                        : "Нэвтрээд контентыг бүрэн үзээрэй!"}
+                                                </p>
+                                            </motion.div>
+                                        </div>
+                                    </div>
+                                )}
+                                {Array.from({ length: 4 }).map((_, index) => (
+                                    <PostSkeletonLoader key={index} />
+                                ))}
+                            </>
+                        )}
+                    </div>
+                </motion.div>
             </div>
         </div>
     );

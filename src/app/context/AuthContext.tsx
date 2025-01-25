@@ -49,9 +49,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const login = (newUser: AuthUser, token: string) => {
-        localStorage.setItem("user", JSON.stringify(newUser));
+        const userWithSubscription = {
+            ...newUser,
+            subscriptionExpiresAt: newUser.subscriptionExpiresAt, // ЭНД ШИНЭ ТАЛБАР НЭМЭГДЭНЭ
+            accessToken: token,
+        };
+        localStorage.setItem("user", JSON.stringify(userWithSubscription));
         localStorage.setItem("token", token);
-        setUser({ ...newUser, accessToken: token });
+        setUser(userWithSubscription);
         setLoggedIn(true);
     };
 

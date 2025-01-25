@@ -1,3 +1,5 @@
+// app/layout.tsx
+
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { AuthProvider } from "./context/AuthContext";
@@ -63,7 +65,7 @@ export default function RootLayout({
             <Header />
 
             {/* Үндсэн контент */}
-            <main className="flex-grow container mx-auto bg-white">
+            <main className="flex-grow container mx-auto">
                 <div className="p-6">
                     {children}
                 </div>
@@ -76,7 +78,5 @@ export default function RootLayout({
         </AuthProvider>
         </body>
         </html>
-
-
     );
 }
