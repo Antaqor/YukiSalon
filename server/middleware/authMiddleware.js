@@ -1,25 +1,27 @@
 // server/middleware/authMiddleware.js
 const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
-module.exports = function authenticateToken(req, res, next) {
+const authenticateToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
-    if (!authHeader) {
-        return res.status(401).json({ error: "No authorization header" });
-    }
-    const parts = authHeader.split(" ");
-    if (parts.length !== 2 || parts[0] !== "Bearer") {
-        return res.status(401).json({ error: "Use 'Bearer <token>' format" });
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ error: "No token provided" });
     }
 
-    const token = parts[1];
-    const secret = process.env.JWT_SECRET || "change-me";
+    const token = authHeader.split(" ")[1];
 
-    jwt.verify(token, secret, (err, decoded) => {
-        if (err) {
-            return res.status(401).json({ error: "Token invalid or expired" });
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || "change-me");
+        const user = await User.findById(decoded.id).select("username age mbti subscriptionExpiresAt");
+        if (!user) {
+            return res.status(401).json({ error: "User not found" });
         }
-        // Амжилттай decode => req.user
-        req.user = decoded; // { id, username, iat, exp }
+        req.user = user; // Attach user to request
         next();
-    });
+    } catch (err) {
+        console.error("Authentication error:", err);
+        return res.status(401).json({ error: "Invalid token" });
+    }
 };
+
+module.exports = authenticateToken;

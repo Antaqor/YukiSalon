@@ -1,9 +1,11 @@
-// server/routes/postCategory.js
+// server/routes/postCategories.js
 const express = require("express");
 const router = express.Router();
 const PostCategory = require("../models/PostCategory");
 
-// GET /api/post-categories => Бүх категори татах
+/**
+ * GET /api/post-categories => fetch all post categories
+ */
 router.get("/", async (req, res) => {
     try {
         const categories = await PostCategory.find().sort({ name: 1 });

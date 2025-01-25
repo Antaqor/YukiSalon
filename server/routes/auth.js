@@ -1,3 +1,4 @@
+// server/routes/auth.js
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
@@ -18,28 +19,28 @@ const mbtiTypes = [
 router.post("/register", async (req, res) => {
     try {
         const { username, password, age, mbti } = req.body;
-        if (!username || !password || !age || !mbti) { // MBTI-г шалгах
+        if (!username || !password || !age || !mbti) { // Check MBTI
             return res.status(400).json({ error: "username, password, age, mbti are required" });
         }
 
-        if (!mbtiTypes.includes(mbti)) { // MBTI төрөл зөв эсэхийг шалгах
+        if (!mbtiTypes.includes(mbti)) { // Validate MBTI type
             return res.status(400).json({ error: "Invalid MBTI type" });
         }
 
-        // username давхцаж буй эсэх
+        // Check if username is already taken
         const existing = await User.findOne({ username });
         if (existing) {
             return res.status(400).json({ error: "Username already used" });
         }
 
-        // password hash
+        // Hash password
         const hashedPw = await bcrypt.hash(password, 10);
 
         const newUser = new User({
             username,
             password: hashedPw,
             age: Number(age),
-            mbti, // MBTI-г хадгалах
+            mbti, // Save MBTI
             subscriptionExpiresAt: null, // default
         });
         await newUser.save();
@@ -47,7 +48,7 @@ router.post("/register", async (req, res) => {
         return res.status(201).json({ message: "User registered!", user: {
                 username: newUser.username,
                 age: newUser.age,
-                mbti: newUser.mbti, // MBTI-г буцаах
+                mbti: newUser.mbti, // Return MBTI
             }});
     } catch (err) {
         console.error("Register error:", err);
@@ -76,7 +77,7 @@ router.post("/login", async (req, res) => {
             return res.status(401).json({ error: "Invalid credentials" });
         }
 
-        // JWT үүсгэх
+        // Create JWT
         const token = jwt.sign(
             { id: user._id, username: user.username },
             process.env.JWT_SECRET || "change-me",
@@ -88,7 +89,7 @@ router.post("/login", async (req, res) => {
                 id: user._id,
                 username: user.username,
                 age: user.age,
-                mbti: user.mbti, // MBTI-г буцаах
+                mbti: user.mbti, // Return MBTI
             },
             token,
         });

@@ -1,3 +1,4 @@
+// app/context/AuthContext.tsx
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
@@ -5,7 +6,7 @@ interface AuthUser {
     id?: string;
     username?: string;
     age?: number;
-    mbti?: string; // Шинэ талбар нэмэх
+    mbti?: string; // New field
     accessToken?: string;
     subscriptionExpiresAt?: string;
 }
@@ -16,7 +17,7 @@ interface AuthState {
     login: (u: AuthUser, t: string) => void;
     logout: () => void;
 
-    // Шинэ функц: subscription хугацааг шинэчлэх
+    // New function: update subscription expiration
     updateSubscriptionExpiresAt: (expires: string) => void;
 }
 
@@ -61,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoggedIn(false);
     };
 
-    // Сарын эрх амжилттай төлөгдөж сунгагдсаны дараа call хийх функц
+    // Update subscription expiration
     const updateSubscriptionExpiresAt = (expires: string) => {
         if (user) {
             const updated = { ...user, subscriptionExpiresAt: expires };

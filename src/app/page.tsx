@@ -2,12 +2,18 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useAuth } from "./context/AuthContext";
-import Skeleton from "react-loading-skeleton"; // Skeleton UI-ийн компонент
+import Skeleton from "react-loading-skeleton"; // Skeleton UI component
 import "react-loading-skeleton/dist/skeleton.css";
+import { FaHeart, FaRegHeart } from "react-icons/fa"; // Import heart icons
 
 interface PostCategory {
     _id: string;
     name: string;
+}
+
+interface LikedUser {
+    _id: string;
+    username: string;
 }
 
 interface Post {
@@ -18,37 +24,42 @@ interface Post {
     user?: {
         username: string;
         age?: number;
-        mbti?: string; // Шинэ талбар нэмэх
     };
     category?: PostCategory;
+    likes: LikedUser[];
 }
 
 export default function HomePage() {
     const { user, loggedIn } = useAuth();
     const [posts, setPosts] = useState<Post[]>([]);
-    const [title, setTitle] = useState("");
-    const [content, setContent] = useState("");
-    const [error, setError] = useState("");
-
     const [categories, setCategories] = useState<PostCategory[]>([]);
     const [selectedCategory, setSelectedCategory] = useState("");
     const [filterCategory, setFilterCategory] = useState("");
+    const [title, setTitle] = useState("");
+    const [content, setContent] = useState("");
+    const [error, setError] = useState("");
+    const [loadingPosts, setLoadingPosts] = useState(true); // Loading state for posts
+    const [loadingCategories, setLoadingCategories] = useState(true); // Loading state for categories
 
     const BASE_URL =
         process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:5001";
 
-    // useCallback ашиглан fetchCategories функцыг мемоизаци хийх
+    // Fetch categories
     const fetchCategories = useCallback(async () => {
+        setLoadingCategories(true);
         try {
             const res = await axios.get(`${BASE_URL}/api/post-categories`);
             setCategories(res.data);
         } catch (err) {
             console.error("Fetch categories error:", err);
+        } finally {
+            setLoadingCategories(false);
         }
     }, [BASE_URL]);
 
-    // useCallback ашиглан fetchPosts функцыг мемоизаци хийх
+    // Fetch posts
     const fetchPosts = useCallback(async (categoryId?: string) => {
+        setLoadingPosts(true);
         try {
             let url = `${BASE_URL}/api/posts`;
             if (categoryId) {
@@ -58,9 +69,12 @@ export default function HomePage() {
             setPosts(res.data);
         } catch (err) {
             console.error("Fetch posts error:", err);
+        } finally {
+            setLoadingPosts(false);
         }
     }, [BASE_URL]);
 
+    // Create a new post
     const createPost = async () => {
         setError("");
         if (!title.trim() || !content.trim()) {
@@ -82,19 +96,49 @@ export default function HomePage() {
                     },
                 }
             );
-            // Prepend new post to the front of the array
             setPosts((prev) => [res.data.post, ...prev]);
-            // Reset fields
             setTitle("");
             setContent("");
             setSelectedCategory("");
-        } catch (err) {
+        } catch (err: any) {
             console.error("Create post error:", err);
-            if (axios.isAxiosError(err) && err.response?.status === 403) {
-                setError("Subscription expired. Please pay first!");
-            } else {
-                setError("Failed to create post.");
-            }
+            setError(
+                axios.isAxiosError(err) && err.response?.status === 403
+                    ? "Subscription expired. Please pay first!"
+                    : "Failed to create post."
+            );
+        }
+    };
+
+    // Like a post
+    const likePost = async (postId: string) => {
+        if (!user?.accessToken) {
+            setError("Please login first.");
+            return;
+        }
+
+        try {
+            const res = await axios.post(
+                `${BASE_URL}/api/posts/${postId}/like`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${user.accessToken}`,
+                    },
+                }
+            );
+            setPosts((prevPosts) =>
+                prevPosts.map((post) =>
+                    post._id === postId ? { ...post, likes: res.data.likes } : post
+                )
+            );
+        } catch (err: any) {
+            console.error("Like post error:", err);
+            setError(
+                axios.isAxiosError(err) && err.response?.data?.error
+                    ? err.response.data.error
+                    : "Failed to like post."
+            );
         }
     };
 
@@ -109,7 +153,7 @@ export default function HomePage() {
         fetchPosts(catId);
     };
 
-    // Function to check if user has active subscription
+    // Check if user has active subscription
     const hasActiveSubscription = () => {
         if (!user?.subscriptionExpiresAt) return false;
         const now = new Date();
@@ -139,19 +183,22 @@ export default function HomePage() {
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                         />
-                        <select
-                            className="w-full border-b border-gray-300 px-2 py-2 text-sm text-black mb-2 focus:outline-none"
-                            value={selectedCategory}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
-                        >
-                            <option value="">-- Choose Category --</option>
-                            {categories.map((cat) => (
-                                <option key={cat._id} value={cat._id}>
-                                    {cat.name}
-                                </option>
-                            ))}
-                        </select>
-
+                        {loadingCategories ? (
+                            <Skeleton height={40} width="100%" />
+                        ) : (
+                            <select
+                                className="w-full border-b border-gray-300 px-2 py-2 text-sm text-black mb-2 focus:outline-none"
+                                value={selectedCategory}
+                                onChange={(e) => setSelectedCategory(e.target.value)}
+                            >
+                                <option value="">-- Choose Category --</option>
+                                {categories.map((cat) => (
+                                    <option key={cat._id} value={cat._id}>
+                                        {cat.name}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
                         <button
                             onClick={createPost}
                             className="bg-black text-white px-4 py-2 text-sm font-medium hover:bg-gray-900 transition"
@@ -165,7 +212,7 @@ export default function HomePage() {
                             Та subscription эрхгүй байна. Постуудыг харахын тулд subscribe хийнэ үү.
                         </p>
                         <button
-                            onClick={() => window.location.href = "/subscribe"} // Subscribe хуудас руу шилжих
+                            onClick={() => (window.location.href = "/subscribe")}
                             className="bg-blue-500 text-white px-4 py-2 text-sm font-medium hover:bg-blue-600 transition"
                         >
                             Subscribe хийх
@@ -177,62 +224,50 @@ export default function HomePage() {
                     </p>
                 )}
 
-                {/* Category Filter */}
-                <div className="mb-4">
-                    <label htmlFor="filter" className="mr-2 font-semibold">
-                        Шүүх:
-                    </label>
-                    <select
-                        id="filter"
-                        className="border-b border-gray-300 px-2 py-2 text-sm text-black focus:outline-none"
-                        value={filterCategory}
-                        onChange={handleFilterChange}
-                        disabled={!isSubscribed} // Subscription байхгүй бол шүүлтүүрийг идэвхгүй болгох
-                    >
-                        <option value="">All Categories</option>
-                        {categories.map((cat) => (
-                            <option key={cat._id} value={cat._id}>
-                                {cat.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                {/* Posts */}
                 <div className="space-y-4">
-                    {isSubscribed ? (
-                        posts.map((p) => (
-                            <div key={p._id} className="border-b border-gray-300 pb-3">
-                                <h3 className="font-semibold">{p.title}</h3>
-                                <p className="mt-1">{p.content}</p>
-                                <small className="text-gray-500 block mt-2">
-                                    By {p.user?.username} {p.user?.mbti ? `• MBTI: ${p.user.mbti}` : ""} —{" "}
-                                    {new Date(p.createdAt).toLocaleString()}
-                                    {p.user?.age ? ` (Age: ${p.user.age})` : ""}
-                                    {p.category ? ` • Category: ${p.category.name}` : ""}
-                                </small>
-                            </div>
-                        ))
-                    ) : loggedIn ? (
-                        // Subscription байхгүй бол skeleton UI болон blurred текст
+                    {loadingPosts ? (
                         Array.from({ length: 5 }).map((_, index) => (
                             <div key={index} className="border-b border-gray-300 pb-3">
-                                <h3 className="font-semibold">
-                                    <Skeleton width={`80%`} />
-                                </h3>
-                                <p className="mt-1">
-                                    <Skeleton count={3} />
-                                </p>
-                                <small className="text-gray-500 block mt-2">
-                                    <Skeleton width={`60%`} />
-                                </small>
+                                <Skeleton height={30} width="60%" />
+                                <Skeleton height={20} width="80%" count={2} />
+                                <Skeleton height={20} width="40%" />
                             </div>
                         ))
                     ) : (
-                        // Нэвтрэхгүй бол пост харагдахгүй
-                        <p className="text-gray-600">
-                            Постуудыг харахын тулд нэвтэрнэ үү.
-                        </p>
+                        posts.map((p) => {
+                            const hasLiked = user
+                                ? p.likes.some((like) => like._id === user.id)
+                                : false;
+                            return (
+                                <div key={p._id} className="border-b border-gray-300 pb-3">
+                                    <h3 className="font-semibold">{p.title}</h3>
+                                    <p className="mt-1">{p.content}</p>
+                                    <small className="text-gray-500 block mt-2">
+                                        By {p.user?.username} —{" "}
+                                        {new Date(p.createdAt).toLocaleString()}
+                                        {p.user?.age ? ` (Age: ${p.user.age})` : ""}
+                                        {p.category ? ` • Category: ${p.category.name}` : ""}
+                                    </small>
+                                    <div className="mt-2 flex items-center">
+                                        <button
+                                            onClick={() => likePost(p._id)}
+                                            className={`text-xl focus:outline-none ${
+                                                hasLiked
+                                                    ? "text-red-500"
+                                                    : "text-gray-400 hover:text-red-500 transition"
+                                            }`}
+                                            disabled={hasLiked}
+                                            aria-label={hasLiked ? "Liked" : "Like"}
+                                        >
+                                            {hasLiked ? <FaHeart /> : <FaRegHeart />}
+                                        </button>
+                                        <span className="ml-2 text-sm text-gray-700">
+                                            {p.likes.length}
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        })
                     )}
                 </div>
             </div>

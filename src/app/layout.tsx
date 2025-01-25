@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     },
     description: "A next-generation scheduling and booking platform with advanced features.",
     keywords: ["VONE", "COMMUNITY", "dao", "network", "zaluusiin network"],
-    authors: [{ name: "Vone Tech", url: "https://foru.mn" }],
+    authors: [{ name: "Vone Tech", url: "https://vone.foru.mn" }],
     verification: {
         google: "YOUR_GOOGLE_SITE_VERIFICATION_TOKEN",
         yandex: "YOUR_YANDEX_SITE_VERIFICATION_TOKEN",

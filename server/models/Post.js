@@ -7,13 +7,12 @@ const PostSchema = new Schema(
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         title: { type: String, required: true },
         content: { type: String, required: true },
-
-        // Хэрэв категоритой хийхийг хүсвэл:
         category: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "PostCategory", // PostCategory.js байхгүй бол энэ талбарыг хас
+            ref: "PostCategory",
             required: false,
         },
+        likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // New field for likes
     },
     { timestamps: true }
 );
