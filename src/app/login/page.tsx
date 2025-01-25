@@ -17,14 +17,16 @@ export default function LoginPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
+
         try {
+            // Call your backend with "username" key
             const res = await axios.post(`${BASE_URL}/api/auth/login`, {
                 username,
                 password,
             });
             if (res.status === 200 && res.data.token) {
                 const { user, token } = res.data;
-                login({ ...user }, token);
+                login(user, token);
                 router.push("/");
             }
         } catch (err: any) {
@@ -34,56 +36,73 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-white px-4">
-            <div className="w-full max-w-sm border border-gray-200 p-6 shadow-sm">
-                <h1 className="text-2xl font-bold mb-4 text-black">
-                    Нэвтрэх
-                </h1>
-                {error && (
-                    <p className="text-red-600 mb-3">
-                        {error}
-                    </p>
-                )}
+        <div className="min-h-screen flex flex-col items-center justify-center bg-white px-4">
+            <div className="w-full max-w-sm p-6">
+                <h1 className="text-2xl font-bold mb-4 text-black">Нэвтрэх</h1>
+                {error && <p className="text-red-600 mb-3">{error}</p>}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* Username field */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Username
+                        <label className="block text-sm font-medium text-gray-800 mb-1">
+                            Хэрэглэгчийн нэр
                         </label>
                         <input
                             type="text"
-                            className="w-full border border-gray-300 px-3 py-2 text-sm text-black focus:outline-none"
+                            className="w-full border-b border-gray-300 px-2 py-2 text-gray-900 focus:outline-none"
                             placeholder="Хэрэглэгчийн нэр"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             required
                         />
                     </div>
+
+                    {/* Password field */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Password
+                        <label className="block text-sm font-medium text-gray-800 mb-1">
+                            Нууц үг
                         </label>
                         <input
                             type="password"
-                            className="w-full border border-gray-300 px-3 py-2 text-sm text-black focus:outline-none"
+                            className="w-full border-b border-gray-300 px-2 py-2 text-gray-900 focus:outline-none"
                             placeholder="Нууц үг"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
                     </div>
+
+                    {/* Remember Me + Forgot Password */}
+                    <div className="flex items-center justify-between text-sm">
+                        <label className="flex items-center text-gray-700">
+                            <input
+                                type="checkbox"
+                                className="h-4 w-4 mr-1"
+                            />
+                            Remember me
+                        </label>
+                        <button
+                            type="button"
+                            onClick={() => alert("Forgot Password?")}
+                            className="underline text-gray-700"
+                        >
+                            Forgot Password
+                        </button>
+                    </div>
+
+                    {/* Sign In button */}
                     <button
                         type="submit"
-                        className="w-full bg-black text-white py-2 text-sm font-medium hover:bg-gray-900 transition"
+                        className="w-full bg-black text-white py-2 text-sm font-semibold hover:bg-gray-900 transition"
                     >
                         Нэвтрэх
                     </button>
                 </form>
 
+                {/* Link to register */}
                 <button
-                    type="button"
                     onClick={() => router.push("/register")}
-                    className="block w-full mt-4 text-center text-sm text-gray-700 underline"
+                    className="mt-4 block text-sm text-gray-700 underline"
                 >
                     Бүртгүүлэх
                 </button>

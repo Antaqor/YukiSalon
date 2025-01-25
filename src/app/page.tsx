@@ -1,7 +1,9 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useAuth } from "./context/AuthContext";
+import Skeleton from "react-loading-skeleton"; // Skeleton UI-ийн компонент
+import "react-loading-skeleton/dist/skeleton.css";
 
 interface PostCategory {
     _id: string;
@@ -13,7 +15,11 @@ interface Post {
     title: string;
     content: string;
     createdAt: string;
-    user?: { username: string; age?: number };
+    user?: {
+        username: string;
+        age?: number;
+        mbti?: string; // Шинэ талбар нэмэх
+    };
     category?: PostCategory;
 }
 
@@ -25,22 +31,24 @@ export default function HomePage() {
     const [error, setError] = useState("");
 
     const [categories, setCategories] = useState<PostCategory[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState<string>("");
-    const [filterCategory, setFilterCategory] = useState<string>("");
+    const [selectedCategory, setSelectedCategory] = useState("");
+    const [filterCategory, setFilterCategory] = useState("");
 
     const BASE_URL =
         process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:5001";
 
-    const fetchCategories = async () => {
+    // useCallback ашиглан fetchCategories функцыг мемоизаци хийх
+    const fetchCategories = useCallback(async () => {
         try {
             const res = await axios.get(`${BASE_URL}/api/post-categories`);
             setCategories(res.data);
         } catch (err) {
             console.error("Fetch categories error:", err);
         }
-    };
+    }, [BASE_URL]);
 
-    const fetchPosts = async (categoryId?: string) => {
+    // useCallback ашиглан fetchPosts функцыг мемоизаци хийх
+    const fetchPosts = useCallback(async (categoryId?: string) => {
         try {
             let url = `${BASE_URL}/api/posts`;
             if (categoryId) {
@@ -51,7 +59,7 @@ export default function HomePage() {
         } catch (err) {
             console.error("Fetch posts error:", err);
         }
-    };
+    }, [BASE_URL]);
 
     const createPost = async () => {
         setError("");
@@ -74,13 +82,15 @@ export default function HomePage() {
                     },
                 }
             );
+            // Prepend new post to the front of the array
             setPosts((prev) => [res.data.post, ...prev]);
+            // Reset fields
             setTitle("");
             setContent("");
             setSelectedCategory("");
-        } catch (err: any) {
+        } catch (err) {
             console.error("Create post error:", err);
-            if (err.response?.status === 403) {
+            if (axios.isAxiosError(err) && err.response?.status === 403) {
                 setError("Subscription expired. Please pay first!");
             } else {
                 setError("Failed to create post.");
@@ -91,7 +101,7 @@ export default function HomePage() {
     useEffect(() => {
         fetchCategories();
         fetchPosts();
-    }, []);
+    }, [fetchCategories, fetchPosts]);
 
     const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const catId = e.target.value;
@@ -99,31 +109,38 @@ export default function HomePage() {
         fetchPosts(catId);
     };
 
+    // Function to check if user has active subscription
+    const hasActiveSubscription = () => {
+        if (!user?.subscriptionExpiresAt) return false;
+        const now = new Date();
+        const expiry = new Date(user.subscriptionExpiresAt);
+        return expiry > now;
+    };
+
+    const isSubscribed = hasActiveSubscription();
+
     return (
         <div className="min-h-screen bg-white">
             <div className="max-w-2xl mx-auto px-4 py-6">
-                <h2 className="text-2xl font-semibold mb-4 text-black">
-                    Newsfeed
-                </h2>
                 {error && <p className="text-red-600 mb-3">{error}</p>}
 
-                {loggedIn ? (
+                {loggedIn && isSubscribed ? (
                     <div className="mb-6">
                         <input
                             placeholder="Title"
-                            className="w-full border border-gray-300 px-3 py-2 text-sm text-black mb-2"
+                            className="w-full border-b border-gray-300 px-2 py-2 text-sm text-black mb-2 focus:outline-none"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                         />
                         <textarea
                             placeholder="Content"
-                            className="w-full border border-gray-300 px-3 py-2 text-sm text-black mb-2"
+                            className="w-full border-b border-gray-300 px-2 py-2 text-sm text-black mb-2 focus:outline-none"
                             rows={3}
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                         />
                         <select
-                            className="w-full border border-gray-300 px-3 py-2 text-sm text-black mb-2"
+                            className="w-full border-b border-gray-300 px-2 py-2 text-sm text-black mb-2 focus:outline-none"
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
                         >
@@ -142,21 +159,35 @@ export default function HomePage() {
                             Post
                         </button>
                     </div>
+                ) : loggedIn && !isSubscribed ? (
+                    <div className="mb-6 p-4 border border-gray-300 rounded">
+                        <p className="text-gray-600 mb-3">
+                            Та subscription эрхгүй байна. Постуудыг харахын тулд subscribe хийнэ үү.
+                        </p>
+                        <button
+                            onClick={() => window.location.href = "/subscribe"} // Subscribe хуудас руу шилжих
+                            className="bg-blue-500 text-white px-4 py-2 text-sm font-medium hover:bg-blue-600 transition"
+                        >
+                            Subscribe хийх
+                        </button>
+                    </div>
                 ) : (
                     <p className="text-gray-600 mb-4">
                         Нэвтэрч байж пост оруулна уу. (Subscription эрхтэй байх шаардлагатай)
                     </p>
                 )}
 
+                {/* Category Filter */}
                 <div className="mb-4">
-                    <label htmlFor="filter" className="mr-2 font-semibold text-black">
+                    <label htmlFor="filter" className="mr-2 font-semibold">
                         Шүүх:
                     </label>
                     <select
                         id="filter"
-                        className="border border-gray-300 px-3 py-2 text-sm text-black"
+                        className="border-b border-gray-300 px-2 py-2 text-sm text-black focus:outline-none"
                         value={filterCategory}
                         onChange={handleFilterChange}
+                        disabled={!isSubscribed} // Subscription байхгүй бол шүүлтүүрийг идэвхгүй болгох
                     >
                         <option value="">All Categories</option>
                         {categories.map((cat) => (
@@ -167,18 +198,42 @@ export default function HomePage() {
                     </select>
                 </div>
 
+                {/* Posts */}
                 <div className="space-y-4">
-                    {posts.map((p) => (
-                        <div key={p._id} className="border border-gray-300 p-4">
-                            <h3 className="font-semibold text-black">{p.title}</h3>
-                            <p className="text-black">{p.content}</p>
-                            <small className="text-gray-500 block mt-2">
-                                By {p.user?.username} — {new Date(p.createdAt).toLocaleString()}
-                                {p.user?.age ? ` (Age: ${p.user?.age})` : ""}
-                                {p.category ? ` • Category: ${p.category.name}` : ""}
-                            </small>
-                        </div>
-                    ))}
+                    {isSubscribed ? (
+                        posts.map((p) => (
+                            <div key={p._id} className="border-b border-gray-300 pb-3">
+                                <h3 className="font-semibold">{p.title}</h3>
+                                <p className="mt-1">{p.content}</p>
+                                <small className="text-gray-500 block mt-2">
+                                    By {p.user?.username} {p.user?.mbti ? `• MBTI: ${p.user.mbti}` : ""} —{" "}
+                                    {new Date(p.createdAt).toLocaleString()}
+                                    {p.user?.age ? ` (Age: ${p.user.age})` : ""}
+                                    {p.category ? ` • Category: ${p.category.name}` : ""}
+                                </small>
+                            </div>
+                        ))
+                    ) : loggedIn ? (
+                        // Subscription байхгүй бол skeleton UI болон blurred текст
+                        Array.from({ length: 5 }).map((_, index) => (
+                            <div key={index} className="border-b border-gray-300 pb-3">
+                                <h3 className="font-semibold">
+                                    <Skeleton width={`80%`} />
+                                </h3>
+                                <p className="mt-1">
+                                    <Skeleton count={3} />
+                                </p>
+                                <small className="text-gray-500 block mt-2">
+                                    <Skeleton width={`60%`} />
+                                </small>
+                            </div>
+                        ))
+                    ) : (
+                        // Нэвтрэхгүй бол пост харагдахгүй
+                        <p className="text-gray-600">
+                            Постуудыг харахын тулд нэвтэрнэ үү.
+                        </p>
+                    )}
                 </div>
             </div>
         </div>

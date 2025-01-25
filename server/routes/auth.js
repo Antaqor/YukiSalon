@@ -1,19 +1,29 @@
-// server/routes/auth.js
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
+const mbtiTypes = [
+    "INTJ", "INTP", "ENTJ", "ENTP",
+    "INFJ", "INFP", "ENFJ", "ENFP",
+    "ISTJ", "ISFJ", "ESTJ", "ESFJ",
+    "ISTP", "ISFP", "ESTP", "ESFP"
+];
+
 /**
  * POST /api/auth/register
- * { username, password, age } => created user
+ * { username, password, age, mbti } => created user
  */
 router.post("/register", async (req, res) => {
     try {
-        const { username, password, age } = req.body;
-        if (!username || !password || !age) {
-            return res.status(400).json({ error: "username, password, age are required" });
+        const { username, password, age, mbti } = req.body;
+        if (!username || !password || !age || !mbti) { // MBTI-г шалгах
+            return res.status(400).json({ error: "username, password, age, mbti are required" });
+        }
+
+        if (!mbtiTypes.includes(mbti)) { // MBTI төрөл зөв эсэхийг шалгах
+            return res.status(400).json({ error: "Invalid MBTI type" });
         }
 
         // username давхцаж буй эсэх
@@ -29,6 +39,7 @@ router.post("/register", async (req, res) => {
             username,
             password: hashedPw,
             age: Number(age),
+            mbti, // MBTI-г хадгалах
             subscriptionExpiresAt: null, // default
         });
         await newUser.save();
@@ -36,6 +47,7 @@ router.post("/register", async (req, res) => {
         return res.status(201).json({ message: "User registered!", user: {
                 username: newUser.username,
                 age: newUser.age,
+                mbti: newUser.mbti, // MBTI-г буцаах
             }});
     } catch (err) {
         console.error("Register error:", err);
@@ -76,6 +88,7 @@ router.post("/login", async (req, res) => {
                 id: user._id,
                 username: user.username,
                 age: user.age,
+                mbti: user.mbti, // MBTI-г буцаах
             },
             token,
         });

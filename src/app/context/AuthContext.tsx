@@ -1,4 +1,3 @@
-// app/context/AuthContext.tsx
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
@@ -6,8 +5,9 @@ interface AuthUser {
     id?: string;
     username?: string;
     age?: number;
+    mbti?: string; // Шинэ талбар нэмэх
     accessToken?: string;
-    subscriptionExpiresAt?: string; // <-- шинэчлэгддэг талбар
+    subscriptionExpiresAt?: string;
 }
 
 interface AuthState {

@@ -10,30 +10,6 @@ html,
 body {
     padding: 0;
     margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background-color: #fff;
-}
-
-* {
-    box-sizing: border-box;
-}
-
-/* If you want a default text color */
-body {
-    color: #333;
-}
-
-/* Optional: hide scrollbar for aesthetic reasons (Chrome/Edge/Safari) */
-::-webkit-scrollbar {
-    width: 8px;
-}
-::-webkit-scrollbar-track {
-    background: #fff;
-}
-::-webkit-scrollbar-thumb {
-    background-color: #fff;
-    border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-    background-color: #fff;
+    font-family: inherit; /* Tailwind-д шингээж удирдах */
+    background-color: inherit; /* Tailwind-д удирдах */
 }
