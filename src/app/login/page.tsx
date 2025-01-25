@@ -2,115 +2,71 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function LoginPage() {
+    const router = useRouter();
+    const { login } = useAuth();
+
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const router = useRouter();
 
-    const { login } = useAuth();
+    const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:5001";
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
-
         try {
-            // Express сервер рүү хүсэлт илгээнэ
-            const res = await axios.post("https://backend.foru.mn/api/auth/login", {
+            const res = await axios.post(`${BASE_URL}/api/auth/login`, {
                 username,
                 password,
             });
-
-            // Хэрэв амжилттай бол хэрэглэгч болон токенийг context-д хадгална
             if (res.status === 200 && res.data.token) {
-                // Token-ийг хэрэглэгчийн объектод нэмэх
-                const newUser = { ...res.data.user, accessToken: res.data.token };
+                // AuthContext.login(...) -д дамжуулах
+                const { user, token } = res.data;
+                login({ ...user }, token);
 
-                // Context–ийн login() функцэд newUser, токенийг дамжуулах
-                login(newUser, res.data.token);
-
-                // Эцэст нь / (home) руу чиглүүлэх
                 router.push("/");
             }
-        } catch (err) {
-            console.error("Нэвтрэх явцад алдаа гарлаа:", err);
-            setError("Нэвтрэх нэр эсвэл нууц үг буруу, эсвэл серверт алдаа гарлаа.");
+        } catch (err: any) {
+            console.error("Login error:", err);
+            setError("Нэвтрэх алдаа.");
         }
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-white px-4">
-            <form
-                onSubmit={handleSubmit}
-                className="w-full max-w-md bg-white rounded-lg shadow-md p-8 flex flex-col space-y-6"
-            >
-                {error && (
-                    <p className="text-red-500 text-center font-medium">
-                        {error}
-                    </p>
-                )}
-
-                {/* Нэвтрэх нэр */}
-                <div className="flex flex-col space-y-2">
-                    <label
-                        htmlFor="username"
-                        className="text-sm font-medium text-gray-700"
-                    >
-                        Нэвтрэх нэр
-                    </label>
+        <div className="min-h-screen flex items-center justify-center">
+            <form onSubmit={handleSubmit} className="w-full max-w-md p-4 bg-white shadow rounded">
+                <h1 className="text-xl font-bold mb-4">Нэвтрэх</h1>
+                {error && <p className="text-red-500 mb-3">{error}</p>}
+                <div className="mb-3">
+                    <label className="block text-sm font-medium mb-1">Username</label>
                     <input
-                        id="username"
                         type="text"
-                        placeholder="Нэвтрэх нэрээ оруулна уу"
-                        className="rounded-lg bg-gray-100 border-0 p-3"
+                        className="w-full border p-2 rounded"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
                     />
                 </div>
-
-                {/* Нууц үг */}
-                <div className="flex flex-col space-y-2">
-                    <label
-                        htmlFor="password"
-                        className="text-sm font-medium text-gray-700"
-                    >
-                        Нууц үгn
-                    </label>
+                <div className="mb-3">
+                    <label className="block text-sm font-medium mb-1">Password</label>
                     <input
-                        id="password"
                         type="password"
-                        placeholder="Нууц үгээ оруулна уу"
-                        className="rounded-lg bg-gray-100 border-0 p-3"
+                        className="w-full border p-2 rounded"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
                 </div>
-
-                {/* Нэвтрэх товч */}
-                <button
-                    type="submit"
-                    className="w-full bg-neutral-900 text-white text-sm font-medium py-3 rounded-lg hover:bg-neutral-700 transition-colors"
-                >
+                <button className="bg-blue-600 text-white px-4 py-2 rounded" type="submit">
                     Нэвтрэх
                 </button>
-
-                {/* 'эсвэл' гэсэн текстэнд тусгай дүрс эсвэл шугам нэмж болно */}
-                <div className="relative flex items-center justify-center">
-                    <div className="w-full h-px bg-gray-300"></div>
-                    <span className="absolute bg-white px-4 text-gray-500">
-                        эсвэл
-                    </span>
-                </div>
-
-                {/* Бүртгүүлэх товч */}
                 <button
                     type="button"
                     onClick={() => router.push("/register")}
-                    className="w-full bg-gray-200 text-neutral-900 text-sm font-medium py-3 rounded-lg hover:bg-gray-300 transition-colors"
+                    className="ml-3 text-blue-600"
                 >
                     Бүртгүүлэх
                 </button>

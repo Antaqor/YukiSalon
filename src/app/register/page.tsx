@@ -1,172 +1,93 @@
-// File: /app/register/page.tsx
-
 "use client";
-
 import React, { useState } from "react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 
-interface RegisterResponse {
-    message: string;
-}
-interface ErrorResponse {
-    error: string;
-}
-
-export default function UserRegisterPage() {
+export default function RegisterPage() {
     const router = useRouter();
     const [username, setUsername] = useState("");
-    const [phoneNumber, setPhoneNumber] = useState("");
-    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [age, setAge] = useState("");
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:5001";
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
+        setSuccess("");
+
+        if (!username || !password || !age) {
+            setError("All fields required.");
+            return;
+        }
+
         try {
-            const response = await axios.post<RegisterResponse>(
-                "https://backend.foru.mn/api/auth/register",
-                {
-                    username,
-                    phoneNumber,
-                    email,
-                    password,
-                    role: "user",
-                }
-            );
-            if (response.status === 201) {
-                alert("User registration successful!");
-                router.push("/login");
-            } else {
-                setError("Registration failed. Please try again.");
+            const res = await axios.post(`${BASE_URL}/api/auth/register`, {
+                username,
+                password,
+                age,
+            });
+            if (res.status === 201) {
+                setSuccess("Registered successfully!");
+                setUsername("");
+                setPassword("");
+                setAge("");
             }
-        } catch (err: unknown) {
-            if (axios.isAxiosError(err)) {
-                const axiosError = err as AxiosError<ErrorResponse>;
-                setError(
-                    axiosError.response?.data.error || "Registration error."
-                );
-            } else {
-                setError("Unknown error occurred.");
-            }
-            console.error("Registration error:", err);
+        } catch (err: any) {
+            console.error("Register error:", err);
+            setError(err.response?.data?.error || "Registration error");
         }
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-white px-4">
-            <form
-                onSubmit={handleSubmit}
-                className="w-full max-w-md bg-white rounded-t-md shadow-md p-8 flex flex-col space-y-6"
-            >
-                {error && (
-                    <p className="text-red-500 text-center font-medium">
-                        {error}
-                    </p>
-                )}
+        <div className="max-w-md mx-auto bg-white p-4 rounded shadow">
+            <h2 className="text-xl font-bold mb-3">Register (username, password, age)</h2>
+            {error && <p className="text-red-500 mb-2">{error}</p>}
+            {success && <p className="text-green-600 mb-2">{success}</p>}
 
-                {/* Хэрэглэгчийн нэр */}
-                <div className="flex flex-col space-y-2">
-                    <label
-                        htmlFor="username"
-                        className="text-sm font-medium text-gray-700"
-                    >
-                        Хэрэглэгчийн нэр
-                    </label>
+            <form onSubmit={handleSubmit} className="space-y-3">
+                <div>
+                    <label className="block text-sm mb-1">Username</label>
                     <input
-                        id="username"
-                        type="text"
-                        placeholder="Хэрэглэгчийн нэрээ оруулна уу"
-                        className="rounded-lg bg-gray-100 border-0 p-3"
+                        className="w-full border p-2 rounded"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        required
                     />
                 </div>
 
-                {/* Утасны дугаар */}
-                <div className="flex flex-col space-y-2">
-                    <label
-                        htmlFor="phoneNumber"
-                        className="text-sm font-medium text-gray-700"
-                    >
-                        Утасны дугаар
-                    </label>
+                <div>
+                    <label className="block text-sm mb-1">Password</label>
                     <input
-                        id="phoneNumber"
-                        type="tel"
-                        placeholder="Утасны дугаараа оруулна уу"
-                        className="rounded-lg bg-gray-100 border-0 p-3"
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        required
-                    />
-                </div>
-
-                {/* И-мэйл */}
-                <div className="flex flex-col space-y-2">
-                    <label
-                        htmlFor="email"
-                        className="text-sm font-medium text-gray-700"
-                    >
-                        И-мэйл
-                    </label>
-                    <input
-                        id="email"
-                        type="email"
-                        placeholder="И-мэйлээ оруулна уу"
-                        className="rounded-lg bg-gray-100 border-0 p-3"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                </div>
-
-                {/* Нууц үг */}
-                <div className="flex flex-col space-y-2">
-                    <label
-                        htmlFor="password"
-                        className="text-sm font-medium text-gray-700"
-                    >
-                        Нууц үг
-                    </label>
-                    <input
-                        id="password"
                         type="password"
-                        placeholder="Нууц үгээ оруулна уу"
-                        className="rounded-lg bg-gray-100 border-0 p-3"
+                        className="w-full border p-2 rounded"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        required
                     />
                 </div>
 
-                {/* Бүртгэл үүсгэх товч */}
-                <button
-                    type="submit"
-                    className="w-full bg-neutral-900 text-white text-sm font-medium py-3 rounded-lg hover:bg-neutral-700 transition-colors"
-                >
-                    Бүртгэл үүсгэх
-                </button>
-
-                {/* 'эсвэл' шугам */}
-                <div className="relative flex items-center justify-center">
-                    <div className="w-full h-px bg-gray-300"></div>
-                    <span className="absolute bg-white px-4 text-gray-500">
-                        эсвэл
-                    </span>
+                <div>
+                    <label className="block text-sm mb-1">Age</label>
+                    <input
+                        type="number"
+                        className="w-full border p-2 rounded"
+                        value={age}
+                        onChange={(e) => setAge(e.target.value)}
+                    />
                 </div>
 
-                {/* Нэвтрэх товч */}
-                <button
-                    type="button"
-                    onClick={() => router.push("/login")}
-                    className="w-full bg-gray-200 text-neutral-900 text-sm font-medium py-3 rounded-lg hover:bg-gray-300 transition-colors"
-                >
-                    Нэвтрэх
+                <button className="bg-blue-600 text-white px-4 py-2 rounded" type="submit">
+                    Register
                 </button>
             </form>
+
+            <button
+                onClick={() => router.push("/")}
+                className="mt-3 underline text-sm text-gray-600"
+            >
+                Go Home
+            </button>
         </div>
     );
 }

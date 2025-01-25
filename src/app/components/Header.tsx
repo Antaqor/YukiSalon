@@ -1,57 +1,64 @@
-// File: /app/components/Header.tsx
+// app/components/Header.tsx
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
     const router = useRouter();
-    const { loggedIn, logout } = useAuth();
+    const { user, loggedIn, logout } = useAuth();
+    const [isMember, setIsMember] = useState(false);
 
-    const handleLogin = () => {
-        router.push("/login");
-    };
+    useEffect(() => {
+        if (user?.subscriptionExpiresAt) {
+            const subDate = new Date(user.subscriptionExpiresAt);
+            setIsMember(subDate > new Date());
+        } else {
+            setIsMember(false);
+        }
+    }, [user]);
 
     const handleLogout = () => {
-        logout(); // Clears localStorage + context
+        logout();
         router.push("/login");
     };
 
     return (
-        <>
-            <header className="fixed top-0 left-0 z-20 w-full h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4">
-                <Link
-                    href="/"
-                    className="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold"
-                >
+        <header className="bg-blue-600 text-white p-4">
+            <nav className="max-w-4xl mx-auto flex items-center justify-between">
+                <Link href="/" className="text-lg font-bold">
                     Vone
                 </Link>
+                <div className="space-x-4">
+                    {/* Нэвтрээгүй бол Register, Login */}
+                    {!loggedIn && (
+                        <>
+                            <Link href="/register">Register</Link>
+                            <Link href="/login">Login</Link>
+                        </>
+                    )}
+                    {/* Нэвтэрсэн бол ... */}
+                    {loggedIn && (
+                        <>
+                            {/* Сарын эрх идэвхтэй бол "Member" гэж харуулна, эс бөгөөс Subscription линк */}
+                            {isMember ? (
+                                <span className="font-semibold">Member</span>
+                            ) : (
+                                <Link href="/subscription">Subscription</Link>
+                            )}
 
-                <div className="ml-auto flex items-center gap-4">
-                    {/* If logged in, optionally show the username */}
-
-                    {loggedIn ? (
-                        <button
-                            onClick={handleLogout}
-                            className="bg-neutral-800 text-white px-3 py-2 rounded text-sm hover:bg-neutral-700 transition"
-                        >
-                            Гарах
-                        </button>
-                    ) : (
-                        <button
-                            onClick={handleLogin}
-                            className="bg-neutral-800 text-white px-3 py-2 rounded text-sm hover:bg-neutral-700 transition"
-                        >
-                            Нэвтрэх
-                        </button>
+                            <button
+                                onClick={handleLogout}
+                                className="bg-gray-700 hover:bg-gray-500 px-3 py-1 rounded"
+                            >
+                                Logout
+                            </button>
+                        </>
                     )}
                 </div>
-            </header>
-
-            {/* Spacer so content isn't behind fixed header */}
-            <div className="mt-16" />
-        </>
+            </nav>
+        </header>
     );
 }

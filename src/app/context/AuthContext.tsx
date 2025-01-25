@@ -1,81 +1,90 @@
-// File: /app/context/AuthContext.tsx
+// app/context/AuthContext.tsx
 "use client";
-
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getToken, getUser, logout as doLogout, saveToken, saveUser } from "../lib/auth";
 
-/**
- * 1) Define an interface for the shape of "user".
- *    Adjust fields as needed based on your actual user data.
- */
 interface AuthUser {
-    id: string;
-    username: string;
-    email?: string;
-    role?: string;
+    id?: string;
+    username?: string;
+    age?: number;
     accessToken?: string;
-    // ... any other fields you may have
+    subscriptionExpiresAt?: string; // <-- шинэчлэгддэг талбар
 }
 
 interface AuthState {
     user: AuthUser | null;
     loggedIn: boolean;
-    login: (newUser: AuthUser, token: string) => void;
+    login: (u: AuthUser, t: string) => void;
     logout: () => void;
+
+    // Шинэ функц: subscription хугацааг шинэчлэх
+    updateSubscriptionExpiresAt: (expires: string) => void;
 }
 
-/**
- * 2) Provide a default context value:
- */
 const AuthContext = createContext<AuthState>({
     user: null,
     loggedIn: false,
     login: () => {},
     logout: () => {},
+    updateSubscriptionExpiresAt: () => {},
 });
 
-/**
- * 3) AuthProvider: store user in state as AuthUser | null
- */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<AuthUser | null>(null);
     const [loggedIn, setLoggedIn] = useState(false);
 
     useEffect(() => {
-        const token = getToken();
-        const storedUser = getUser(); // you might get an object that matches AuthUser
-        if (token && storedUser) {
-            setUser(storedUser);
-            setLoggedIn(true);
+        const storedUserStr = localStorage.getItem("user");
+        const token = localStorage.getItem("token");
+        if (storedUserStr && token) {
+            try {
+                const parsed = JSON.parse(storedUserStr) as AuthUser;
+                parsed.accessToken = token;
+                setUser(parsed);
+                setLoggedIn(true);
+            } catch {
+                // ignore
+            }
         }
     }, []);
 
-    /**
-     * 4) login accepts an AuthUser & token
-     */
     const login = (newUser: AuthUser, token: string) => {
-        saveUser(newUser);
-        saveToken(token);
-        setUser(newUser);
+        localStorage.setItem("user", JSON.stringify(newUser));
+        localStorage.setItem("token", token);
+        setUser({ ...newUser, accessToken: token });
         setLoggedIn(true);
     };
 
     const logout = () => {
-        doLogout();
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
         setUser(null);
         setLoggedIn(false);
     };
 
+    // Сарын эрх амжилттай төлөгдөж сунгагдсаны дараа call хийх функц
+    const updateSubscriptionExpiresAt = (expires: string) => {
+        if (user) {
+            const updated = { ...user, subscriptionExpiresAt: expires };
+            setUser(updated);
+            localStorage.setItem("user", JSON.stringify(updated));
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, loggedIn, login, logout }}>
+        <AuthContext.Provider
+            value={{
+                user,
+                loggedIn,
+                login,
+                logout,
+                updateSubscriptionExpiresAt
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );
 }
 
-/**
- * 5) A custom hook to access the context:
- */
 export function useAuth() {
     return useContext(AuthContext);
 }
