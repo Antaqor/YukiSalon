@@ -35,8 +35,8 @@ export default function Header() {
                     {/* Нэвтрээгүй бол Register, Login */}
                     {!loggedIn && (
                         <>
-                            <Link href="/register">Register</Link>
-                            <Link href="/login">Login</Link>
+                            <Link href="/register">Бүртгүүлэх</Link>
+                            <Link href="/login">Нэвтрэх</Link>
                         </>
                     )}
                     {/* Нэвтэрсэн бол ... */}
@@ -53,7 +53,7 @@ export default function Header() {
                                 onClick={handleLogout}
                                 className="bg-gray-700 hover:bg-gray-500 px-3 py-1 rounded"
                             >
-                                Logout
+                                Гарах
                             </button>
                         </>
                     )}

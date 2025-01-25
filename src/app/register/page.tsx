@@ -30,7 +30,7 @@ export default function RegisterPage() {
                 age,
             });
             if (res.status === 201) {
-                setSuccess("Registered successfully!");
+                setSuccess("Ажилттай бүртгэл үүсгэлээ");
                 setUsername("");
                 setPassword("");
                 setAge("");
@@ -43,22 +43,22 @@ export default function RegisterPage() {
 
     return (
         <div className="max-w-md mx-auto bg-white p-4 rounded shadow">
-            <h2 className="text-xl font-bold mb-3">Register (username, password, age)</h2>
+            <h2 className="text-xl font-bold mb-3">Бүртгүүлэх</h2>
             {error && <p className="text-red-500 mb-2">{error}</p>}
             {success && <p className="text-green-600 mb-2">{success}</p>}
 
             <form onSubmit={handleSubmit} className="space-y-3">
                 <div>
-                    <label className="block text-sm mb-1">Username</label>
+                    <label className="block text-sm mb-1">Нэр</label>
                     <input
                         className="w-full border p-2 rounded"
                         value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        onChange={(e) => setUsername(e.target.value.toLowerCase())}
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm mb-1">Password</label>
+                    <label className="block text-sm mb-1">Нууц үг</label>
                     <input
                         type="password"
                         className="w-full border p-2 rounded"
@@ -68,7 +68,7 @@ export default function RegisterPage() {
                 </div>
 
                 <div>
-                    <label className="block text-sm mb-1">Age</label>
+                    <label className="block text-sm mb-1">Нас</label>
                     <input
                         type="number"
                         className="w-full border p-2 rounded"
@@ -78,7 +78,7 @@ export default function RegisterPage() {
                 </div>
 
                 <button className="bg-blue-600 text-white px-4 py-2 rounded" type="submit">
-                    Register
+                    Бүртгүүлэх
                 </button>
             </form>
 
@@ -86,7 +86,7 @@ export default function RegisterPage() {
                 onClick={() => router.push("/")}
                 className="mt-3 underline text-sm text-gray-600"
             >
-                Go Home
+               Нүүр хуудас
             </button>
         </div>
     );

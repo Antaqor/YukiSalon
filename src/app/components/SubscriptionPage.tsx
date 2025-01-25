@@ -103,8 +103,8 @@ export default function SubscriptionPage() {
 
     return (
         <div className="max-w-xl mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4 text-center">Monthly Subscription</h1>
-            <p className="mb-4 text-center text-gray-600">Price: 1,000₮ / month</p>
+            <h1 className="text-2xl font-bold mb-4 text-center">Сарын Гишүүнчлэл</h1>
+            <p className="mb-4 text-center text-gray-600">Төлбөр: 1,000₮ / сард</p>
 
             {message && (
                 <div className="mb-3 p-2 bg-blue-100 text-blue-800 rounded text-center">
@@ -118,12 +118,12 @@ export default function SubscriptionPage() {
                         onClick={createInvoice}
                         className="block w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
                     >
-                        Create Invoice (1,000₮)
+                        Төлбөр (1,000₮) төлөх
                     </button>
 
                     {qrUrl && (
                         <div className="text-center">
-                            <p className="mb-2 text-gray-600">Scan this QR to pay:</p>
+                            <p className="mb-2 text-gray-600">QR уншуулна уу:</p>
                             <img
                                 src={qrUrl}
                                 alt="QPay Subscription"
@@ -134,7 +134,7 @@ export default function SubscriptionPage() {
 
                     {isMobile && paymentUrls.length > 0 && (
                         <div>
-                            <p className="mb-2 text-gray-600 text-center">Or use these payment options:</p>
+                            <p className="mb-2 text-gray-600 text-center">Банкны аппаар төлөх:</p>
                             <ul className="grid grid-cols-2 gap-4">
                                 {paymentUrls.map((option, idx) => (
                                     <li key={idx} className="text-center">
@@ -164,7 +164,7 @@ export default function SubscriptionPage() {
                             onClick={checkInvoice}
                             className="block w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
                         >
-                            Check Payment
+                            Төлбөр төлөлт шалгах
                         </button>
                     )}
                 </div>
@@ -172,7 +172,7 @@ export default function SubscriptionPage() {
 
             {paid && (
                 <div className="text-green-600 font-semibold text-center mt-6">
-                    Subscription is active! Now you can post.
+                   Таны Subscription нэг сарын эрх идэвхчлээ
                 </div>
             )}
         </div>
