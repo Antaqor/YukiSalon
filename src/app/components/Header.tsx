@@ -1,4 +1,3 @@
-// app/components/Header.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -26,32 +25,35 @@ export default function Header() {
     };
 
     return (
-        <header className="bg-blue-600 text-white p-4">
-            <nav className="max-w-4xl mx-auto flex items-center justify-between">
-                <Link href="/" className="text-lg font-bold">
+        <header className="w-full bg-white border-b border-gray-200">
+            <nav className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+                <Link href="/" className="text-xl font-semibold text-black">
                     Vone
                 </Link>
                 <div className="space-x-4">
-                    {/* Нэвтрээгүй бол Register, Login */}
                     {!loggedIn && (
                         <>
-                            <Link href="/register">Бүртгүүлэх</Link>
-                            <Link href="/login">Нэвтрэх</Link>
+                            <Link href="/register" className="text-gray-700">
+                                Бүртгүүлэх
+                            </Link>
+                            <Link href="/login" className="text-gray-700">
+                                Нэвтрэх
+                            </Link>
                         </>
                     )}
-                    {/* Нэвтэрсэн бол ... */}
                     {loggedIn && (
                         <>
-                            {/* Сарын эрх идэвхтэй бол "Member" гэж харуулна, эс бөгөөс Subscription линк */}
                             {isMember ? (
-                                <span className="font-semibold">Member</span>
+                                <span className="font-semibold text-black">Member</span>
                             ) : (
-                                <Link href="/subscription">Subscription</Link>
+                                <Link href="/subscription" className="text-gray-700">
+                                    Subscription
+                                </Link>
                             )}
 
                             <button
                                 onClick={handleLogout}
-                                className="bg-gray-700 hover:bg-gray-500 px-3 py-1 rounded"
+                                className="bg-black text-white px-3 py-1 hover:bg-gray-900 transition"
                             >
                                 Гарах
                             </button>

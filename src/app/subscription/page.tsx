@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
-// Payment Option-ийн бүтэц тодорхойлолт
+// Төлбөрийн сонголтын төрлийн тодорхойлолт
 interface PaymentOption {
     link: string;
     logo: string;
@@ -15,15 +15,14 @@ export default function SubscriptionPage() {
     const { user, updateSubscriptionExpiresAt } = useAuth();
     const [invoiceId, setInvoiceId] = useState("");
     const [qrUrl, setQrUrl] = useState("");
-    const [paymentUrls, setPaymentUrls] = useState<PaymentOption[]>([]); // Payment options төрлийн массив
+    const [paymentUrls, setPaymentUrls] = useState<PaymentOption[]>([]);
     const [message, setMessage] = useState("");
     const [paid, setPaid] = useState(false);
-    const [isMobile, setIsMobile] = useState(false); // Утаснаас хандаж байгаа эсэхийг шалгах
+    const [isMobile, setIsMobile] = useState(false);
 
     const BASE_URL =
         process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:5001";
 
-    // **Утаснаас хандаж байгаа эсэхийг шалгах**
     useEffect(() => {
         const checkMobile = () => {
             const userAgent = navigator.userAgent || navigator.vendor;
@@ -32,12 +31,12 @@ export default function SubscriptionPage() {
         checkMobile();
     }, []);
 
-    // **Invoice үүсгэх функц**
+    // Төлбөрийн бичиг (Invoice) үүсгэх
     const createInvoice = async () => {
         try {
-            setMessage("Creating invoice...");
+            setMessage("Төлбөрийн бичиг үүсгэж байна...");
             if (!user?.accessToken) {
-                setMessage("Please login first.");
+                setMessage("Та эхлээд нэвтэрнэ үү.");
                 return;
             }
 
@@ -52,27 +51,34 @@ export default function SubscriptionPage() {
             if (res.data.success) {
                 setInvoiceId(res.data.invoiceId);
                 setQrUrl(res.data.qrDataUrl);
-                // Зөвхөн шаардлагатай сонголтуудыг шүүнэ
+                // Зөвхөн шаардлагатай төлбөрийн сонголтуудыг шүүж авах
                 const filteredUrls = res.data.invoiceData.urls.filter((option: PaymentOption) =>
-                    ["Monpay", "Khan bank", "M bank", "Toki App", "Social Pay", "Trade and Development bank"].includes(option.name)
+                    [
+                        "Monpay",
+                        "Khan bank",
+                        "M bank",
+                        "Toki App",
+                        "Social Pay",
+                        "Trade and Development bank",
+                    ].includes(option.name)
                 );
                 setPaymentUrls(filteredUrls);
-                setMessage("Invoice created! Please scan the QR or use the payment links.");
+                setMessage("Төлбөрийн бичиг үүслээ! QR кодыг уншуулах эсвэл төлбөрийн холбоосыг ашиглана уу.");
             } else {
-                setMessage("Failed to create invoice.");
+                setMessage("Төлбөрийн бичиг үүсгэхэд алдаа гарлаа.");
             }
         } catch (err) {
             console.error("createInvoice error:", err);
-            setMessage("Error creating invoice.");
+            setMessage("Төлбөрийн бичиг үүсгэхэд алдаа гарлаа.");
         }
     };
 
-    // **Invoice төлбөр шалгах функц**
+    // Төлбөр төлөгдсөн эсэхийг шалгах
     const checkInvoice = async () => {
         try {
-            setMessage("Checking payment status...");
+            setMessage("Төлбөр шалгаж байна...");
             if (!user?.accessToken) {
-                setMessage("Please login first.");
+                setMessage("Та эхлээд нэвтэрнэ үү.");
                 return;
             }
 
@@ -86,25 +92,27 @@ export default function SubscriptionPage() {
 
             if (res.data.paid) {
                 setPaid(true);
-                setMessage(
-                    `Төлбөр амжилттай! Таны subscription: ${res.data.subscriptionExpiresAt}`
-                );
+                setMessage(`Төлбөр амжилттай! Таны эрх дуусах хугацаа: ${res.data.subscriptionExpiresAt}`);
                 if (res.data.subscriptionExpiresAt) {
                     updateSubscriptionExpiresAt(res.data.subscriptionExpiresAt);
                 }
             } else {
-                setMessage("Төлбөр хараахан төлөгдөөгүй байна.");
+                setMessage("Төлбөр хараахан хийгдээгүй байна.");
             }
         } catch (err) {
             console.error("checkInvoice error:", err);
-            setMessage("Error checking payment.");
+            setMessage("Төлбөр шалгахад алдаа гарлаа.");
         }
     };
 
     return (
         <div className="max-w-xl mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4 text-center">Monthly Subscription</h1>
-            <p className="mb-4 text-center text-gray-600">Price: 1,000₮ / month</p>
+            <h1 className="text-2xl font-bold mb-4 text-center">
+                Сарын Гишүүнчлэл
+            </h1>
+            <p className="mb-4 text-center text-gray-600">
+                Төлбөр: 1,000₮ / сар
+            </p>
 
             {message && (
                 <div className="mb-3 p-2 bg-blue-100 text-blue-800 rounded text-center">
@@ -118,12 +126,14 @@ export default function SubscriptionPage() {
                         onClick={createInvoice}
                         className="block w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
                     >
-                        Create Invoice (1,000₮)
+                        Төлбөр үүсгэх (1,000₮)
                     </button>
 
                     {qrUrl && (
                         <div className="text-center">
-                            <p className="mb-2 text-gray-600">Scan this QR to pay:</p>
+                            <p className="mb-2 text-gray-600">
+                                Төлбөр төлөх QR уншуулна уу:
+                            </p>
                             <img
                                 src={qrUrl}
                                 alt="QPay Subscription"
@@ -134,7 +144,9 @@ export default function SubscriptionPage() {
 
                     {isMobile && paymentUrls.length > 0 && (
                         <div>
-                            <p className="mb-2 text-gray-600 text-center">Or use these payment options:</p>
+                            <p className="mb-2 text-gray-600 text-center">
+                                Бусад төлбөрийн сонголтуудыг ашиглах:
+                            </p>
                             <ul className="grid grid-cols-2 gap-4">
                                 {paymentUrls.map((option, idx) => (
                                     <li key={idx} className="text-center">
@@ -164,7 +176,7 @@ export default function SubscriptionPage() {
                             onClick={checkInvoice}
                             className="block w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
                         >
-                            Check Payment
+                            Төлбөр шалгах
                         </button>
                     )}
                 </div>
@@ -172,7 +184,7 @@ export default function SubscriptionPage() {
 
             {paid && (
                 <div className="text-green-600 font-semibold text-center mt-6">
-                    Subscription is active! Now you can post.
+                    Таны эрх идэвхэжлээ! Одоо та пост оруулах боломжтой.
                 </div>
             )}
         </div>
