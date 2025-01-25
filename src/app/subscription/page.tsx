@@ -54,7 +54,7 @@ export default function SubscriptionPage() {
                 setQrUrl(res.data.qrDataUrl);
                 // Зөвхөн шаардлагатай сонголтуудыг шүүнэ
                 const filteredUrls = res.data.invoiceData.urls.filter((option: PaymentOption) =>
-                    ["Мон Пэй", "Хаан банк", "М банк", "Toki App"].includes(option.name)
+                    ["Monpay", "Khan bank", "M bank", "Toki App", "Social Pay", "Trade and Development bank"].includes(option.name)
                 );
                 setPaymentUrls(filteredUrls);
                 setMessage("Invoice created! Please scan the QR or use the payment links.");
