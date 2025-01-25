@@ -45,7 +45,7 @@ router.post("/create-invoice", authenticateToken, async (req, res) => {
         const invoiceCode = process.env.QPAY_INVOICE_CODE || "FORU_INVOICE";
 
         // 3) Төлбөрийн дүн
-        const subscriptionFee = 1000;
+        const subscriptionFee = 20;
 
         // 4) QPay AccessToken авах
         const token = await getQpayToken();
