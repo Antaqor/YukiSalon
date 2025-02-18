@@ -19,7 +19,7 @@ interface PostData {
     createdAt: string;
 }
 
-export default function MyOwnProfilePage() {
+export default function UserProfilePage() {
     const router = useRouter();
     const [userData, setUserData] = useState<UserData | null>(null);
     const [userPosts, setUserPosts] = useState<PostData[]>([]);
@@ -27,13 +27,15 @@ export default function MyOwnProfilePage() {
     const [loadingPosts, setLoadingPosts] = useState(false);
     const [error, setError] = useState("");
 
+    // Your backend
     const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:5001";
 
     function getToken() {
+        // e.g. from localStorage or AuthContext
         return localStorage.getItem("token") || "";
     }
 
-    // 1) Fetch the logged-in user's profile
+    // 1) Fetch user profile
     useEffect(() => {
         const token = getToken();
         if (!token) {
@@ -41,7 +43,6 @@ export default function MyOwnProfilePage() {
             return;
         }
 
-        setLoadingProfile(true);
         axios
             .get(`${BASE_URL}/api/auth/profile`, {
                 headers: { Authorization: `Bearer ${token}` },
@@ -50,18 +51,19 @@ export default function MyOwnProfilePage() {
                 setUserData(res.data);
             })
             .catch((err) => {
-                console.error("My profile fetch error:", err);
-                setError("Өөрийн профайл татаж авахад алдаа гарлаа.");
+                console.error("Profile fetch error:", err);
+                setError("Профайл татаж авахад алдаа гарлаа.");
             })
             .finally(() => setLoadingProfile(false));
     }, [router, BASE_URL]);
 
-    // 2) After we have the user’s data, fetch that user’s posts
+    // 2) Fetch user’s own posts
     useEffect(() => {
         if (!userData?._id) return;
+        const token = getToken();
+        if (!token) return;
 
         setLoadingPosts(true);
-        const token = getToken();
         axios
             .get(`${BASE_URL}/api/posts?user=${userData._id}`, {
                 headers: { Authorization: `Bearer ${token}` },
@@ -71,7 +73,7 @@ export default function MyOwnProfilePage() {
             })
             .catch((err) => {
                 console.error("User posts fetch error:", err);
-                setError("Өөрийн нийтлэлүүдийг татаж авахад алдаа гарлаа.");
+                setError("Нийтлэлүүдийг татаж авахад алдаа гарлаа.");
             })
             .finally(() => setLoadingPosts(false));
     }, [userData, BASE_URL]);
@@ -83,25 +85,23 @@ export default function MyOwnProfilePage() {
         return <div className="p-4 text-red-500">{error}</div>;
     }
     if (!userData) {
-        return <div className="p-4">Өөрийн профайл олдсонгүй.</div>;
+        return <div className="p-4">Хэрэглэгчийн профайл олдсонгүй.</div>;
     }
 
     return (
         <div className="font-sans bg-white min-h-screen">
-            {/* My profile header */}
+            {/* Header */}
             <div className="text-center p-5 border-b border-gray-200">
                 {userData.profilePicture ? (
                     <img
                         src={userData.profilePicture}
-                        alt="My Profile"
+                        alt="Profile"
                         className="w-20 h-20 mx-auto rounded-full object-cover mb-2"
                     />
                 ) : (
                     <div className="w-20 h-20 mx-auto rounded-full bg-gray-200 mb-2" />
                 )}
-                <h2 className="text-lg font-semibold text-gray-800">
-                    {userData.username} (Миний Профайл)
-                </h2>
+                <h2 className="text-lg font-semibold text-gray-800">{userData.username}</h2>
                 {userData.rating && (
                     <p className="text-sm text-gray-600">
                         ★ {userData.rating} үнэлгээ
@@ -109,15 +109,15 @@ export default function MyOwnProfilePage() {
                 )}
             </div>
 
-            {/* subscriptionExpiresAt if you want */}
+            {/* If you want a subscription note */}
             {userData.subscriptionExpiresAt && (
                 <div className="m-4 p-3 bg-blue-50 border border-blue-200 text-sm text-blue-800">
-                    Миний subscription дуусах огноо:{" "}
+                    Таны subscription дуусах огноо:{" "}
                     {new Date(userData.subscriptionExpiresAt).toLocaleDateString()}
                 </div>
             )}
 
-            {/* My posts */}
+            {/* User's posts */}
             <div className="px-4 mt-4">
                 <h3 className="text-lg font-bold mb-3">Миний нийтлэлүүд</h3>
                 {loadingPosts ? (

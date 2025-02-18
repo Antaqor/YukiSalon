@@ -1,12 +1,10 @@
-// app/context/AuthContext.tsx
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface AuthUser {
     id?: string;
     username?: string;
-    age?: number;
-    mbti?: string; // New field
+    email?: string;
     accessToken?: string;
     subscriptionExpiresAt?: string;
 }
@@ -16,8 +14,6 @@ interface AuthState {
     loggedIn: boolean;
     login: (u: AuthUser, t: string) => void;
     logout: () => void;
-
-    // New function: update subscription expiration
     updateSubscriptionExpiresAt: (expires: string) => void;
 }
 
@@ -51,7 +47,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const login = (newUser: AuthUser, token: string) => {
         const userWithSubscription = {
             ...newUser,
-            subscriptionExpiresAt: newUser.subscriptionExpiresAt, // ЭНД ШИНЭ ТАЛБАР НЭМЭГДЭНЭ
+            subscriptionExpiresAt: newUser.subscriptionExpiresAt,
             accessToken: token,
         };
         localStorage.setItem("user", JSON.stringify(userWithSubscription));
@@ -67,7 +63,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoggedIn(false);
     };
 
-    // Update subscription expiration
     const updateSubscriptionExpiresAt = (expires: string) => {
         if (user) {
             const updated = { ...user, subscriptionExpiresAt: expires };
@@ -83,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 loggedIn,
                 login,
                 logout,
-                updateSubscriptionExpiresAt
+                updateSubscriptionExpiresAt,
             }}
         >
             {children}

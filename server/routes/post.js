@@ -1,22 +1,33 @@
-// server/routes/post.js (Complete with Like Feature)
 const express = require("express");
 const router = express.Router();
 const Post = require("../models/Post");
-const User = require("../models/User");
 const authenticateToken = require("../middleware/authMiddleware");
 
 /**
- * GET /api/posts => fetch all posts with user and likes
+ * GET /api/posts
+ * Optionally filter by ?category=<catId>
+ * Also filter by ?user=<userId> for the user’s own posts
  */
 router.get("/", async (req, res) => {
     try {
-        const posts = await Post.find()
-            .populate("user", "username age mbti")
-            .populate({
-                path: "likes",
-                select: "username mbti",
-            })
+        // Grab query params
+        const { category, user } = req.query;
+
+        // Build filter object
+        const filter = {};
+        if (category) {
+            filter.category = category;
+        }
+        if (user) {
+            filter.user = user; // <-- IMPORTANT: filter by user ID
+        }
+
+        // Fetch from DB
+        const posts = await Post.find(filter)
+            .populate("user", "username") // show the author's username
+            .populate("category", "name")
             .sort({ createdAt: -1 });
+
         return res.json(posts);
     } catch (err) {
         console.error("Error fetching posts:", err);
@@ -25,95 +36,65 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * POST /api/posts => create a new post
- * Subscription check is already handled in the existing code
+ * POST /api/posts => create new post (login required)
  */
 router.post("/", authenticateToken, async (req, res) => {
     try {
-        // 1) Subscription check
-        const userId = req.user.id;
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(401).json({ error: "User not found" });
-        }
-        if (!user.subscriptionExpiresAt || user.subscriptionExpiresAt < new Date()) {
-            return res.status(403).json({ error: "Subscription expired. Please pay subscription first." });
-        }
-
-        // 2) Post fields check
         const { title, content, category } = req.body;
         if (!title || !content) {
-            return res.status(400).json({ error: "Title and content required." });
+            return res.status(400).json({ error: "Title and content required" });
         }
 
-        // 3) Create post
-        const newPost = new Post({
+        // Create post
+        const newPost = await Post.create({
             title,
             content,
             category: category || null,
-            user: userId,
+            user: req.user._id,
         });
-        const saved = await newPost.save();
 
         // Populate user and category
-        await saved.populate("user", "username age mbti");
+        await newPost.populate("user", "username");
         if (category) {
-            await saved.populate("category", "name");
+            await newPost.populate("category", "name");
         }
 
-        return res.status(201).json({
-            message: "Post created",
-            post: saved,
-        });
+        return res.status(201).json({ message: "Post created", post: newPost });
     } catch (err) {
-        console.error("Error creating post:", err);
+        console.error("Create post error:", err);
         return res.status(500).json({ error: "Server error" });
     }
 });
 
 /**
- * POST /api/posts/:id/like => like a post
+ * POST /api/posts/:id/like => like a post (login required)
  */
 router.post("/:id/like", authenticateToken, async (req, res) => {
     try {
         const postId = req.params.id;
-        const userId = req.user.id;
+        const userId = req.user._id;
 
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(401).json({ error: "User not found" });
-        }
-        if (!user.subscriptionExpiresAt || user.subscriptionExpiresAt < new Date()) {
-            return res.status(403).json({ error: "Subscription expired. Please pay subscription first." });
-        }
-
-        const post = await Post.findById(postId).populate("likes", "username mbti");
+        const post = await Post.findById(postId).populate("likes", "username");
         if (!post) {
             return res.status(404).json({ error: "Post not found" });
         }
 
-        // Check if user already liked the post
-        if (post.likes.some((like) => like._id.toString() === userId)) {
-            return res.status(400).json({ error: "You have already liked this post." });
+        // Check if user already liked
+        if (post.likes.some((like) => like._id.toString() === userId.toString())) {
+            return res.status(400).json({ error: "You already liked this post" });
         }
 
-        // Add user to likes
         post.likes.push(userId);
         await post.save();
-
-        // Populate likes again
-        await post.populate({
-            path: "likes",
-            select: "username mbti",
-        });
+        await post.populate("likes", "username");
 
         return res.json({
-            message: "Post liked.",
+            message: "Post liked",
             likesCount: post.likes.length,
             likes: post.likes,
         });
     } catch (err) {
-        console.error("Error liking post:", err);
+        console.error("Like error:", err);
         return res.status(500).json({ error: "Server error" });
     }
 });

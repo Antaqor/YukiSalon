@@ -1,4 +1,3 @@
-// server/routes/subscription.js
 const express = require("express");
 const axios = require("axios");
 const QRCode = require("qrcode");
@@ -10,7 +9,7 @@ let cachedToken = null;
 let tokenExpiresAt = 0;
 
 /**
- * QPay AccessToken авах helper
+ * Get QPay AccessToken (helper)
  */
 async function getQpayToken() {
     if (cachedToken && Date.now() < tokenExpiresAt) {
@@ -34,28 +33,21 @@ async function getQpayToken() {
 
 /**
  * POST /api/subscription/create-invoice
- * => 1,000₮ төлбөр үүсгэх
  */
 router.post("/create-invoice", authenticateToken, async (req, res) => {
     try {
-        // 1) Хэрэглэгчийн ID
-        const userId = req.user.id; // authenticateToken-аас
-        // 2) QPay Invoice Code -- QPay Portal дээр үүнийг "invoice code" маягаар бүртгэсэн байх
-        //   Жишээ нь: process.env.QPAY_INVOICE_CODE="FORU_INVOICE"
+        // 1) Get user ID from token
+        const userId = req.user.id;
+        // 2) QPay Invoice Code
         const invoiceCode = process.env.QPAY_INVOICE_CODE || "FORU_INVOICE";
-
-        // 3) Төлбөрийн дүн
+        // 3) Amount
         const subscriptionFee = 1000;
-
-        // 4) QPay AccessToken авах
+        // 4) QPay AccessToken
         const token = await getQpayToken();
-
-        // 5) Sender invoice no => давтагдашгүй
+        // 5) Unique invoice number
         const senderInvoiceNo = "sub_" + userId + "_" + Date.now();
-
         // 6) Payload
         const payload = {
-            // Үүнийг QPay Portal-д урьдчилан бүртгэсэн байх ёстой!
             invoice_code: invoiceCode,
             sender_invoice_no: senderInvoiceNo,
             invoice_receiver_code: "terminal",
@@ -63,16 +55,14 @@ router.post("/create-invoice", authenticateToken, async (req, res) => {
             invoice_description: "Monthly Subscription",
             callback_url: "https://your-domain.mn/api/subscription/callback",
         };
-
-        // 7) QPay рүү илгээх
+        // 7) Send to QPay
         const response = await axios.post("https://merchant.qpay.mn/v2/invoice", payload, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             },
         });
-
-        // 8) Амжилттай -> QR үүсгэх
+        // 8) If success, generate QR
         const invoiceData = response.data;
         let qrDataUrl = null;
         if (invoiceData.qr_text) {
@@ -96,7 +86,6 @@ router.post("/create-invoice", authenticateToken, async (req, res) => {
 
 /**
  * POST /api/subscription/check-invoice
- * => invoice төлбөр төлөгдсөн эсэх шалгаад, OK бол subscriptionExpiresAt-г 30 хоног сунгана
  */
 router.post("/check-invoice", authenticateToken, async (req, res) => {
     try {
@@ -119,7 +108,6 @@ router.post("/check-invoice", authenticateToken, async (req, res) => {
             },
         });
 
-        // Хамгийн энгийн байдлаар payment_status==="PAID" эсэхийг шалгана
         const rows = checkResp.data?.rows || [];
         let paid = false;
         for (const row of rows) {
@@ -133,7 +121,7 @@ router.post("/check-invoice", authenticateToken, async (req, res) => {
             return res.json({ success: true, paid: false });
         }
 
-        // Paid => User subscription-г 30 хоног сунгах
+        // If paid => extend subscription by 30 days
         const userId = req.user.id;
         const user = await User.findById(userId);
         if (!user) {

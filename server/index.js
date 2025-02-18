@@ -1,44 +1,35 @@
-// server/index.js
 require("dotenv").config({ path: "./server/.env" });
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
-// Маршрут файл
 const authRoutes = require("./routes/auth");
 const postRoutes = require("./routes/post");
 const postCategoryRoutes = require("./routes/postCategory");
-const subscriptionRoutes = require("./routes/subscription");
-
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-/**
- * CORS тохиргоо — frontend “http://localhost:3000” ажиллаж байвал origin-д нэм
- */
 app.use(
     cors({
-        origin: ["http://localhost:3000","http://vone.foru.mn"],
+        origin: ["http://localhost:3000", "http://vone.mn"],
         credentials: true,
     })
 );
-
-// JSON parse
 app.use(express.json());
 
-// MongoDB холболт
+// Connect to Mongo
 mongoose
     .connect(process.env.MONGODB_URI)
     .then(() => {
         console.log("Connected to MongoDB");
-        seedPostCategories(); // Хүсвэл default категори үүсгэх
+        seedPostCategories();
     })
     .catch((err) => {
         console.error("MongoDB connection error:", err);
     });
 
-// Жишээ: Default PostCategory seed
+// Seed categories if needed
 async function seedPostCategories() {
     const PostCategory = require("./models/PostCategory");
     const defaultCategories = [
@@ -60,9 +51,7 @@ async function seedPostCategories() {
     }
 }
 
-// Маршрутууд
 app.use("/api/auth", authRoutes);
-app.use("/api/subscription", subscriptionRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/post-categories", postCategoryRoutes);
 

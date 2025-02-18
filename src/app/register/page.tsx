@@ -6,21 +6,19 @@ import { useRouter } from "next/navigation";
 export default function RegisterPage() {
     const router = useRouter();
     const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [age, setAge] = useState("");
-    const [mbti, setMbti] = useState(""); // MBTI төлөв нэмэх
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
-    const BASE_URL =
-        process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:5001";
+    const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:5001";
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
         setSuccess("");
 
-        if (!username || !password || !age || !mbti) { // MBTI-г шалгах
+        if (!username || !email || !password) {
             setError("Бүх талбаруудыг бөглөнө үү.");
             return;
         }
@@ -28,30 +26,20 @@ export default function RegisterPage() {
         try {
             const res = await axios.post(`${BASE_URL}/api/auth/register`, {
                 username,
+                email,
                 password,
-                age,
-                mbti, // MBTI-г оруулах
             });
             if (res.status === 201) {
                 setSuccess("Ажилттай бүртгэл үүсгэлээ");
                 setUsername("");
+                setEmail("");
                 setPassword("");
-                setAge("");
-                setMbti(""); // MBTI-г цэвэрлэх
             }
         } catch (err: any) {
             console.error("Register error:", err);
             setError(err.response?.data?.error || "Registration error");
         }
     };
-
-    // 16 MBTI төрөл
-    const mbtiOptions = [
-        "INTJ", "INTP", "ENTJ", "ENTP",
-        "INFJ", "INFP", "ENFJ", "ENFP",
-        "ISTJ", "ISFJ", "ESTJ", "ESFJ",
-        "ISTP", "ISFP", "ESTP", "ESFP"
-    ];
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-white px-4">
@@ -72,6 +60,20 @@ export default function RegisterPage() {
                             onChange={(e) => setUsername(e.target.value)}
                         />
                     </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-800 mb-1">
+                            Имэйл
+                        </label>
+                        <input
+                            type="email"
+                            className="w-full border-b border-gray-300 px-2 py-2 text-gray-900 focus:outline-none"
+                            placeholder="name@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </div>
+
                     <div>
                         <label className="block text-sm font-medium text-gray-800 mb-1">
                             Нууц үг
@@ -83,35 +85,6 @@ export default function RegisterPage() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-800 mb-1">
-                            Нас
-                        </label>
-                        <input
-                            type="number"
-                            className="w-full border-b border-gray-300 px-2 py-2 text-gray-900 focus:outline-none"
-                            placeholder="Жишээ: 25"
-                            value={age}
-                            onChange={(e) => setAge(e.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-800 mb-1">
-                            MBTI төрөл
-                        </label>
-                        <select
-                            className="w-full border-b border-gray-300 px-2 py-2 text-gray-900 focus:outline-none"
-                            value={mbti}
-                            onChange={(e) => setMbti(e.target.value)}
-                        >
-                            <option value="">Сонгоно уу</option>
-                            {mbtiOptions.map((type) => (
-                                <option key={type} value={type}>
-                                    {type}
-                                </option>
-                            ))}
-                        </select>
                     </div>
 
                     <button

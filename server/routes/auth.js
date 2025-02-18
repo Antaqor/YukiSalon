@@ -1,58 +1,37 @@
-// server/routes/auth.js
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const authenticateToken = require("../middleware/authMiddleware");
 
-const mbtiTypes = [
-    "INTJ", "INTP", "ENTJ", "ENTP",
-    "INFJ", "INFP", "ENFJ", "ENFP",
-    "ISTJ", "ISFJ", "ESTJ", "ESFJ",
-    "ISTP", "ISFP", "ESTP", "ESFP"
-];
-
-/**
- * POST /api/auth/register
- * { username, password, age, mbti } => created user
- */
+// POST /api/auth/register
 router.post("/register", async (req, res) => {
     try {
-        const { username, password, age, mbti } = req.body;
-        if (!username || !password || !age || !mbti) { // Check MBTI
-            return res.status(400).json({ error: "username, password, age, mbti are required" });
+        const { username, email, password } = req.body;
+        if (!username || !email || !password) {
+            return res.status(400).json({ error: "username, email, and password are required" });
         }
 
-        if (!mbtiTypes.includes(mbti)) { // Validate MBTI type
-            return res.status(400).json({ error: "Invalid MBTI type" });
-        }
-
-        // Check if username is already taken
-        const existing = await User.findOne({ username });
+        const existing = await User.findOne({ $or: [{ username }, { email }] });
         if (existing) {
-            return res.status(400).json({ error: "Username already used" });
+            return res.status(400).json({ error: "Username or email already in use" });
         }
 
-        // Hash password
         const hashedPw = await bcrypt.hash(password, 10);
-
-        const newUser = new User({
+        const newUser = await User.create({
             username,
+            email,
             password: hashedPw,
-            age: Number(age),
-            mbti, // Save MBTI
-            subscriptionExpiresAt: null, // default
         });
-        await newUser.save();
 
         return res.status(201).json({
             message: "User registered!",
             user: {
+                id: newUser._id,
                 username: newUser.username,
-                age: newUser.age,
-                mbti: newUser.mbti,
-                subscriptionExpiresAt: newUser.subscriptionExpiresAt, // ЭНЭ МӨРИЙГ НЭМНЭ
-            }
+                email: newUser.email,
+            },
         });
     } catch (err) {
         console.error("Register error:", err);
@@ -60,15 +39,12 @@ router.post("/register", async (req, res) => {
     }
 });
 
-/**
- * POST /api/auth/login
- * { username, password } => returns token
- */
+// POST /api/auth/login
 router.post("/login", async (req, res) => {
     try {
         const { username, password } = req.body;
         if (!username || !password) {
-            return res.status(400).json({ error: "username, password required" });
+            return res.status(400).json({ error: "username and password required" });
         }
 
         const user = await User.findOne({ username });
@@ -81,7 +57,6 @@ router.post("/login", async (req, res) => {
             return res.status(401).json({ error: "Invalid credentials" });
         }
 
-        // Create JWT
         const token = jwt.sign(
             { id: user._id, username: user.username },
             process.env.JWT_SECRET || "change-me",
@@ -92,9 +67,10 @@ router.post("/login", async (req, res) => {
             user: {
                 id: user._id,
                 username: user.username,
-                age: user.age,
-                mbti: user.mbti,
-                subscriptionExpiresAt: user.subscriptionExpiresAt, // ЭНЭ МӨРИЙГ НЭМНЭ
+                email: user.email,
+                profilePicture: user.profilePicture,
+                rating: user.rating,
+                subscriptionExpiresAt: user.subscriptionExpiresAt,
             },
             token,
         });
@@ -103,5 +79,39 @@ router.post("/login", async (req, res) => {
         return res.status(500).json({ error: "Server error" });
     }
 });
+
+// GET /api/auth/user/:id => fetch user by ID for public profile
+router.get("/user/:id", async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).select(
+            "username email profilePicture rating createdAt"
+        );
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        return res.json(user);
+    } catch (err) {
+        console.error("Fetch user error:", err);
+        return res.status(500).json({ error: "Server error" });
+    }
+});
+
+router.get("/profile", authenticateToken, async (req, res) => {
+    try {
+        // req.user was set by authenticateToken
+        const userId = req.user._id || req.user.id;
+        const user = await User.findById(userId).select(
+            "username email profilePicture rating subscriptionExpiresAt"
+        );
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        return res.json(user);
+    } catch (err) {
+        console.error("Profile fetch error:", err);
+        return res.status(500).json({ error: "Server error" });
+    }
+});
+
 
 module.exports = router;

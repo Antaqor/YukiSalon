@@ -11,21 +11,20 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
-    const BASE_URL =
-        process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:5001";
+    const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:5001";
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
 
         try {
-            // Call your backend with "username" key
             const res = await axios.post(`${BASE_URL}/api/auth/login`, {
                 username,
                 password,
             });
             if (res.status === 200 && res.data.token) {
                 const { user, token } = res.data;
+                // Save user & token to AuthContext
                 login(user, token);
                 router.push("/");
             }
@@ -42,7 +41,6 @@ export default function LoginPage() {
                 {error && <p className="text-red-600 mb-3">{error}</p>}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {/* Username field */}
                     <div>
                         <label className="block text-sm font-medium text-gray-800 mb-1">
                             Хэрэглэгчийн нэр
@@ -57,7 +55,6 @@ export default function LoginPage() {
                         />
                     </div>
 
-                    {/* Password field */}
                     <div>
                         <label className="block text-sm font-medium text-gray-800 mb-1">
                             Нууц үг
@@ -72,13 +69,9 @@ export default function LoginPage() {
                         />
                     </div>
 
-                    {/* Remember Me + Forgot Password */}
                     <div className="flex items-center justify-between text-sm">
                         <label className="flex items-center text-gray-700">
-                            <input
-                                type="checkbox"
-                                className="h-4 w-4 mr-1"
-                            />
+                            <input type="checkbox" className="h-4 w-4 mr-1" />
                             Remember me
                         </label>
                         <button
@@ -90,7 +83,6 @@ export default function LoginPage() {
                         </button>
                     </div>
 
-                    {/* Sign In button */}
                     <button
                         type="submit"
                         className="w-full bg-black text-white py-2 text-sm font-semibold hover:bg-gray-900 transition"
@@ -99,7 +91,6 @@ export default function LoginPage() {
                     </button>
                 </form>
 
-                {/* Link to register */}
                 <button
                     onClick={() => router.push("/register")}
                     className="mt-4 block text-sm text-gray-700 underline"
