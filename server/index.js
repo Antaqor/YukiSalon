@@ -10,12 +10,15 @@ const postCategoryRoutes = require("./routes/postCategory");
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+app.set("trust proxy", 1);
+
 app.use(
     cors({
-        origin: ["http://localhost:3000", "https://vone.mn", "https://www.vone.mn" ],
+        origin: ["https://vone.mn", "https://www.vone.mn"],
         credentials: true,
     })
 );
+
 app.use(express.json());
 
 // Connect to Mongo
