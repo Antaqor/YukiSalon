@@ -21,7 +21,7 @@ export default function SubscriptionPage() {
     const [isMobile, setIsMobile] = useState(false);
 
     const BASE_URL =
-        process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:5001";
+        process.env.NEXT_PUBLIC_BACKEND_API_URL || "https://vone.mn";
 
     useEffect(() => {
         const checkMobile = () => {

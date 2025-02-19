@@ -16,7 +16,7 @@ const Newsfeed: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
 
     const BASE_URL =
-        process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:5001';
+        process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://';
 
     // --- (1) Fetch posts ---
     const fetchPosts = async () => {
