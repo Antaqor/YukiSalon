@@ -9,46 +9,56 @@ import type { Metadata } from "next";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    metadataBase: new URL("http://vone.foru.mn"),
+    metadataBase: new URL("https://vone.mn"), // **HTTPS-г анхаарах**
     title: {
         default: "VONE",
-        template: "%s | THE VONE CLAN",
+        template: "%s | VONE",
     },
-    description: "A next-generation scheduling and booking platform with advanced features.",
-    keywords: ["VONE", "COMMUNITY", "dao", "network", "zaluusiin network"],
-    authors: [{ name: "Vone Tech", url: "https://vone.foru.mn" }],
+    description: "VONE - A next-generation community platform for networking and innovation.",
+    keywords: ["VONE", "Community", "DAO", "Network", "Zaluusiin Network"],
+    authors: [{ name: "Vone Tech", url: "https://vone.mn" }],
     verification: {
-        google: "YOUR_GOOGLE_SITE_VERIFICATION_TOKEN",
+        google: "YOUR_GOOGLE_SITE_VERIFICATION_TOKEN", // Google search-т зориулсан verification
         yandex: "YOUR_YANDEX_SITE_VERIFICATION_TOKEN",
     },
+
     openGraph: {
         title: "VONE – A Next-Generation Platform",
-        description: "THE VONE CLAN",
-        url: "http://vone.foru.mn",
-        siteName: "THE VONE CLAN",
+        description: "Join THE VONE CLAN – Your community for networking and innovation.",
+        url: "https://vone.mn",
+        siteName: "VONE",
         images: [
             {
-                url: "https://example.com/og-image.jpg",
+                url: "https://cdn.midjourney.com/9c84cf56-387f-4b49-a6c9-b991843f77e6/0_0.png", // **Social Preview зураг**
                 width: 1200,
                 height: 630,
-                alt: "THE VONE CLAN",
+                alt: "VONE Community - THE VONE CLAN",
             },
         ],
-        locale: "en_US",
+        locale: "mn_MN",
         type: "website",
     },
+
     twitter: {
         card: "summary_large_image",
-        title: "THE VONE CLAN",
-        description: "THE VONE CLAN",
-        images: ["https://example.com/og-image.jpg"],
-        creator: "@your_twitter_handle",
+        title: "VONE - Next-Gen Platform",
+        description: "Join THE VONE CLAN – Your community for networking and innovation.",
+        images: ["https://cdn.midjourney.com/9c84cf56-387f-4b49-a6c9-b991843f77e6/0_0.png"],
+        creator: "@your_twitter_handle", // Өөрийн Twitter хаягаа оруулах
     },
+
     alternates: {
-        canonical: "https://example.com",
+        canonical: "https://vone.mn",
         languages: {
-            "en-US": "https://example.com/en-us",
+            "mn-MN": "https://vone.mn/mn-mn", // Монгол хувилбар
+            "en-US": "https://vone.mn/en-us", // Англи хувилбар
         },
+    },
+
+    icons: {
+        icon: "/favicon.ico", // **Tab дээр харагдах favicon**
+        apple: "/apple-touch-icon.png", // **Apple home screen дээр**
+        shortcut: "/favicon-32x32.png", // **Windows & Android**
     },
 };
 
