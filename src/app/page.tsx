@@ -39,7 +39,7 @@ export default function HomePage() {
 
     const BASE_URL = "https://vone.mn";
     const fileInputRef = useRef<HTMLInputElement>(null);
-
+    const UPLOADS_URL = `${BASE_URL}/uploads`;
     // 1) Fetch posts
     const fetchPosts = useCallback(async () => {
         try {
@@ -298,9 +298,10 @@ export default function HomePage() {
                                         {/* Show image if present */}
                                         {post.image && (
                                             <img
-                                                src={`${BASE_URL}/${post.image}`}
+                                                src={`${UPLOADS_URL}/${post.image}`}
                                                 alt="Post Image"
                                                 className="mt-2 max-w-full rounded"
+                                                onError={(e) => (e.currentTarget.style.display = "none")} // Image not found үед алга болгох
                                             />
                                         )}
                                         <div className="mt-2 text-sm text-gray-400 flex items-center gap-2">
