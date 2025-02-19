@@ -2,11 +2,12 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface AuthUser {
-    id?: string;
+    _id?: string; // Өөрчлөгдсөн
     username?: string;
     email?: string;
     accessToken?: string;
     subscriptionExpiresAt?: string;
+    following?: string[];
 }
 
 interface AuthState {
@@ -39,7 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setUser(parsed);
                 setLoggedIn(true);
             } catch {
-                // ignore
+                // ignore parsing error
             }
         }
     }, []);

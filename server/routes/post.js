@@ -1,34 +1,53 @@
 const express = require("express");
 const router = express.Router();
+const multer = require("multer");
+const fs = require("fs");
+const path = require("path");
 const Post = require("../models/Post");
 const authenticateToken = require("../middleware/authMiddleware");
 
-/**
- * GET /api/posts
- * Optionally filter by ?category=<catId>
- * Also filter by ?user=<userId> for the user’s own posts
- */
+// Ensure "uploads" directory exists
+const uploadDir = path.join(__dirname, "../uploads");
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+    console.log("Created uploads folder at:", uploadDir);
+}
+
+// Configure multer
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        console.log("Saving file to:", uploadDir);
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+        const finalName = uniqueSuffix + "-" + file.originalname;
+        console.log("Generated filename:", finalName);
+        cb(null, finalName);
+    },
+});
+const upload = multer({ storage });
+
+// GET /api/posts
 router.get("/", async (req, res) => {
     try {
-        // Grab query params
-        const { category, user } = req.query;
-
-        // Build filter object
+        const { user, sort } = req.query;
         const filter = {};
-        if (category) {
-            filter.category = category;
-        }
-        if (user) {
-            filter.user = user; // <-- IMPORTANT: filter by user ID
-        }
+        if (user) filter.user = user;
 
-        // Fetch from DB
-        const posts = await Post.find(filter)
-            .populate("user", "username") // show the author's username
-            .populate("category", "name")
-            .sort({ createdAt: -1 });
-
-        return res.json(posts);
+        if (sort === "recommendation") {
+            const posts = await Post.aggregate([
+                { $match: filter },
+                { $addFields: { likesCount: { $size: "$likes" } } },
+                { $sort: { likesCount: -1, createdAt: -1 } },
+            ]);
+            return res.json(posts);
+        } else {
+            const posts = await Post.find(filter)
+                .populate("user", "username")
+                .sort({ createdAt: -1 });
+            return res.json(posts);
+        }
     } catch (err) {
         console.error("Error fetching posts:", err);
         return res.status(500).json({ error: "Server error" });
@@ -36,28 +55,30 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * POST /api/posts => create new post (login required)
+ * POST /api/posts => create new post
  */
-router.post("/", authenticateToken, async (req, res) => {
+router.post("/", authenticateToken, upload.single("image"), async (req, res) => {
     try {
-        const { title, content, category } = req.body;
-        if (!title || !content) {
-            return res.status(400).json({ error: "Title and content required" });
+        const { content } = req.body;
+        if (!content) {
+            return res.status(400).json({ error: "Content required" });
         }
 
-        // Create post
+        // If a file was uploaded, store a relative path "uploads/<filename>"
+        let imagePath = null;
+        if (req.file) {
+            imagePath = "uploads/" + req.file.filename;
+            console.log("Storing relative path in DB =>", imagePath);
+        }
+
         const newPost = await Post.create({
-            title,
             content,
-            category: category || null,
+            image: imagePath, // e.g. "uploads/1681234567-somePic.png"
             user: req.user._id,
         });
 
-        // Populate user and category
         await newPost.populate("user", "username");
-        if (category) {
-            await newPost.populate("category", "name");
-        }
+        console.log("Created post =>", newPost); // see what actually stored
 
         return res.status(201).json({ message: "Post created", post: newPost });
     } catch (err) {
@@ -67,7 +88,7 @@ router.post("/", authenticateToken, async (req, res) => {
 });
 
 /**
- * POST /api/posts/:id/like => like a post (login required)
+ * POST /api/posts/:id/like => like a post
  */
 router.post("/:id/like", authenticateToken, async (req, res) => {
     try {
@@ -78,8 +99,6 @@ router.post("/:id/like", authenticateToken, async (req, res) => {
         if (!post) {
             return res.status(404).json({ error: "Post not found" });
         }
-
-        // Check if user already liked
         if (post.likes.some((like) => like._id.toString() === userId.toString())) {
             return res.status(400).json({ error: "You already liked this post" });
         }

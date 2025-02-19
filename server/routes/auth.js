@@ -5,33 +5,22 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const authenticateToken = require("../middleware/authMiddleware");
 
-// POST /api/auth/register
+// Register
 router.post("/register", async (req, res) => {
     try {
         const { username, email, password } = req.body;
         if (!username || !email || !password) {
             return res.status(400).json({ error: "username, email, and password are required" });
         }
-
         const existing = await User.findOne({ $or: [{ username }, { email }] });
         if (existing) {
             return res.status(400).json({ error: "Username or email already in use" });
         }
-
         const hashedPw = await bcrypt.hash(password, 10);
-        const newUser = await User.create({
-            username,
-            email,
-            password: hashedPw,
-        });
-
+        const newUser = await User.create({ username, email, password: hashedPw });
         return res.status(201).json({
             message: "User registered!",
-            user: {
-                id: newUser._id,
-                username: newUser.username,
-                email: newUser.email,
-            },
+            user: { _id: newUser._id, username: newUser.username, email: newUser.email },
         });
     } catch (err) {
         console.error("Register error:", err);
@@ -39,38 +28,36 @@ router.post("/register", async (req, res) => {
     }
 });
 
-// POST /api/auth/login
+// Login
 router.post("/login", async (req, res) => {
     try {
         const { username, password } = req.body;
         if (!username || !password) {
             return res.status(400).json({ error: "username and password required" });
         }
-
         const user = await User.findOne({ username });
         if (!user) {
             return res.status(401).json({ error: "Invalid credentials" });
         }
-
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(401).json({ error: "Invalid credentials" });
         }
-
         const token = jwt.sign(
             { id: user._id, username: user.username },
             process.env.JWT_SECRET || "change-me",
             { expiresIn: "1h" }
         );
-
         return res.json({
             user: {
-                id: user._id,
+                _id: user._id,
                 username: user.username,
                 email: user.email,
                 profilePicture: user.profilePicture,
                 rating: user.rating,
                 subscriptionExpiresAt: user.subscriptionExpiresAt,
+                following: user.following,
+                followers: user.followers,
             },
             token,
         });
@@ -80,11 +67,11 @@ router.post("/login", async (req, res) => {
     }
 });
 
-// GET /api/auth/user/:id => fetch user by ID for public profile
+// Get public user profile
 router.get("/user/:id", async (req, res) => {
     try {
         const user = await User.findById(req.params.id).select(
-            "username email profilePicture rating createdAt"
+            "username email profilePicture rating subscriptionExpiresAt following followers"
         );
         if (!user) {
             return res.status(404).json({ error: "User not found" });
@@ -96,12 +83,12 @@ router.get("/user/:id", async (req, res) => {
     }
 });
 
+// Get own profile
 router.get("/profile", authenticateToken, async (req, res) => {
     try {
-        // req.user was set by authenticateToken
         const userId = req.user._id || req.user.id;
         const user = await User.findById(userId).select(
-            "username email profilePicture rating subscriptionExpiresAt"
+            "username email profilePicture rating subscriptionExpiresAt following followers"
         );
         if (!user) {
             return res.status(404).json({ error: "User not found" });
@@ -112,6 +99,5 @@ router.get("/profile", authenticateToken, async (req, res) => {
         return res.status(500).json({ error: "Server error" });
     }
 });
-
 
 module.exports = router;

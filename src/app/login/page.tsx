@@ -11,7 +11,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
-    const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "https://vone.mn";
+    const BASE_URL =  "http://localhost:5001";
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

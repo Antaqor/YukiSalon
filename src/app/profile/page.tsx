@@ -10,6 +10,8 @@ interface UserData {
     profilePicture?: string;
     rating?: number;
     subscriptionExpiresAt?: string;
+    followers?: string[];
+    following?: string[];
 }
 
 interface PostData {
@@ -27,7 +29,7 @@ export default function MyOwnProfilePage() {
     const [loadingPosts, setLoadingPosts] = useState(false);
     const [error, setError] = useState("");
 
-    const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "https://vone.mn";
+    const BASE_URL = "http://localhost:5001";
 
     function getToken() {
         return localStorage.getItem("token") || "";
@@ -50,8 +52,8 @@ export default function MyOwnProfilePage() {
                 setUserData(res.data);
             })
             .catch((err) => {
-                console.error("My profile fetch error:", err);
-                setError("Өөрийн профайл татаж авахад алдаа гарлаа.");
+                console.error("My profile fetch error:", err.response?.data || err.message);
+                setError(err.response?.data?.error || "Өөрийн профайл татаж авахад алдаа гарлаа.");
             })
             .finally(() => setLoadingProfile(false));
     }, [router, BASE_URL]);
@@ -70,8 +72,8 @@ export default function MyOwnProfilePage() {
                 setUserPosts(res.data);
             })
             .catch((err) => {
-                console.error("User posts fetch error:", err);
-                setError("Өөрийн нийтлэлүүдийг татаж авахад алдаа гарлаа.");
+                console.error("User posts fetch error:", err.response?.data || err.message);
+                setError(err.response?.data?.error || "Өөрийн нийтлэлүүдийг татаж авахад алдаа гарлаа.");
             })
             .finally(() => setLoadingPosts(false));
     }, [userData, BASE_URL]);
@@ -103,13 +105,26 @@ export default function MyOwnProfilePage() {
                     {userData.username} (Миний Профайл)
                 </h2>
                 {userData.rating && (
-                    <p className="text-sm text-gray-600">
-                        ★ {userData.rating} үнэлгээ
-                    </p>
+                    <p className="text-sm text-gray-600">★ {userData.rating} үнэлгээ</p>
                 )}
+                {/* Display follow counts */}
+                <div className="flex justify-center gap-6 mt-3">
+                    <div>
+            <span className="font-bold">
+              {userData.followers ? userData.followers.length : 0}
+            </span>{" "}
+                        Followers
+                    </div>
+                    <div>
+            <span className="font-bold">
+              {userData.following ? userData.following.length : 0}
+            </span>{" "}
+                        Following
+                    </div>
+                </div>
             </div>
 
-            {/* subscriptionExpiresAt if you want */}
+            {/* Subscription expiration */}
             {userData.subscriptionExpiresAt && (
                 <div className="m-4 p-3 bg-blue-50 border border-blue-200 text-sm text-blue-800">
                     Миний subscription дуусах огноо:{" "}

@@ -9,6 +9,8 @@ interface UserData {
     email?: string;
     profilePicture?: string;
     rating?: number;
+    followers?: string[];
+    following?: string[];
 }
 
 interface PostData {
@@ -21,7 +23,7 @@ interface PostData {
 export default function PublicProfilePage() {
     const router = useRouter();
     const params = useParams();
-    const userId = params.id;
+    const userId = params.id as string;
 
     const [userData, setUserData] = useState<UserData | null>(null);
     const [userPosts, setUserPosts] = useState<PostData[]>([]);
@@ -29,20 +31,19 @@ export default function PublicProfilePage() {
     const [postLoading, setPostLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "https://vone.mn";
+    const BASE_URL = "http://localhost:5001";
 
     useEffect(() => {
         if (!userId) return;
         setLoading(true);
-        // This fetches the *public* user data for userId
         axios
             .get(`${BASE_URL}/api/auth/user/${userId}`)
             .then((res) => {
                 setUserData(res.data);
             })
             .catch((err) => {
-                console.error("Fetch user error:", err);
-                setError("Хэрэглэгчийн профайл татаж авахад алдаа гарлаа.");
+                console.error("Fetch user error:", err.response?.data || err.message);
+                setError(err.response?.data?.error || "Хэрэглэгчийн профайл татаж авахад алдаа гарлаа.");
             })
             .finally(() => setLoading(false));
     }, [userId, BASE_URL]);
@@ -57,7 +58,7 @@ export default function PublicProfilePage() {
                 setUserPosts(res.data);
             })
             .catch((err) => {
-                console.error("User posts error:", err);
+                console.error("User posts error:", err.response?.data || err.message);
             })
             .finally(() => setPostLoading(false));
     }, [userId, BASE_URL]);
@@ -89,6 +90,21 @@ export default function PublicProfilePage() {
                 {userData.rating && (
                     <p className="text-sm text-gray-600">★ {userData.rating} үнэлгээ</p>
                 )}
+                {/* Display follow counts */}
+                <div className="flex justify-center gap-6 mt-3">
+                    <div>
+            <span className="font-bold">
+              {userData.followers ? userData.followers.length : 0}
+            </span>{" "}
+                        Followers
+                    </div>
+                    <div>
+            <span className="font-bold">
+              {userData.following ? userData.following.length : 0}
+            </span>{" "}
+                        Following
+                    </div>
+                </div>
             </div>
 
             {/* That user's posts */}
@@ -99,10 +115,7 @@ export default function PublicProfilePage() {
                     <p className="text-gray-600">Энэ хэрэглэгч нийтлэлгүй байна.</p>
                 )}
                 {userPosts.map((post) => (
-                    <div
-                        key={post._id}
-                        className="border-b border-gray-200 pb-2 mb-2"
-                    >
+                    <div key={post._id} className="border-b border-gray-200 pb-2 mb-2">
                         <h4 className="font-semibold">{post.title}</h4>
                         <p className="text-sm text-gray-600">{post.content}</p>
                         <p className="text-xs text-gray-400">

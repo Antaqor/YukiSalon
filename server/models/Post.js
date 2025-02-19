@@ -3,10 +3,9 @@ const { Schema, model, models } = mongoose;
 
 const PostSchema = new Schema(
     {
-        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-        title: { type: String, required: true },
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
         content: { type: String, required: true },
-        category: { type: mongoose.Schema.Types.ObjectId, ref: "PostCategory" },
+        image: { type: String }, // e.g. "uploads/filename.png"
         likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     },
     { timestamps: true }
