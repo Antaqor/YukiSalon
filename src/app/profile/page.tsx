@@ -29,7 +29,7 @@ export default function MyOwnProfilePage() {
     const [loadingPosts, setLoadingPosts] = useState(false);
     const [error, setError] = useState("");
 
-    const BASE_URL = "http://localhost:5001";
+    const BASE_URL = "https://vone.mn";
 
     function getToken() {
         return localStorage.getItem("token") || "";
