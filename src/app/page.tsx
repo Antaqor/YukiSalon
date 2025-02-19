@@ -39,7 +39,7 @@ export default function HomePage() {
     const [selectedCategory, setSelectedCategory] = useState("");
     const [error, setError] = useState("");
 
-    const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:5001";
+    const BASE_URL = "https://vone.mn"
 
     // Fetch categories
     const fetchCategories = useCallback(async () => {
