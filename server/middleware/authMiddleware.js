@@ -11,8 +11,9 @@ const authenticateToken = async (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET || "change-me");
+        // Select only the fields we actually have now
         const user = await User.findById(decoded.id).select(
-            "username email subscriptionExpiresAt following followers"
+            "username name phoneNumber location gender birthday profilePicture subscriptionExpiresAt following followers"
         );
         if (!user) {
             return res.status(401).json({ error: "User not found" });

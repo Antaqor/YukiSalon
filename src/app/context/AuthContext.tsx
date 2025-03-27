@@ -1,13 +1,26 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-interface AuthUser {
-    _id?: string; // Өөрчлөгдсөн
+interface Birthday {
+    year: string;
+    month: string;
+    day: string;
+}
+
+export interface AuthUser {
+    _id?: string;
     username?: string;
-    email?: string;
-    accessToken?: string;
+    name?: string;
+    phoneNumber?: string;
+    location?: string;
+    gender?: string;
+    birthday?: Birthday;
+    profilePicture?: string;
+    rating?: number;
     subscriptionExpiresAt?: string;
     following?: string[];
+    followers?: string[];
+    accessToken?: string;
 }
 
 interface AuthState {

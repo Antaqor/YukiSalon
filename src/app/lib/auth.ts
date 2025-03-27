@@ -1,10 +1,12 @@
-// File: /app/lib/auth.ts
-
 /** 1) Define your AuthUser type (or import from your context if it’s the same) */
 export interface AuthUser {
     id: string;
     username: string;
-    email?: string;
+    name?: string;
+    phoneNumber?: string;
+    location?: string;
+    gender?: string;
+    birthday?: { year: string; month: string; day: string };
     role?: string;
     accessToken?: string;
     // ... add other fields if needed

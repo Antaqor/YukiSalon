@@ -1,5 +1,11 @@
 "use client";
-import React, { useState, useEffect, useCallback, ChangeEvent, useRef } from "react";
+import React, {
+    useState,
+    useEffect,
+    useCallback,
+    ChangeEvent,
+    useRef,
+} from "react";
 import axios from "axios";
 import Link from "next/link";
 import { useAuth } from "./context/AuthContext";
@@ -40,11 +46,11 @@ export default function HomePage() {
     const BASE_URL = "https://vone.mn";
     const fileInputRef = useRef<HTMLInputElement>(null);
     const UPLOADS_URL = `${BASE_URL}/uploads`;
+
     // 1) Fetch posts
     const fetchPosts = useCallback(async () => {
         try {
             const res = await axios.get(`${BASE_URL}/api/posts`);
-            console.log("Fetched posts =>", res.data);
             setPosts(res.data);
             setAllPosts(res.data);
             computeTrendingHashtags(res.data);
@@ -64,10 +70,9 @@ export default function HomePage() {
                 });
             }
         });
-        const trending: Hashtag[] = Object.entries(hashtagCount).map(([tag, count]) => ({
-            tag,
-            count,
-        }));
+        const trending: Hashtag[] = Object.entries(hashtagCount).map(
+            ([tag, count]) => ({ tag, count })
+        );
         trending.sort((a, b) => b.count - a.count);
         setTrendingHashtags(trending.slice(0, 5));
     };
@@ -98,10 +103,7 @@ export default function HomePage() {
         try {
             const formData = new FormData();
             formData.append("content", content);
-            if (imageFile) {
-                formData.append("image", imageFile);
-                console.log("Appending image file =>", imageFile.name);
-            }
+            if (imageFile) formData.append("image", imageFile);
 
             const res = await axios.post(`${BASE_URL}/api/posts`, formData, {
                 headers: {
@@ -110,7 +112,6 @@ export default function HomePage() {
                 },
             });
 
-            console.log("Created post =>", res.data.post);
             setPosts((prev) => [res.data.post, ...prev]);
             setAllPosts((prev) => [res.data.post, ...prev]);
             computeTrendingHashtags([res.data.post, ...allPosts]);
@@ -122,7 +123,7 @@ export default function HomePage() {
         }
     };
 
-    // Trigger hidden file input
+    // 5) Trigger hidden file input
     const triggerFileInput = () => {
         fileInputRef.current?.click();
     };
@@ -131,7 +132,6 @@ export default function HomePage() {
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             setImageFile(e.target.files[0]);
-            console.log("Selected file =>", e.target.files[0].name);
         }
     };
 
@@ -144,7 +144,6 @@ export default function HomePage() {
                 {},
                 { headers: { Authorization: `Bearer ${user.accessToken}` } }
             );
-            console.log("Like response =>", res.data);
             const updatedLikes = res.data.likes;
             setPosts((prev) =>
                 prev.map((p) => (p._id === postId ? { ...p, likes: updatedLikes } : p))
@@ -158,13 +157,14 @@ export default function HomePage() {
     const handleFollow = async (targetUserId: string) => {
         if (!user?.accessToken) return;
         try {
-            const res = await axios.post(
+            await axios.post(
                 `${BASE_URL}/api/users/${targetUserId}/follow`,
                 {},
                 { headers: { Authorization: `Bearer ${user.accessToken}` } }
             );
-            console.log("Follow response =>", res.data);
-            const updatedFollowing = user.following ? [...user.following, targetUserId] : [targetUserId];
+            const updatedFollowing = user.following
+                ? [...user.following, targetUserId]
+                : [targetUserId];
             login({ ...user, following: updatedFollowing }, user.accessToken);
         } catch (err) {
             console.error("Follow error:", err);
@@ -174,25 +174,26 @@ export default function HomePage() {
     const handleUnfollow = async (targetUserId: string) => {
         if (!user?.accessToken) return;
         try {
-            const res = await axios.post(
+            await axios.post(
                 `${BASE_URL}/api/users/${targetUserId}/unfollow`,
                 {},
                 { headers: { Authorization: `Bearer ${user.accessToken}` } }
             );
-            console.log("Unfollow response =>", res.data);
             if (user.following) {
-                const updatedFollowing = user.following.filter((id) => id !== targetUserId);
+                const updatedFollowing = user.following.filter(
+                    (id) => id !== targetUserId
+                );
                 login({ ...user, following: updatedFollowing }, user.accessToken);
             }
         } catch (err: any) {
             if (
-                err.response &&
-                err.response.status === 400 &&
+                err.response?.status === 400 &&
                 err.response.data?.error === "You are not following this user"
             ) {
-                console.log("Idempotent unfollow => success anyway");
                 if (user.following) {
-                    const updatedFollowing = user.following.filter((id) => id !== targetUserId);
+                    const updatedFollowing = user.following.filter(
+                        (id) => id !== targetUserId
+                    );
                     login({ ...user, following: updatedFollowing }, user.accessToken);
                 }
             } else {
@@ -201,20 +202,20 @@ export default function HomePage() {
         }
     };
 
-    // On mount, fetch posts
+    // Fetch posts on mount
     useEffect(() => {
         fetchPosts();
     }, [fetchPosts]);
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-[#000000]">
             <div className="max-w-2xl mx-auto px-4 py-6">
-                {/* If error => show message */}
+                {/* Error message */}
                 {error && (
                     <motion.div
                         initial={{ y: -20 }}
                         animate={{ y: 0 }}
-                        className="text-red-600 mb-4 p-3 bg-red-50 rounded"
+                        className="text-red-400 mb-4 p-3 bg-red-900 rounded border border-[#2f3336]"
                     >
                         {error}
                     </motion.div>
@@ -222,10 +223,17 @@ export default function HomePage() {
 
                 {/* Trending Hashtags */}
                 <div className="mb-6">
-                    <h2 className="text-lg font-semibold mb-2">Trending Hashtags</h2>
+                    <h2 className="flex items-center text-lg font-semibold mb-2">
+                        <FiCamera className="w-5 h-5 mr-2 text-[#1D9BF0]" />
+                        Trending Hashtags
+                    </h2>
                     <div className="flex flex-wrap gap-2">
                         <button
-                            className={`px-3 py-1 rounded ${filterHashtag === "" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                            className={`px-3 py-1 rounded border border-[#2f3336] ${
+                                filterHashtag === ""
+                                    ? "bg-[#1D9BF0] text-white"
+                                    : "bg-[#000000] text-gray-300"
+                            }`}
                             onClick={() => filterPostsByHashtag("")}
                         >
                             Бүх
@@ -233,8 +241,10 @@ export default function HomePage() {
                         {trendingHashtags.map((hashtag) => (
                             <button
                                 key={hashtag.tag}
-                                className={`px-3 py-1 rounded ${
-                                    filterHashtag === hashtag.tag ? "bg-blue-500 text-white" : "bg-gray-200"
+                                className={`px-3 py-1 rounded border border-[#2f3336] ${
+                                    filterHashtag === hashtag.tag
+                                        ? "bg-[#1D9BF0] text-white"
+                                        : "bg-[#000000] text-gray-300"
                                 }`}
                                 onClick={() => filterPostsByHashtag(hashtag.tag)}
                             >
@@ -246,9 +256,12 @@ export default function HomePage() {
 
                 {/* Create new post */}
                 {loggedIn && (
-                    <motion.div className="space-y-3 mb-6" initial={{ y: -20 }} animate={{ y: 0 }}>
+                    <motion.div
+                        className="space-y-3 mb-6"
+                        initial={{ y: -20 }}
+                        animate={{ y: 0 }}
+                    >
                         <div className="flex items-center gap-2">
-                            {/* Hidden file input for images */}
                             <input
                                 type="file"
                                 accept="image/*"
@@ -257,23 +270,27 @@ export default function HomePage() {
                                 className="hidden"
                             />
                             <button
-                                onClick={() => fileInputRef.current?.click()}
-                                className="p-2 border border-gray-300 rounded-full hover:bg-gray-100"
+                                onClick={triggerFileInput}
+                                className="p-2 border border-[#2f3336] rounded-full hover:bg-[#2f3336]"
                             >
-                                <FiCamera className="w-6 h-6 text-gray-600" />
+                                <FiCamera className="w-6 h-6 text-gray-300" />
                             </button>
-                            {imageFile && <span className="text-sm text-gray-700">{imageFile.name}</span>}
+                            {imageFile && (
+                                <span className="text-sm text-gray-300">
+                  {imageFile.name}
+                </span>
+                            )}
                         </div>
                         <textarea
                             placeholder="Контент бичнэ үү..."
-                            className="w-full border-b border-gray-300 p-2 focus:outline-none"
+                            className="w-full border-b border-[#2f3336] p-2 focus:outline-none bg-[#000000] text-gray-100"
                             rows={3}
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                         />
                         <button
                             onClick={createPost}
-                            className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition"
+                            className="bg-[#1D9BF0] text-white px-4 py-2 rounded hover:opacity-90 transition border border-[#2f3336]"
                         >
                             Нийтлэх
                         </button>
@@ -290,39 +307,42 @@ export default function HomePage() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.05 }}
-                                className="border-b border-gray-200 pb-4"
+                                className="border-b border-[#2f3336] pb-4"
                             >
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <p className="text-gray-600">{post.content}</p>
-                                        {/* Show image if present */}
+                                        <p className="text-gray-300">{post.content}</p>
                                         {post.image && (
                                             <img
                                                 src={`${UPLOADS_URL}/${post.image}`}
                                                 alt="Post Image"
-                                                className="mt-2 max-w-full rounded"
-                                                onError={(e) => (e.currentTarget.style.display = "none")} // Image not found үед алга болгох
+                                                className="mt-2 max-w-full rounded border border-[#2f3336]"
+                                                onError={(e) =>
+                                                    (e.currentTarget.style.display = "none")
+                                                }
                                             />
                                         )}
                                         <div className="mt-2 text-sm text-gray-400 flex items-center gap-2">
                                             {postUser ? (
                                                 <>
                                                     <Link href={`/profile/${postUser._id}`}>
-                                                        <span className="text-blue-500 hover:underline">{postUser.username}</span>
+                            <span className="text-[#1D9BF0] hover:underline">
+                              {postUser.username}
+                            </span>
                                                     </Link>
                                                     {loggedIn && user && user._id !== postUser._id && (
                                                         <>
                                                             {user.following?.includes(postUser._id) ? (
                                                                 <button
                                                                     onClick={() => handleUnfollow(postUser._id)}
-                                                                    className="text-sm text-green-600"
+                                                                    className="text-sm text-green-400"
                                                                 >
                                                                     Unfollow
                                                                 </button>
                                                             ) : (
                                                                 <button
                                                                     onClick={() => handleFollow(postUser._id)}
-                                                                    className="text-sm text-blue-600"
+                                                                    className="text-sm text-[#1D9BF0]"
                                                                 >
                                                                     Follow
                                                                 </button>
@@ -333,7 +353,9 @@ export default function HomePage() {
                                             ) : (
                                                 <span>Unknown User</span>
                                             )}
-                                            <span> • {new Date(post.createdAt).toLocaleDateString()}</span>
+                                            <span>
+                        • {new Date(post.createdAt).toLocaleDateString()}
+                      </span>
                                         </div>
                                     </div>
                                     <button
