@@ -6,8 +6,9 @@ const path = require("path");
 const multer = require("multer");
 const Book = require("../models/Book");
 
-// Get UPLOAD_DIR from .env (which might be relative) and resolve it to an absolute path.
+// Get the UPLOAD_DIR from .env (can be relative, e.g. "server/uploads")
 const envUploadDir = process.env.UPLOAD_DIR || "server/uploads";
+// Convert to absolute path if not already absolute.
 const uploadDir = path.isAbsolute(envUploadDir)
     ? envUploadDir
     : path.join(process.cwd(), envUploadDir);
@@ -36,11 +37,14 @@ const storage = multer.diskStorage({
         cb(null, uniqueSuffix);
     },
 });
-const upload = multer({ storage });
+
+// Optionally set a file size limit (e.g., 10 MB)
+const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
 
 // Create a new book
 router.post("/", upload.single("coverImage"), async (req, res) => {
     try {
+        console.log("Received file:", req.file);
         const { title, author, description, price, saleActive, salePrice } = req.body;
         let coverImageUrl = "";
         if (req.file) {
@@ -59,7 +63,7 @@ router.post("/", upload.single("coverImage"), async (req, res) => {
         res.json(newBook);
     } catch (err) {
         console.error("Error creating book:", err);
-        res.status(500).json({ error: "Server error while creating book." });
+        res.status(500).json({ error: "Server error while creating book.", details: err.message });
     }
 });
 
@@ -89,6 +93,7 @@ router.get("/:id", async (req, res) => {
 // Update a book (if changing image, send multipart)
 router.put("/:id", upload.single("coverImage"), async (req, res) => {
     try {
+        console.log("Updating book, received file:", req.file);
         const { title, author, description, price, saleActive, salePrice } = req.body;
         let coverImageUrl;
         if (req.file) {
@@ -108,7 +113,7 @@ router.put("/:id", upload.single("coverImage"), async (req, res) => {
         res.json(book);
     } catch (err) {
         console.error("Error updating book:", err);
-        res.status(500).json({ error: "Server error updating book." });
+        res.status(500).json({ error: "Server error updating book.", details: err.message });
     }
 });
 
