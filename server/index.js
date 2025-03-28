@@ -3,13 +3,13 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs");
 
 const authRoutes = require("./routes/auth");
 const postRoutes = require("./routes/post");
 const userRoutes = require("./routes/user");
 const paymentRoutes = require("./routes/payment");
-
-// 1. Шинээр bookRoutes импортлох
+// Import the book routes
 const bookRoutes = require("./routes/bookRoutes");
 
 const app = express();
@@ -26,10 +26,24 @@ app.use(
 
 app.use(express.json());
 
-// Serve static files from "uploads" folder
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Define uploads directory using an environment variable, with a fallback.
+const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(__dirname, "uploads");
 
-// MongoDB connect
+// Ensure the uploads directory exists (creates it if it doesn’t)
+if (!fs.existsSync(UPLOAD_DIR)) {
+    try {
+        fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+        console.log(`Created uploads folder at: ${UPLOAD_DIR}`);
+    } catch (err) {
+        console.error("Error creating uploads folder:", err);
+        process.exit(1);
+    }
+}
+
+// Serve static files from the verified uploads folder.
+app.use("/uploads", express.static(UPLOAD_DIR));
+
+// Connect to MongoDB.
 mongoose
     .connect(process.env.MONGODB_URI)
     .then(() => {
@@ -39,13 +53,11 @@ mongoose
         console.error("MongoDB connection error:", err);
     });
 
-// 2. Бусад route-уудаа дуудах
+// Mount your API routes.
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/payments", paymentRoutes);
-
-// 3. Шинэ номын route - /api/books
 app.use("/api/books", bookRoutes);
 
 app.get("/", (req, res) => {

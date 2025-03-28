@@ -5,9 +5,12 @@ const path = require("path");
 const multer = require("multer");
 const Book = require("../models/Book");
 
-const uploadDir = path.join(__dirname, "../uploads");
+// Use environment variable for the uploads directory, or default to "../uploads"
+const uploadDir = process.env.UPLOAD_DIR || path.join(__dirname, "../uploads");
+
+// Ensure the uploads directory exists (redundant if already created in main server, but safe to have)
 if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
+    fs.mkdirSync(uploadDir, { recursive: true });
     console.log("Created uploads folder:", uploadDir);
 }
 
@@ -16,8 +19,10 @@ const storage = multer.diskStorage({
         cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
+        // Sanitize the file name to avoid issues with special characters
         let safeName = file.originalname
-            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
             .replace(/\s+/g, "_")
             .replace(/[^а-яА-ЯёЁa-zA-Z0-9.\-_]/g, "");
         const uniqueSuffix = Date.now() + "-" + safeName;
