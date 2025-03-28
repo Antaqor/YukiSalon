@@ -2,17 +2,17 @@ const express = require("express");
 const router = express.Router();
 const fs = require("fs");
 const path = require("path");
-const multer = require("multer"); // Зөв require("multer")
+const multer = require("multer");
 const Book = require("../models/Book");
 
-// "uploads" хавтас бүрэн замыг үүсгэх
+// Upload хавтасны замыг найдвартай болгох
 const uploadDir = path.join(__dirname, "../uploads");
 if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
+    fs.mkdirSync(uploadDir, { recursive: true }); // Олон түвшний хавтас үүсгэх боломжтой
     console.log("Created uploads folder:", uploadDir);
 }
 
-// Multer тохиргоо – filename-г sanitize хийдэг
+// Multer тохиргоо: файлын хэмжээ, төрөлд хязгаарлалт нэмэх
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, uploadDir);
@@ -27,16 +27,28 @@ const storage = multer.diskStorage({
         cb(null, uniqueSuffix);
     },
 });
-const upload = multer({ storage });
 
-// CREATE Book (POST /api/books)
+const upload = multer({
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB хязгаар
+    fileFilter: (req, file, cb) => {
+        if (!file.mimetype.startsWith("image/")) {
+            return cb(new Error("Зөвхөн зураг оруулна уу!"));
+        }
+        cb(null, true);
+    },
+});
+
+// POST /api/books (Create)
 router.post("/", upload.single("coverImage"), async (req, res) => {
     try {
         const { title, author, description, price, saleActive, salePrice } = req.body;
+
         let coverImageUrl = "";
         if (req.file) {
             coverImageUrl = "uploads/" + req.file.filename;
         }
+
         const newBook = await Book.create({
             title,
             author,
@@ -46,45 +58,47 @@ router.post("/", upload.single("coverImage"), async (req, res) => {
             saleActive: saleActive === "true",
             salePrice: Number(salePrice) || 0,
         });
+
         res.json(newBook);
     } catch (err) {
-        console.error("Error creating book:", err);
+        console.error("Error creating book:", err.message, err.stack); // Дэлгэрэнгүй алдаа
         res.status(500).json({ error: "Server error while creating book." });
     }
 });
 
-// READ ALL Books (GET /api/books)
+// GET /api/books (Read All)
 router.get("/", async (req, res) => {
     try {
         const books = await Book.find().sort({ createdAt: -1 });
         res.json(books);
     } catch (err) {
-        console.error("Error fetching books:", err);
+        console.error("Error fetching books:", err.message, err.stack);
         res.status(500).json({ error: "Server error while fetching books." });
     }
 });
 
-// READ ONE Book (GET /api/books/:id)
+// GET /api/books/:id (Read One)
 router.get("/:id", async (req, res) => {
     try {
         const book = await Book.findById(req.params.id);
-        if (!book)
-            return res.status(404).json({ error: "Book not found." });
+        if (!book) return res.status(404).json({ error: "Book not found." });
         res.json(book);
     } catch (err) {
-        console.error("Error fetching single book:", err);
+        console.error("Error fetching single book:", err.message, err.stack);
         res.status(500).json({ error: "Server error fetching that book." });
     }
 });
 
-// UPDATE Book (PUT /api/books/:id)
+// PUT /api/books/:id (Update)
 router.put("/:id", upload.single("coverImage"), async (req, res) => {
     try {
         const { title, author, description, price, saleActive, salePrice } = req.body;
         let coverImageUrl;
+
         if (req.file) {
             coverImageUrl = "uploads/" + req.file.filename;
         }
+
         const updatedData = {
             title,
             author,
@@ -94,25 +108,27 @@ router.put("/:id", upload.single("coverImage"), async (req, res) => {
             salePrice: Number(salePrice) || 0,
         };
         if (coverImageUrl) updatedData.coverImageUrl = coverImageUrl;
-        const book = await Book.findByIdAndUpdate(req.params.id, updatedData, { new: true });
-        if (!book)
-            return res.status(404).json({ error: "Book not found." });
+
+        const book = await Book.findByIdAndUpdate(req.params.id, updatedData, {
+            new: true,
+        });
+        if (!book) return res.status(404).json({ error: "Book not found." });
+
         res.json(book);
     } catch (err) {
-        console.error("Error updating book:", err);
+        console.error("Error updating book:", err.message, err.stack);
         res.status(500).json({ error: "Server error updating book." });
     }
 });
 
-// DELETE Book (DELETE /api/books/:id)
+// DELETE /api/books/:id
 router.delete("/:id", async (req, res) => {
     try {
         const book = await Book.findByIdAndDelete(req.params.id);
-        if (!book)
-            return res.status(404).json({ error: "Book not found." });
+        if (!book) return res.status(404).json({ error: "Book not found." });
         res.json({ message: "Book deleted successfully." });
     } catch (err) {
-        console.error("Error deleting book:", err);
+        console.error("Error deleting book:", err.message, err.stack);
         res.status(500).json({ error: "Server error deleting book." });
     }
 });

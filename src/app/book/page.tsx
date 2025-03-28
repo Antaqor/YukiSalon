@@ -11,32 +11,27 @@ interface Book {
     coverImageUrl: string;
     saleActive: boolean;
     salePrice: number;
-    createdAt?: string;
-    updatedAt?: string;
 }
 
 export default function BooksListPage() {
     const [books, setBooks] = useState<Book[]>([]);
     const [status, setStatus] = useState("");
-
-    // Production: replace with your production domain if needed.
     const BACKEND_URL = "https://vone.mn/api";
-    // For local testing, you can use: "http://localhost:5001/api"
 
     useEffect(() => {
-        const fetchBooks = async () => {
+        const fetchData = async () => {
             try {
                 const res = await fetch(`${BACKEND_URL}/books`);
-                if (!res.ok) throw new Error("Failed to fetch books");
+                if (!res.ok) throw new Error("Failed to fetch");
                 const data = await res.json();
                 setBooks(data);
-            } catch (error: any) {
-                console.error(error);
-                setStatus("Номыг татахад алдаа гарлаа!");
+            } catch (err) {
+                console.error("Error fetching books:", err?.message); // Дэлгэрэнгүй алдаа
+                setStatus("Ном татахад алдаа!");
             }
         };
-        fetchBooks();
-    }, [BACKEND_URL]);
+        fetchData();
+    }, []);
 
     return (
         <main className="min-h-screen bg-black text-gray-100 px-4 py-8">
@@ -44,9 +39,8 @@ export default function BooksListPage() {
                 <h1 className="text-3xl font-bold mb-8 text-center tracking-wider uppercase">
                     Бүх Ном
                 </h1>
-                {status && (
-                    <p className="text-red-500 mb-4 text-center">{status}</p>
-                )}
+                {status && <p className="text-red-500 mb-4 text-center">{status}</p>}
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {books.map((book) => {
                         const finalPrice = book.saleActive ? book.salePrice : book.price;
@@ -63,7 +57,7 @@ export default function BooksListPage() {
                                 {book.coverImageUrl ? (
                                     <div className="relative w-full aspect-[3/4] overflow-hidden bg-black">
                                         <img
-                                            src={`https://vone.mn/uploads/${book.coverImageUrl.split("/")[1]}`}
+                                            src={`https://vone.mn/${book.coverImageUrl}`}
                                             alt={book.title}
                                             className="w-full h-full object-cover
                                  group-hover:opacity-90
@@ -75,6 +69,7 @@ export default function BooksListPage() {
                                         No Cover
                                     </div>
                                 )}
+
                                 <div className="p-4 flex flex-col flex-1">
                                     <h2 className="text-lg font-semibold uppercase tracking-wide mb-1 line-clamp-1">
                                         {book.title}
