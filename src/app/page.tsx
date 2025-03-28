@@ -47,7 +47,7 @@ export default function HomePage() {
     // *** Таны локал сервер: http://localhost:5001
     // *** API: http://localhost:5001/api
     // *** Үнэндээ posts: http://localhost:5001/api/posts
-    const BASE_URL = "https://vone.mn/api";
+    const BASE_URL = "https://vone.mn";
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Зураг статикийн зам: http://localhost:5001/uploads
