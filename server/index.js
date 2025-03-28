@@ -9,7 +9,6 @@ const authRoutes = require("./routes/auth");
 const postRoutes = require("./routes/post");
 const userRoutes = require("./routes/user");
 const paymentRoutes = require("./routes/payment");
-// Import the book routes
 const bookRoutes = require("./routes/bookRoutes");
 
 const app = express();
@@ -26,10 +25,11 @@ app.use(
 
 app.use(express.json());
 
-// Define uploads directory using an environment variable, with a fallback.
-const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(__dirname, "uploads");
+// Define the uploads directory as "server/uploads" relative to the project root
+const UPLOAD_DIR =
+    process.env.UPLOAD_DIR || path.join(process.cwd(), "server", "uploads");
 
-// Ensure the uploads directory exists (creates it if it doesn’t)
+// Ensure the uploads directory exists
 if (!fs.existsSync(UPLOAD_DIR)) {
     try {
         fs.mkdirSync(UPLOAD_DIR, { recursive: true });
@@ -40,7 +40,8 @@ if (!fs.existsSync(UPLOAD_DIR)) {
     }
 }
 
-// Serve static files from the verified uploads folder.
+// Serve static files from the uploads folder.
+// Requests to "/uploads" will look in "server/uploads".
 app.use("/uploads", express.static(UPLOAD_DIR));
 
 // Connect to MongoDB.
@@ -53,7 +54,7 @@ mongoose
         console.error("MongoDB connection error:", err);
     });
 
-// Mount your API routes.
+// Mount API routes.
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/users", userRoutes);

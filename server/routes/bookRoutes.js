@@ -5,10 +5,11 @@ const path = require("path");
 const multer = require("multer");
 const Book = require("../models/Book");
 
-// Use environment variable for the uploads directory, or default to "../uploads"
-const uploadDir = process.env.UPLOAD_DIR || path.join(__dirname, "../uploads");
+// Use the same uploads directory as in the main server file.
+const uploadDir =
+    process.env.UPLOAD_DIR || path.join(process.cwd(), "server", "uploads");
 
-// Ensure the uploads directory exists (redundant if already created in main server, but safe to have)
+// Ensure the uploads directory exists (redundant if already created in the main file, but safe to have)
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
     console.log("Created uploads folder:", uploadDir);
@@ -16,6 +17,7 @@ if (!fs.existsSync(uploadDir)) {
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
+        console.log("Uploading file to:", uploadDir);
         cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
@@ -34,20 +36,12 @@ const upload = multer({ storage });
 // POST /api/books (Create)
 router.post("/", upload.single("coverImage"), async (req, res) => {
     try {
-        const {
-            title,
-            author,
-            description,
-            price,
-            saleActive,
-            salePrice,
-        } = req.body;
-
+        const { title, author, description, price, saleActive, salePrice } = req.body;
         let coverImageUrl = "";
         if (req.file) {
+            // Set the URL relative to the static folder; matches the main server middleware.
             coverImageUrl = "uploads/" + req.file.filename;
         }
-
         const newBook = await Book.create({
             title,
             author,
@@ -57,7 +51,6 @@ router.post("/", upload.single("coverImage"), async (req, res) => {
             saleActive: saleActive === "true",
             salePrice: Number(salePrice) || 0,
         });
-
         res.json(newBook);
     } catch (err) {
         console.error("Error creating book:", err);
@@ -91,20 +84,11 @@ router.get("/:id", async (req, res) => {
 // PUT /api/books/:id (Update)
 router.put("/:id", upload.single("coverImage"), async (req, res) => {
     try {
-        const {
-            title,
-            author,
-            description,
-            price,
-            saleActive,
-            salePrice,
-        } = req.body;
+        const { title, author, description, price, saleActive, salePrice } = req.body;
         let coverImageUrl;
-
         if (req.file) {
             coverImageUrl = "uploads/" + req.file.filename;
         }
-
         const updatedData = {
             title,
             author,
@@ -114,12 +98,8 @@ router.put("/:id", upload.single("coverImage"), async (req, res) => {
             salePrice: Number(salePrice) || 0,
         };
         if (coverImageUrl) updatedData.coverImageUrl = coverImageUrl;
-
-        const book = await Book.findByIdAndUpdate(req.params.id, updatedData, {
-            new: true,
-        });
+        const book = await Book.findByIdAndUpdate(req.params.id, updatedData, { new: true });
         if (!book) return res.status(404).json({ error: "Book not found." });
-
         res.json(book);
     } catch (err) {
         console.error("Error updating book:", err);
