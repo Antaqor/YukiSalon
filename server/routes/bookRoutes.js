@@ -1,3 +1,4 @@
+// server/routes/bookRoutes.js
 const express = require("express");
 const router = express.Router();
 const fs = require("fs");
@@ -5,14 +6,14 @@ const path = require("path");
 const multer = require("multer");
 const Book = require("../models/Book");
 
-// Use the same uploads directory as in the main server file.
-const uploadDir =
-    process.env.UPLOAD_DIR || path.join(process.cwd(), "server", "uploads");
+// Use the same uploads directory as defined in index.js.
+const uploadDir = process.env.UPLOAD_DIR || path.join(process.cwd(), "server", "uploads");
+console.log("Book Routes Upload Directory:", uploadDir);
 
-// Ensure the uploads directory exists (redundant if already created in the main file, but safe to have)
+// Ensure the uploads directory exists.
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
-    console.log("Created uploads folder:", uploadDir);
+    console.log("Created uploads folder in bookRoutes:", uploadDir);
 }
 
 const storage = multer.diskStorage({
@@ -21,7 +22,7 @@ const storage = multer.diskStorage({
         cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
-        // Sanitize the file name to avoid issues with special characters
+        // Sanitize file name to avoid issues with special characters.
         let safeName = file.originalname
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
@@ -33,13 +34,13 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// POST /api/books (Create)
+// Create a new book
 router.post("/", upload.single("coverImage"), async (req, res) => {
     try {
         const { title, author, description, price, saleActive, salePrice } = req.body;
         let coverImageUrl = "";
         if (req.file) {
-            // Set the URL relative to the static folder; matches the main server middleware.
+            // The returned URL is relative to the static middleware.
             coverImageUrl = "uploads/" + req.file.filename;
         }
         const newBook = await Book.create({
@@ -58,7 +59,7 @@ router.post("/", upload.single("coverImage"), async (req, res) => {
     }
 });
 
-// GET /api/books (Read All)
+// Read all books
 router.get("/", async (req, res) => {
     try {
         const books = await Book.find().sort({ createdAt: -1 });
@@ -69,7 +70,7 @@ router.get("/", async (req, res) => {
     }
 });
 
-// GET /api/books/:id (Read One)
+// Read one book
 router.get("/:id", async (req, res) => {
     try {
         const book = await Book.findById(req.params.id);
@@ -81,7 +82,7 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-// PUT /api/books/:id (Update)
+// Update a book (text update; if changing image, send multipart)
 router.put("/:id", upload.single("coverImage"), async (req, res) => {
     try {
         const { title, author, description, price, saleActive, salePrice } = req.body;
@@ -107,7 +108,7 @@ router.put("/:id", upload.single("coverImage"), async (req, res) => {
     }
 });
 
-// DELETE /api/books/:id
+// Delete a book
 router.delete("/:id", async (req, res) => {
     try {
         const book = await Book.findByIdAndDelete(req.params.id);

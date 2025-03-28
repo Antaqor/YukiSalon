@@ -1,3 +1,4 @@
+// BooksListPage.tsx (e.g., in /src/pages/books-list.tsx)
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
@@ -48,20 +49,14 @@ export default function BooksListPage() {
                             <Link
                                 key={book._id}
                                 href={`/book/${book._id}`}
-                                className="group relative rounded-lg overflow-hidden
-                           border border-gray-800 bg-[#16181C]
-                           hover:shadow-lg hover:shadow-[#1D9BF0]/30
-                           hover:-translate-y-1 hover:scale-[1.01]
-                           transition-transform duration-300 flex flex-col"
+                                className="group relative rounded-lg overflow-hidden border border-gray-800 bg-[#16181C] hover:shadow-lg hover:shadow-[#1D9BF0]/30 hover:-translate-y-1 hover:scale-[1.01] transition-transform duration-300 flex flex-col"
                             >
                                 {book.coverImageUrl ? (
                                     <div className="relative w-full aspect-[3/4] overflow-hidden bg-black">
                                         <img
                                             src={`https://vone.mn/${book.coverImageUrl}`}
                                             alt={book.title}
-                                            className="w-full h-full object-cover
-                                 group-hover:opacity-90
-                                 group-hover:scale-105 transition duration-300"
+                                            className="w-full h-full object-cover group-hover:opacity-90 group-hover:scale-105 transition duration-300"
                                         />
                                     </div>
                                 ) : (
@@ -70,7 +65,6 @@ export default function BooksListPage() {
                                     </div>
                                 )}
 
-                                {/* Доод хэсэг: номын мэдээлэл */}
                                 <div className="p-4 flex flex-col flex-1">
                                     <h2 className="text-lg font-semibold uppercase tracking-wide mb-1 line-clamp-1">
                                         {book.title}
@@ -78,12 +72,9 @@ export default function BooksListPage() {
                                     <p className="text-xs text-gray-400 mb-2 line-clamp-1">
                                         Зохиогч: {book.author}
                                     </p>
-
                                     <p className="text-sm text-gray-300 mb-3 line-clamp-2">
                                         {book.description}
                                     </p>
-
-                                    {/* Хямдралтай эсэх */}
                                     {book.saleActive ? (
                                         <div className="mt-auto space-y-1">
                                             <p className="text-sm text-gray-500 line-through">

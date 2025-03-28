@@ -1,3 +1,4 @@
+// server/index.js
 require("dotenv").config({ path: "./server/.env" });
 const express = require("express");
 const mongoose = require("mongoose");
@@ -5,6 +6,7 @@ const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
 
+// Import routes
 const authRoutes = require("./routes/auth");
 const postRoutes = require("./routes/post");
 const userRoutes = require("./routes/user");
@@ -25,11 +27,11 @@ app.use(
 
 app.use(express.json());
 
-// Define the uploads directory as "server/uploads" relative to the project root
-const UPLOAD_DIR =
-    process.env.UPLOAD_DIR || path.join(process.cwd(), "server", "uploads");
+// Define uploads directory as "server/uploads" relative to the project root.
+const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(process.cwd(), "server", "uploads");
+console.log("Uploads Directory:", UPLOAD_DIR);
 
-// Ensure the uploads directory exists
+// Ensure the uploads directory exists.
 if (!fs.existsSync(UPLOAD_DIR)) {
     try {
         fs.mkdirSync(UPLOAD_DIR, { recursive: true });
@@ -41,7 +43,7 @@ if (!fs.existsSync(UPLOAD_DIR)) {
 }
 
 // Serve static files from the uploads folder.
-// Requests to "/uploads" will look in "server/uploads".
+// Requests to "/uploads" are mapped to the "server/uploads" folder.
 app.use("/uploads", express.static(UPLOAD_DIR));
 
 // Connect to MongoDB.

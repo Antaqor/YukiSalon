@@ -1,7 +1,7 @@
+// BookDashboardPage.tsx (e.g., in /src/pages/book-dashboard.tsx)
 "use client";
 import React, { useEffect, useState, useRef, FormEvent } from "react";
 
-// Book interface
 interface Book {
     _id: string;
     title: string;
@@ -21,7 +21,7 @@ export default function BookDashboardPage() {
     const [books, setBooks] = useState<Book[]>([]);
     const [status, setStatus] = useState("");
 
-    // ----- NEW Book form states -----
+    // New Book form states
     const [title, setTitle] = useState("");
     const [author, setAuthor] = useState("");
     const [description, setDescription] = useState("");
@@ -31,7 +31,7 @@ export default function BookDashboardPage() {
     const [coverFile, setCoverFile] = useState<File | null>(null);
     const coverRef = useRef<HTMLInputElement>(null);
 
-    // GET existing books
+    // Fetch books on mount.
     useEffect(() => {
         const fetchBooks = async () => {
             try {
@@ -47,16 +47,14 @@ export default function BookDashboardPage() {
         fetchBooks();
     }, []);
 
-    // Create new book (POST)
+    // Create a new book.
     const handleCreateBook = async (e: FormEvent) => {
         e.preventDefault();
         setStatus("");
-
         if (!title.trim()) {
             setStatus("Номын нэр оруулна уу!");
             return;
         }
-
         try {
             const formData = new FormData();
             formData.append("title", title);
@@ -68,15 +66,13 @@ export default function BookDashboardPage() {
             if (coverFile) {
                 formData.append("coverImage", coverFile);
             }
-
             const res = await fetch(`${BACKEND_URL}/books`, {
                 method: "POST",
                 body: formData,
             });
             if (!res.ok) throw new Error("Create book failed");
             const newBook = await res.json();
-
-            // reset form
+            // Reset form.
             setTitle("");
             setAuthor("");
             setDescription("");
@@ -85,8 +81,6 @@ export default function BookDashboardPage() {
             setSalePrice("");
             setCoverFile(null);
             if (coverRef.current) coverRef.current.value = "";
-
-            // add new book to local state
             setBooks((prev) => [newBook, ...prev]);
             setStatus("Ном амжилттай нэмлээ!");
         } catch (err) {
@@ -95,10 +89,9 @@ export default function BookDashboardPage() {
         }
     };
 
-    // Update Book
+    // For updating (text fields only).
     const handleUpdateBook = async (bookId: string, updatedData: Partial<Book>) => {
         try {
-            // For text fields only (no file). If want file, must do multipart again
             const res = await fetch(`${BACKEND_URL}/books/${bookId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
@@ -106,9 +99,7 @@ export default function BookDashboardPage() {
             });
             if (!res.ok) throw new Error("Update fail");
             const updatedBook = await res.json();
-            setBooks((prev) =>
-                prev.map((b) => (b._id === bookId ? updatedBook : b))
-            );
+            setBooks((prev) => prev.map((b) => (b._id === bookId ? updatedBook : b)));
             setStatus("Номыг шинэчиллээ!");
         } catch (err) {
             console.error(err);
@@ -116,7 +107,7 @@ export default function BookDashboardPage() {
         }
     };
 
-    // Delete Book
+    // Delete a book.
     const handleDeleteBook = async (bookId: string) => {
         try {
             const res = await fetch(`${BACKEND_URL}/books/${bookId}`, {
@@ -137,15 +128,12 @@ export default function BookDashboardPage() {
                 <h1 className="text-3xl font-bold mb-2 text-center uppercase tracking-wider">
                     Номын Админ Самбар
                 </h1>
-                {status && (
-                    <p className="text-center text-red-400 mb-4">{status}</p>
-                )}
+                {status && <p className="text-center text-red-400 mb-4">{status}</p>}
 
-                {/* 1) CREATE NEW BOOK FORM */}
+                {/* New Book Form */}
                 <section className="bg-[#16181C] border border-gray-700 p-4 rounded space-y-4">
                     <h2 className="text-xl font-semibold">Ном нэмэх</h2>
                     <form onSubmit={handleCreateBook} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {/* Left side form fields */}
                         <div className="space-y-2">
                             <div>
                                 <label className="block mb-1">Номын нэр</label>
@@ -175,8 +163,6 @@ export default function BookDashboardPage() {
                                 />
                             </div>
                         </div>
-
-                        {/* Right side form fields */}
                         <div className="space-y-2">
                             <div>
                                 <label className="block mb-1">Үнэ (₮)</label>
@@ -218,11 +204,7 @@ export default function BookDashboardPage() {
                                 />
                             </div>
                             <div>
-                                <button
-                                    type="submit"
-                                    disabled={false}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded mt-2"
-                                >
+                                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded mt-2">
                                     Нэмэх
                                 </button>
                             </div>
@@ -230,7 +212,7 @@ export default function BookDashboardPage() {
                     </form>
                 </section>
 
-                {/* 2) LIST & EDIT EXISTING BOOKS */}
+                {/* List & Edit Books */}
                 <section className="space-y-4">
                     <h2 className="text-xl font-semibold">Одоо байгаа номууд</h2>
                     <div className="space-y-3">
@@ -249,7 +231,6 @@ export default function BookDashboardPage() {
     );
 }
 
-/** Child: One row for editing an existing book */
 function BookRow({
                      book,
                      onUpdate,
@@ -268,17 +249,19 @@ function BookRow({
 
     return (
         <div className="bg-[#16181C] border border-gray-700 p-4 rounded flex flex-col md:flex-row gap-4 items-start">
-            {/* Cover thumb */}
             <div className="w-24 h-24 bg-[#222] flex-shrink-0 overflow-hidden">
-                {book.coverImageUrl && (
+                {book.coverImageUrl ? (
                     <img
                         src={`https://vone.mn/${book.coverImageUrl}`}
                         alt={book.title}
                         className="w-full h-full object-cover"
                     />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-500">
+                        No Cover
+                    </div>
                 )}
             </div>
-            {/* Inputs */}
             <div className="flex-1 grid grid-cols-2 gap-2">
                 <div className="col-span-2">
                     <label className="text-sm text-gray-300">Номын нэр</label>
@@ -313,7 +296,6 @@ function BookRow({
                         onChange={(e) => setDescription(e.target.value)}
                     />
                 </div>
-                {/* sale */}
                 <div className="col-span-2 flex items-center gap-3">
                     <label className="text-sm text-gray-300">Хямдрал?</label>
                     <input
@@ -330,19 +312,10 @@ function BookRow({
                     />
                 </div>
             </div>
-
-            {/* Action buttons */}
             <div className="flex flex-col gap-2 justify-center">
                 <button
                     onClick={() =>
-                        onUpdate(book._id, {
-                            title,
-                            author,
-                            description,
-                            price,
-                            saleActive,
-                            salePrice,
-                        })
+                        onUpdate(book._id, { title, author, description, price, saleActive, salePrice })
                     }
                     className="px-3 py-1 bg-blue-600 rounded hover:bg-blue-500"
                 >
