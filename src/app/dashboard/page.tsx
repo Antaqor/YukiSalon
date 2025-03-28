@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState, useRef, FormEvent } from "react";
 
+// Book interface
 interface Book {
     _id: string;
     title: string;
@@ -14,23 +15,23 @@ interface Book {
     updatedAt?: string;
 }
 
-const BACKEND_URL = "http://localhost:5001/api";
+const BACKEND_URL = "https://vone.mn/api";
 
 export default function BookDashboardPage() {
     const [books, setBooks] = useState<Book[]>([]);
     const [status, setStatus] = useState("");
 
-    // NEW Book form states
-    const [newTitle, setNewTitle] = useState("");
-    const [newAuthor, setNewAuthor] = useState("");
-    const [newDescription, setNewDescription] = useState("");
-    const [newPrice, setNewPrice] = useState("");
-    const [newSaleActive, setNewSaleActive] = useState(false);
-    const [newSalePrice, setNewSalePrice] = useState("");
-    const [newCoverFile, setNewCoverFile] = useState<File | null>(null);
+    // ----- NEW Book form states -----
+    const [title, setTitle] = useState("");
+    const [author, setAuthor] = useState("");
+    const [description, setDescription] = useState("");
+    const [price, setPrice] = useState("");
+    const [saleActive, setSaleActive] = useState(false);
+    const [salePrice, setSalePrice] = useState("");
+    const [coverFile, setCoverFile] = useState<File | null>(null);
     const coverRef = useRef<HTMLInputElement>(null);
 
-    // Fetch existing books on mount
+    // GET existing books
     useEffect(() => {
         const fetchBooks = async () => {
             try {
@@ -51,21 +52,21 @@ export default function BookDashboardPage() {
         e.preventDefault();
         setStatus("");
 
-        if (!newTitle.trim()) {
-            setStatus("Номын нэрээ оруулаач!");
+        if (!title.trim()) {
+            setStatus("Номын нэр оруулна уу!");
             return;
         }
 
         try {
             const formData = new FormData();
-            formData.append("title", newTitle);
-            formData.append("author", newAuthor);
-            formData.append("description", newDescription);
-            formData.append("price", newPrice || "0");
-            formData.append("saleActive", newSaleActive.toString());
-            formData.append("salePrice", newSalePrice || "0");
-            if (newCoverFile) {
-                formData.append("coverImage", newCoverFile);
+            formData.append("title", title);
+            formData.append("author", author);
+            formData.append("description", description);
+            formData.append("price", price || "0");
+            formData.append("saleActive", saleActive.toString());
+            formData.append("salePrice", salePrice || "0");
+            if (coverFile) {
+                formData.append("coverImage", coverFile);
             }
 
             const res = await fetch(`${BACKEND_URL}/books`, {
@@ -75,34 +76,35 @@ export default function BookDashboardPage() {
             if (!res.ok) throw new Error("Create book failed");
             const newBook = await res.json();
 
-            // Reset form
-            setNewTitle("");
-            setNewAuthor("");
-            setNewDescription("");
-            setNewPrice("");
-            setNewSaleActive(false);
-            setNewSalePrice("");
-            setNewCoverFile(null);
+            // reset form
+            setTitle("");
+            setAuthor("");
+            setDescription("");
+            setPrice("");
+            setSaleActive(false);
+            setSalePrice("");
+            setCoverFile(null);
             if (coverRef.current) coverRef.current.value = "";
 
-            // Update local state
+            // add new book to local state
             setBooks((prev) => [newBook, ...prev]);
             setStatus("Ном амжилттай нэмлээ!");
         } catch (err) {
             console.error(err);
-            setStatus("Алдаа гарлаа. Дахин оролд!");
+            setStatus("Алдаа гарлаа!");
         }
     };
 
-    // Update Book (via child component)
+    // Update Book
     const handleUpdateBook = async (bookId: string, updatedData: Partial<Book>) => {
         try {
+            // For text fields only (no file). If want file, must do multipart again
             const res = await fetch(`${BACKEND_URL}/books/${bookId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updatedData),
             });
-            if (!res.ok) throw new Error("Update failed");
+            if (!res.ok) throw new Error("Update fail");
             const updatedBook = await res.json();
             setBooks((prev) =>
                 prev.map((b) => (b._id === bookId ? updatedBook : b))
@@ -120,12 +122,12 @@ export default function BookDashboardPage() {
             const res = await fetch(`${BACKEND_URL}/books/${bookId}`, {
                 method: "DELETE",
             });
-            if (!res.ok) throw new Error("Delete failed");
+            if (!res.ok) throw new Error("Delete fail");
             setBooks((prev) => prev.filter((b) => b._id !== bookId));
-            setStatus("Ном устгагдлаа!");
+            setStatus("Устгагдлаа!");
         } catch (err) {
             console.error(err);
-            setStatus("Устгахад алдаа гарлаа!");
+            setStatus("Устгахад алдаа!");
         }
     };
 
@@ -139,18 +141,18 @@ export default function BookDashboardPage() {
                     <p className="text-center text-red-400 mb-4">{status}</p>
                 )}
 
-                {/* CREATE NEW BOOK FORM */}
+                {/* 1) CREATE NEW BOOK FORM */}
                 <section className="bg-[#16181C] border border-gray-700 p-4 rounded space-y-4">
                     <h2 className="text-xl font-semibold">Ном нэмэх</h2>
                     <form onSubmit={handleCreateBook} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {/* Left side */}
+                        {/* Left side form fields */}
                         <div className="space-y-2">
                             <div>
                                 <label className="block mb-1">Номын нэр</label>
                                 <input
                                     className="w-full bg-gray-800 p-2 rounded"
-                                    value={newTitle}
-                                    onChange={(e) => setNewTitle(e.target.value)}
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
                                     placeholder="Жишээ: Next.js Reference"
                                 />
                             </div>
@@ -158,8 +160,8 @@ export default function BookDashboardPage() {
                                 <label className="block mb-1">Зохиогч</label>
                                 <input
                                     className="w-full bg-gray-800 p-2 rounded"
-                                    value={newAuthor}
-                                    onChange={(e) => setNewAuthor(e.target.value)}
+                                    value={author}
+                                    onChange={(e) => setAuthor(e.target.value)}
                                     placeholder="Жишээ: Tesla Vision"
                                 />
                             </div>
@@ -167,21 +169,22 @@ export default function BookDashboardPage() {
                                 <label className="block mb-1">Тайлбар</label>
                                 <textarea
                                     className="w-full bg-gray-800 p-2 rounded"
-                                    value={newDescription}
-                                    onChange={(e) => setNewDescription(e.target.value)}
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
                                     placeholder="Номын дэлгэрэнгүй..."
                                 />
                             </div>
                         </div>
-                        {/* Right side */}
+
+                        {/* Right side form fields */}
                         <div className="space-y-2">
                             <div>
                                 <label className="block mb-1">Үнэ (₮)</label>
                                 <input
                                     type="number"
                                     className="w-full bg-gray-800 p-2 rounded"
-                                    value={newPrice}
-                                    onChange={(e) => setNewPrice(e.target.value)}
+                                    value={price}
+                                    onChange={(e) => setPrice(e.target.value)}
                                     placeholder="Жишээ: 9900"
                                 />
                             </div>
@@ -189,15 +192,15 @@ export default function BookDashboardPage() {
                                 <label>Хямдрал?</label>
                                 <input
                                     type="checkbox"
-                                    checked={newSaleActive}
-                                    onChange={(e) => setNewSaleActive(e.target.checked)}
+                                    checked={saleActive}
+                                    onChange={(e) => setSaleActive(e.target.checked)}
                                 />
                                 <label>Sale Price:</label>
                                 <input
                                     type="number"
                                     className="bg-gray-800 p-2 rounded w-24"
-                                    value={newSalePrice}
-                                    onChange={(e) => setNewSalePrice(e.target.value)}
+                                    value={salePrice}
+                                    onChange={(e) => setSalePrice(e.target.value)}
                                 />
                             </div>
                             <div>
@@ -208,7 +211,7 @@ export default function BookDashboardPage() {
                                     accept="image/*"
                                     onChange={(e) => {
                                         if (e.target.files?.[0]) {
-                                            setNewCoverFile(e.target.files[0]);
+                                            setCoverFile(e.target.files[0]);
                                         }
                                     }}
                                     className="text-white"
@@ -227,7 +230,7 @@ export default function BookDashboardPage() {
                     </form>
                 </section>
 
-                {/* LIST & EDIT EXISTING BOOKS */}
+                {/* 2) LIST & EDIT EXISTING BOOKS */}
                 <section className="space-y-4">
                     <h2 className="text-xl font-semibold">Одоо байгаа номууд</h2>
                     <div className="space-y-3">
@@ -246,7 +249,7 @@ export default function BookDashboardPage() {
     );
 }
 
-// Child Component: BookRow
+/** Child: One row for editing an existing book */
 function BookRow({
                      book,
                      onUpdate,
@@ -265,7 +268,7 @@ function BookRow({
 
     return (
         <div className="bg-[#16181C] border border-gray-700 p-4 rounded flex flex-col md:flex-row gap-4 items-start">
-            {/* Cover Thumbnail */}
+            {/* Cover thumb */}
             <div className="w-24 h-24 bg-[#222] flex-shrink-0 overflow-hidden">
                 {book.coverImageUrl && (
                     <img
@@ -275,7 +278,7 @@ function BookRow({
                     />
                 )}
             </div>
-            {/* Editable Fields */}
+            {/* Inputs */}
             <div className="flex-1 grid grid-cols-2 gap-2">
                 <div className="col-span-2">
                     <label className="text-sm text-gray-300">Номын нэр</label>
@@ -310,6 +313,7 @@ function BookRow({
                         onChange={(e) => setDescription(e.target.value)}
                     />
                 </div>
+                {/* sale */}
                 <div className="col-span-2 flex items-center gap-3">
                     <label className="text-sm text-gray-300">Хямдрал?</label>
                     <input
@@ -326,7 +330,8 @@ function BookRow({
                     />
                 </div>
             </div>
-            {/* Action Buttons */}
+
+            {/* Action buttons */}
             <div className="flex flex-col gap-2 justify-center">
                 <button
                     onClick={() =>
@@ -339,13 +344,13 @@ function BookRow({
                             salePrice,
                         })
                     }
-                    className="px-3 py-1 bg-blue-600 rounded hover:bg-blue-500 transition"
+                    className="px-3 py-1 bg-blue-600 rounded hover:bg-blue-500"
                 >
                     Шинэчлэх
                 </button>
                 <button
                     onClick={() => onDelete(book._id)}
-                    className="px-3 py-1 bg-red-600 rounded hover:bg-red-500 transition"
+                    className="px-3 py-1 bg-red-600 rounded hover:bg-red-500"
                 >
                     Устгах
                 </button>

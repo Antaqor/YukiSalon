@@ -26,7 +26,7 @@ export default function BooksListPage() {
                 const data = await res.json();
                 setBooks(data);
             } catch (err) {
-                console.error("Error fetching books:", err?.message); // Дэлгэрэнгүй алдаа
+                console.error(err);
                 setStatus("Ном татахад алдаа!");
             }
         };
@@ -70,6 +70,7 @@ export default function BooksListPage() {
                                     </div>
                                 )}
 
+                                {/* Доод хэсэг: номын мэдээлэл */}
                                 <div className="p-4 flex flex-col flex-1">
                                     <h2 className="text-lg font-semibold uppercase tracking-wide mb-1 line-clamp-1">
                                         {book.title}
@@ -77,9 +78,12 @@ export default function BooksListPage() {
                                     <p className="text-xs text-gray-400 mb-2 line-clamp-1">
                                         Зохиогч: {book.author}
                                     </p>
+
                                     <p className="text-sm text-gray-300 mb-3 line-clamp-2">
                                         {book.description}
                                     </p>
+
+                                    {/* Хямдралтай эсэх */}
                                     {book.saleActive ? (
                                         <div className="mt-auto space-y-1">
                                             <p className="text-sm text-gray-500 line-through">
