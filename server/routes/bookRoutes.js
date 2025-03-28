@@ -6,8 +6,12 @@ const path = require("path");
 const multer = require("multer");
 const Book = require("../models/Book");
 
-// Use the same uploads directory as defined in index.js.
-const uploadDir = process.env.UPLOAD_DIR || path.join(process.cwd(), "server", "uploads");
+// Get UPLOAD_DIR from .env (which might be relative) and resolve it to an absolute path.
+const envUploadDir = process.env.UPLOAD_DIR || "server/uploads";
+const uploadDir = path.isAbsolute(envUploadDir)
+    ? envUploadDir
+    : path.join(process.cwd(), envUploadDir);
+
 console.log("Book Routes Upload Directory:", uploadDir);
 
 // Ensure the uploads directory exists.
@@ -82,7 +86,7 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-// Update a book (text update; if changing image, send multipart)
+// Update a book (if changing image, send multipart)
 router.put("/:id", upload.single("coverImage"), async (req, res) => {
     try {
         const { title, author, description, price, saleActive, salePrice } = req.body;
