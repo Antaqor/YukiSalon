@@ -16,7 +16,7 @@ export default function Header() {
                         <Link href="/">
                             <Image
                                 src={logo}
-                                alt="Logo"
+                                alt="Лого"
                                 className="h-8 w-auto object-contain cursor-pointer transition-transform hover:scale-105"
                             />
                         </Link>
@@ -28,7 +28,7 @@ export default function Header() {
                                 href="/logout"
                                 className="flex items-center text-gray-100 hover:text-blue-400 relative group"
                             >
-                                Logout
+                                Гарах
                                 <span className="absolute left-0 bottom-0 w-full h-0.5 bg-blue-400 scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
                             </Link>
                         ) : (
@@ -37,14 +37,14 @@ export default function Header() {
                                     href="/login"
                                     className="flex items-center text-gray-100 hover:text-blue-400 relative group"
                                 >
-                                    Login
+                                    Нэвтрэх
                                     <span className="absolute left-0 bottom-0 w-full h-0.5 bg-blue-400 scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
                                 </Link>
                                 <Link
                                     href="/register"
                                     className="flex items-center text-gray-100 hover:text-blue-400 relative group"
                                 >
-                                    Register
+                                    Бүртгүүлэх
                                     <span className="absolute left-0 bottom-0 w-full h-0.5 bg-blue-400 scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
                                 </Link>
                             </>
@@ -53,7 +53,7 @@ export default function Header() {
                     <button
                         className="md:hidden absolute top-4 right-4 focus:outline-none"
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        aria-label="Toggle menu"
+                        aria-label="Цэсийг солих"
                     >
                     </button>
                 </nav>
@@ -68,7 +68,7 @@ export default function Header() {
                                             onClick={() => setIsMenuOpen(false)}
                                             className="flex items-center text-gray-100 hover:text-blue-400 text-xl font-medium transition-colors"
                                         >
-                                            Logout
+                                            Гарах
                                         </Link>
                                     </li>
                                 ) : (
@@ -79,7 +79,7 @@ export default function Header() {
                                                 onClick={() => setIsMenuOpen(false)}
                                                 className="flex items-center text-gray-100 hover:text-blue-400 text-xl font-medium transition-colors"
                                             >
-                                                Login
+                                                Нэвтрэх
                                             </Link>
                                         </li>
                                         <li>
@@ -88,7 +88,7 @@ export default function Header() {
                                                 onClick={() => setIsMenuOpen(false)}
                                                 className="flex items-center text-gray-100 hover:text-blue-400 text-xl font-medium transition-colors"
                                             >
-                                                Register
+                                                Бүртгүүлэх
                                             </Link>
                                         </li>
                                     </>

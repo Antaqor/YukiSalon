@@ -13,8 +13,7 @@ export const metadata: Metadata = {
         default: "VONE",
         template: "%s | VONE",
     },
-    description:
-        "VONE - A next-generation community platform for networking and innovation.",
+    description: "VONE - Сүлжээ ба инновацийн дараагийн үеийн платформ.",
     keywords: ["VONE", "Community", "DAO", "Network", "Zaluusiin Network"],
     authors: [{ name: "Vone Tech", url: "https://vone.mn" }],
     verification: {
@@ -22,9 +21,8 @@ export const metadata: Metadata = {
         yandex: "YOUR_YANDEX_SITE_VERIFICATION_TOKEN",
     },
     openGraph: {
-        title: "VONE – A Next-Generation Platform",
-        description:
-            "Join THE VONE CLAN – Your community for networking and innovation.",
+        title: "VONE – Дараагийн үеийн платформ",
+        description: "VONE CLAN-д нэгдээрэй – Сүлжээ, инновацийн хамт олон.",
         url: "https://vone.mn",
         siteName: "VONE",
         images: [
@@ -40,9 +38,8 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "VONE - Next-Gen Platform",
-        description:
-            "Join THE VONE CLAN – Your community for networking and innovation.",
+        title: "VONE - Дараагийн үеийн платформ",
+        description: "VONE CLAN-д нэгдээрэй – Сүлжээ, инновацийн хамт олон.",
         images: [
             "https://cdn.midjourney.com/9c84cf56-387f-4b49-a6c9-b991843f77e6/0_0.png",
         ],
@@ -64,19 +61,19 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en">
+        <html lang="mn">
         <body
             className={`${inter.className} flex flex-col min-h-screen bg-[#000000] text-[#E1E8ED]`}
         >
         <AuthProvider>
-            {/* Shared Container for Header and Main */}
+            {/* Header болон Main-ыг багтаасан нийтлэг контайнер */}
             <div className="max-w-7xl w-full mx-auto px-6">
-                {/* Header */}
+                {/* Толгой хэсэг */}
                 <Header />
 
-                {/* Main Layout */}
+                {/* Үндсэн Layout */}
                 <main className="flex-grow flex flex-col md:flex-row gap-0 pt-16">
-                    {/* Left Sidebar */}
+                    {/* Зүүн талын Sidebar */}
                     <aside className="hidden md:block w-full md:w-1/4 border-r border-[#2f3336] sticky top-16 h-[calc(100vh-80px)] overflow-y-auto">
                         <nav>
                             <ul className="space-y-3">
@@ -99,12 +96,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                                 d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                                             />
                                         </svg>
-                                        Home
+                                        Нүүр
                                     </Link>
                                 </li>
                                 <li>
                                     <Link
-                                        href="/explore"
+                                        href="/book"
                                         className="group flex items-center p-4 pl-0 text-xl font-bold transition-colors duration-200 hover:bg-[#2f3336] focus:outline-none focus:ring-2 focus:ring-[#1D9BF0]"
                                     >
                                         <svg
@@ -118,10 +115,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
                                                 strokeWidth="2"
-                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                                d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 006 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
                                             />
                                         </svg>
-                                        Explore
+                                        Ном
                                     </Link>
                                 </li>
                                 <li>
@@ -143,7 +140,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                                 d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
                                             />
                                         </svg>
-                                        Notifications
+                                        Мэдэгдэл
                                     </Link>
                                 </li>
                                 <li>
@@ -165,7 +162,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                                             />
                                         </svg>
-                                        Messages
+                                        Зурвас
                                     </Link>
                                 </li>
                                 <li>
@@ -187,7 +184,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                                             />
                                         </svg>
-                                        Profile
+                                        Профайл
                                     </Link>
                                 </li>
                                 <li>
@@ -215,22 +212,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                                 d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                                             />
                                         </svg>
-                                        Settings
+                                        Тохиргоо
                                     </Link>
                                 </li>
                             </ul>
                         </nav>
                     </aside>
 
-                    {/* Main Content */}
+                    {/* Үндсэн контент */}
                     <div className="w-full md:w-1/2 border-r border-[#2f3336]">
                         <div className="p-4 space-y-6">{children}</div>
                     </div>
 
-                    {/* Right Sidebar */}
+                    {/* Баруун талын Sidebar */}
                     <aside className="hidden md:block w-full md:w-1/4 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto p-2">
                         <div className="space-y-6">
-                            {/* Trending Topics */}
+                            {/* Идэвхтэй сэдвүүд */}
                             <div className="p-4 transition-shadow duration-200 hover:shadow-md">
                                 <h2 className="flex items-center font-semibold mb-3">
                                     <svg
@@ -247,7 +244,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                             d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
                                         />
                                     </svg>
-                                    Trending Topics
+                                    Идэвхтэй сэдвүүд
                                 </h2>
                                 <ul className="space-y-3">
                                     <li>
@@ -255,7 +252,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                             href="#"
                                             className="text-[#1D9BF0] hover:underline transition-colors duration-200"
                                         >
-                                            #Innovation
+                                            #Инноваци
                                         </a>
                                     </li>
                                     <li>
@@ -263,7 +260,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                             href="#"
                                             className="text-[#1D9BF0] hover:underline transition-colors duration-200"
                                         >
-                                            #Networking
+                                            #Сүлжээ
                                         </a>
                                     </li>
                                     <li>
@@ -277,7 +274,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                 </ul>
                             </div>
 
-                            {/* Suggested Follows */}
+                            {/* Зөвлөмж болгож буй хэрэглэгчид */}
                             <div className="p-4 transition-shadow duration-200 hover:shadow-md">
                                 <h2 className="flex items-center font-semibold mb-3">
                                     <svg
@@ -294,7 +291,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                             d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
                                         />
                                     </svg>
-                                    Suggested Follows
+                                    Зөвлөмж болгож буй хэрэглэгчид
                                 </h2>
                                 <div className="space-y-4">
                                     <div className="flex items-center space-x-3">
@@ -304,11 +301,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                             className="w-10 h-10 rounded-full"
                                         />
                                         <div className="flex-1">
-                                            <p className="font-semibold">User One</p>
+                                            <p className="font-semibold">Хэрэглэгч Нэг</p>
                                             <p className="text-gray-400 text-sm">@userone</p>
                                         </div>
                                         <button className="bg-[#1D9BF0] text-white px-4 py-1 rounded-full hover:scale-105 transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-[#1D9BF0]">
-                                            Follow
+                                            Дагах
                                         </button>
                                     </div>
                                 </div>
@@ -318,10 +315,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </main>
             </div>
 
-            {/* Footer */}
+            {/* Хөл хэсэг */}
             <footer className="w-full text-sm text-center py-4 border-t border-[#2f3336]">
                 <p className="text-gray-400">
-                    © 2025 THE VONE CLAN. All rights reserved.
+                    © 2025 THE VONE CLAN. Бүх эрх хуулиар хамгаалагдсан.
                 </p>
             </footer>
         </AuthProvider>

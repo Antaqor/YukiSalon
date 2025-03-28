@@ -35,6 +35,7 @@ interface Hashtag {
 
 export default function HomePage() {
     const { user, loggedIn, login } = useAuth();
+
     const [posts, setPosts] = useState<Post[]>([]);
     const [allPosts, setAllPosts] = useState<Post[]>([]);
     const [content, setContent] = useState("");
@@ -43,13 +44,19 @@ export default function HomePage() {
     const [trendingHashtags, setTrendingHashtags] = useState<Hashtag[]>([]);
     const [filterHashtag, setFilterHashtag] = useState("");
 
-    const BASE_URL = "https://vone.mn";
+    // *** Таны локал сервер: http://localhost:5001
+    // *** API: http://localhost:5001/api
+    // *** Үнэндээ posts: http://localhost:5001/api/posts
+    const BASE_URL = "https://vone.mn/api";
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Зураг статикийн зам: http://localhost:5001/uploads
     const UPLOADS_URL = `${BASE_URL}/uploads`;
 
     // 1) Fetch posts
     const fetchPosts = useCallback(async () => {
         try {
+            // GET -> http://localhost:5001/api/posts
             const res = await axios.get(`${BASE_URL}/api/posts`);
             setPosts(res.data);
             setAllPosts(res.data);
@@ -105,6 +112,7 @@ export default function HomePage() {
             formData.append("content", content);
             if (imageFile) formData.append("image", imageFile);
 
+            // POST -> http://localhost:5001/api/posts
             const res = await axios.post(`${BASE_URL}/api/posts`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.accessToken}`,
@@ -139,6 +147,7 @@ export default function HomePage() {
     const handleLike = async (postId: string) => {
         if (!user?.accessToken) return;
         try {
+            // POST -> http://localhost:5001/api/posts/:postId/like
             const res = await axios.post(
                 `${BASE_URL}/api/posts/${postId}/like`,
                 {},
@@ -210,7 +219,7 @@ export default function HomePage() {
     return (
         <div className="min-h-screen bg-[#000000]">
             <div className="max-w-2xl mx-auto px-4 py-6">
-                {/* Error message */}
+                {/* Алдааны мессеж */}
                 {error && (
                     <motion.div
                         initial={{ y: -20 }}
@@ -277,8 +286,8 @@ export default function HomePage() {
                             </button>
                             {imageFile && (
                                 <span className="text-sm text-gray-300">
-                  {imageFile.name}
-                </span>
+                                    {imageFile.name}
+                                </span>
                             )}
                         </div>
                         <textarea
@@ -315,20 +324,20 @@ export default function HomePage() {
                                         {post.image && (
                                             <img
                                                 src={`${UPLOADS_URL}/${post.image}`}
-                                                alt="Post Image"
+                                                alt="Post"
                                                 className="mt-2 max-w-full rounded border border-[#2f3336]"
-                                                onError={(e) =>
-                                                    (e.currentTarget.style.display = "none")
-                                                }
+                                                onError={(e) => {
+                                                    e.currentTarget.style.display = "none";
+                                                }}
                                             />
                                         )}
                                         <div className="mt-2 text-sm text-gray-400 flex items-center gap-2">
                                             {postUser ? (
                                                 <>
                                                     <Link href={`/profile/${postUser._id}`}>
-                            <span className="text-[#1D9BF0] hover:underline">
-                              {postUser.username}
-                            </span>
+                                                        <span className="text-[#1D9BF0] hover:underline">
+                                                            {postUser.username}
+                                                        </span>
                                                     </Link>
                                                     {loggedIn && user && user._id !== postUser._id && (
                                                         <>
@@ -353,9 +362,7 @@ export default function HomePage() {
                                             ) : (
                                                 <span>Unknown User</span>
                                             )}
-                                            <span>
-                        • {new Date(post.createdAt).toLocaleDateString()}
-                      </span>
+                                            <span>• {new Date(post.createdAt).toLocaleDateString()}</span>
                                         </div>
                                     </div>
                                     <button
