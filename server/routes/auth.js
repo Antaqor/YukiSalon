@@ -2,106 +2,115 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
-const authenticateToken = require("../middleware/authMiddleware");
-
-// -------------- MULTER FOR FILE UPLOADS --------------
 const multer = require("multer");
 const path = require("path");
 
+const User = require("../models/User");
+const authenticateToken = require("../middleware/authMiddleware");
+
+// ---------------------- MULTER CONFIG ----------------------
+// Limit file size to 5 MB. Adjust as needed.
 const upload = multer({
     dest: path.join(__dirname, "..", "uploads"),
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
 });
 
-// -------------- REGISTER --------------
-router.post("/register", upload.single("profilePicture"), async (req, res) => {
-    try {
-        // Debug logs: see exactly what's in req.body / req.file
-        console.log("------ REGISTER BODY ------");
-        console.log(req.body);
-        console.log("------ REGISTER FILE ------");
-        console.log(req.file);
+// ---------------------- REGISTER ----------------------
+router.post("/register", (req, res) => {
+    // Wrap the single-file upload so we can properly catch Multer errors
+    upload.single("profilePicture")(req, res, async (err) => {
+        if (err) {
+            // If Multer file-size limit was triggered:
+            if (err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE") {
+                return res.status(400).json({ error: "Файл хэтэрхий том байна (5MB max)!" });
+            }
+            // Some other Multer error
+            return res.status(400).json({ error: err.message });
+        }
 
-        // Because it's multipart, fields are in req.body, file in req.file
-        const {
-            username,
-            password,
-            phoneNumber,
-            location,
-            gender,
-        } = req.body;
-
-        // The birthday was sent as a JSON string => parse it
-        let birthday = {};
         try {
-            birthday = JSON.parse(req.body.birthday);
-        } catch (err) {
-            return res.status(400).json({ error: "Invalid birthday format" });
-        }
+            // Debug logs to see what’s incoming
+            console.log("------ REGISTER BODY ------");
+            console.log(req.body);
+            console.log("------ REGISTER FILE ------");
+            console.log(req.file);
 
-        // If file was uploaded, build a path
-        let profilePicturePath = "";
-        if (req.file) {
-            profilePicturePath = "/uploads/" + req.file.filename;
-        }
+            // Destructure fields
+            const { username, password, phoneNumber, location, gender } = req.body;
 
-        // Validate required fields (NO 'name')
-        if (
-            !username ||
-            !password ||
-            !phoneNumber ||
-            !location ||
-            !gender ||
-            !birthday.year ||
-            !birthday.month ||
-            !birthday.day
-        ) {
-            return res.status(400).json({
-                error:
-                    "Missing required fields (username, password, phoneNumber, location, gender, birthday)",
+            // Parse birthday from JSON string
+            let birthday = {};
+            try {
+                birthday = JSON.parse(req.body.birthday);
+            } catch (err) {
+                return res.status(400).json({ error: "Invalid birthday format" });
+            }
+
+            // Build file path if a file was uploaded
+            let profilePicturePath = "";
+            if (req.file) {
+                profilePicturePath = "/uploads/" + req.file.filename;
+            }
+
+            // Validate required fields
+            if (
+                !username ||
+                !password ||
+                !phoneNumber ||
+                !location ||
+                !gender ||
+                !birthday.year ||
+                !birthday.month ||
+                !birthday.day
+            ) {
+                return res.status(400).json({
+                    error:
+                        "Missing required fields (username, password, phoneNumber, location, gender, birthday)",
+                });
+            }
+
+            // Check if username is taken
+            const existing = await User.findOne({ username });
+            if (existing) {
+                return res.status(400).json({ error: "Username already in use" });
+            }
+
+            // Hash password
+            const hashedPw = await bcrypt.hash(password, 10);
+
+            // Create new user
+            const newUser = await User.create({
+                username,
+                password: hashedPw,
+                phoneNumber,
+                location,
+                gender,
+                birthday,
+                profilePicture: profilePicturePath,
             });
+
+            // Success!
+            return res.status(201).json({
+                message: "User registered!",
+                user: {
+                    _id: newUser._id,
+                    username: newUser.username,
+                    phoneNumber: newUser.phoneNumber,
+                    location: newUser.location,
+                    gender: newUser.gender,
+                    birthday: newUser.birthday,
+                    profilePicture: newUser.profilePicture,
+                    subscriptionExpiresAt: newUser.subscriptionExpiresAt,
+                },
+            });
+        } catch (err) {
+            console.error("Register error:", err);
+            return res.status(500).json({ error: "Server error" });
         }
-
-        // Check if username is taken
-        const existing = await User.findOne({ username });
-        if (existing) {
-            return res.status(400).json({ error: "Username already in use" });
-        }
-
-        // Hash the password
-        const hashedPw = await bcrypt.hash(password, 10);
-
-        // Create new user (NO 'name')
-        const newUser = await User.create({
-            username,
-            password: hashedPw,
-            phoneNumber,
-            location,
-            gender,
-            birthday,
-            profilePicture: profilePicturePath,
-        });
-
-        return res.status(201).json({
-            message: "User registered!",
-            user: {
-                _id: newUser._id,
-                username: newUser.username,
-                phoneNumber: newUser.phoneNumber,
-                location: newUser.location,
-                gender: newUser.gender,
-                birthday: newUser.birthday,
-                profilePicture: newUser.profilePicture,
-                subscriptionExpiresAt: newUser.subscriptionExpiresAt,
-            },
-        });
-    } catch (err) {
-        console.error("Register error:", err);
-        return res.status(500).json({ error: "Server error" });
-    }
+    });
 });
 
-// -------------- LOGIN --------------
+// ---------------------- LOGIN ----------------------
 router.post("/login", async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -119,6 +128,7 @@ router.post("/login", async (req, res) => {
             return res.status(401).json({ error: "Invalid credentials" });
         }
 
+        // Generate JWT
         const token = jwt.sign(
             { id: user._id, username: user.username },
             process.env.JWT_SECRET || "change-me",
@@ -147,7 +157,7 @@ router.post("/login", async (req, res) => {
     }
 });
 
-// -------------- PUBLIC PROFILE (by ID) --------------
+// ---------------------- PUBLIC PROFILE (by ID) ----------------------
 router.get("/user/:id", async (req, res) => {
     try {
         const user = await User.findById(req.params.id).select(
@@ -163,7 +173,7 @@ router.get("/user/:id", async (req, res) => {
     }
 });
 
-// -------------- GET OWN PROFILE --------------
+// ---------------------- GET OWN PROFILE ----------------------
 router.get("/profile", authenticateToken, async (req, res) => {
     try {
         const userId = req.user._id || req.user.id;
