@@ -40,7 +40,7 @@ export default function HomePage() {
     const [trendingHashtags, setTrendingHashtags] = useState<Hashtag[]>([]);
     const [filterHashtag, setFilterHashtag] = useState("");
 
-    const BASE_URL = "http://localhost:5001";
+    const BASE_URL = "https://vone.mn";
     const UPLOADS_URL = `${BASE_URL}/uploads`;
     const fileInputRef = useRef<HTMLInputElement>(null);
 
