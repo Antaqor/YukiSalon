@@ -7,10 +7,10 @@ const fs = require("fs");
 
 // Import routes
 const authRoutes = require("./routes/auth");
-const postRoutes = require("./routes/post");        // only if you have these
-const userRoutes = require("./routes/user");        // only if you have these
-const paymentRoutes = require("./routes/payment");  // only if you have these
-const bookRoutes = require("./routes/bookRoutes");  // only if you have these
+const postRoutes = require("./routes/post");        // Only if you have these
+const userRoutes = require("./routes/user");        // Only if you have these
+const paymentRoutes = require("./routes/payment");  // Only if you have these
+const bookRoutes = require("./routes/bookRoutes");  // Only if you have these
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -25,7 +25,7 @@ app.use(
     })
 );
 
-// ----- Basic JSON parsing (for endpoints that don’t handle files) -----
+// ----- Basic JSON parsing for non-file endpoints -----
 app.use(express.json());
 
 // ----- Ensure "uploads" folder is ready -----

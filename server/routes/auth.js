@@ -9,11 +9,16 @@ const fs = require("fs");
 const User = require("../models/User");
 const authenticateToken = require("../middleware/authMiddleware");
 
+// ---------------------- FILE SIZE LIMITS (in bytes) ----------------------
+const MIN_FILE_SIZE = 10 * 1024;          // 10KB
+const MAX_FILE_SIZE = 5 * 1024 * 1024;    // 5MB
+
 // ---------------------- MULTER CONFIG ----------------------
-// We'll limit files to 5 MB max. Then we’ll do an *additional* min-size check afterward (10 KB).
+// We'll let Multer handle up to 5MB; for anything bigger, it fails immediately.
+// We'll also do our own min-size check AFTER Multer stores the file.
 const upload = multer({
     dest: path.join(__dirname, "..", "uploads"),
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+    limits: { fileSize: MAX_FILE_SIZE },
     fileFilter: (req, file, cb) => {
         // Only allow image mime types
         if (!file.mimetype.startsWith("image/")) {
@@ -23,7 +28,7 @@ const upload = multer({
     },
 });
 
-// Helper for removing an unwanted file (e.g. if we fail validation after upload)
+// ---------------------- UTILITY: Remove a file if we reject it after upload ----------------------
 function removeUploadedFile(file) {
     if (file && file.path && fs.existsSync(file.path)) {
         fs.unlinkSync(file.path);
@@ -32,26 +37,27 @@ function removeUploadedFile(file) {
 
 // ---------------------- REGISTER ----------------------
 router.post("/register", (req, res) => {
-    // Wrap the single-file upload so we can properly catch Multer errors
+    // Wrap single-file upload so we can catch Multer errors
     upload.single("profilePicture")(req, res, async (err) => {
+        // If Multer threw an error (e.g., bigger than 5MB, not an image, etc.)
         if (err) {
-            // Multer-specific error -> check if it's a file-size limit
-            if (err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE") {
+            if (err.code === "LIMIT_FILE_SIZE") {
+                // File is bigger than 5MB
                 return res.status(400).json({
-                    error: "Image size must be between 10KB and 5MB.",
+                    error: "Зурагны хэмжээ хамгийн ихдээ 5MB байх ёстой.",
                 });
             }
-            // Some other Multer error (mime type, etc.)
+            // Some other Multer or fileFilter error
             return res.status(400).json({ error: err.message });
         }
 
         try {
-            // If we have a file, do the min-size check (10KB)
+            // If user actually uploaded a file, do the MIN size check (10KB)
             if (req.file) {
-                if (req.file.size < 10 * 1024) {
+                if (req.file.size < MIN_FILE_SIZE) {
                     removeUploadedFile(req.file);
                     return res.status(400).json({
-                        error: "Image size must be between 10KB and 5MB.",
+                        error: "Зурагны хэмжээ хамгийн багадаа 10KB байх ёстой.",
                     });
                 }
             }
@@ -70,7 +76,6 @@ router.post("/register", (req, res) => {
             try {
                 birthday = JSON.parse(req.body.birthday);
             } catch (parseErr) {
-                // If we fail, remove file so it doesn't linger
                 removeUploadedFile(req.file);
                 return res.status(400).json({ error: "Invalid birthday format" });
             }
@@ -92,7 +97,6 @@ router.post("/register", (req, res) => {
                 !birthday.month ||
                 !birthday.day
             ) {
-                // If fails, remove file
                 removeUploadedFile(req.file);
                 return res.status(400).json({
                     error:
@@ -137,7 +141,6 @@ router.post("/register", (req, res) => {
             });
         } catch (error) {
             console.error("Register error:", error);
-            // On any server error, remove file
             removeUploadedFile(req.file);
             return res.status(500).json({ error: "Server error" });
         }

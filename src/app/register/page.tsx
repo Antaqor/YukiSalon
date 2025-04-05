@@ -13,9 +13,9 @@ const isValidPassword = (password: string) => {
     return password.length >= 6;
 };
 
-// Limits for images
-const MIN_IMAGE_SIZE = 10 * 1024;       // 10 KB
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
+// Adjust if you want different min/max sizes:
+const MIN_FILE_SIZE = 10 * 1024;        // 10KB
+const MAX_FILE_SIZE = 5 * 1024 * 1024;  // 5MB
 
 export default function RegisterMultiStepPage() {
     const router = useRouter();
@@ -23,7 +23,7 @@ export default function RegisterMultiStepPage() {
     // ---------- STEP CONTROL ----------
     const [step, setStep] = useState(1);
 
-    // ---------- STEP 1 FIELDS ----------
+    // ---------- STEP 1 FIELDS (NO name) ----------
     const [username, setUsername] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [birthMonth, setBirthMonth] = useState("");
@@ -55,7 +55,7 @@ export default function RegisterMultiStepPage() {
         profilePicture: "",
     });
 
-    // Update this to your actual server endpoint
+    // Replace with your actual server endpoint
     const BASE_URL = "https://vone.mn";
 
     // ------------------------------------------------------------------
@@ -133,20 +133,8 @@ export default function RegisterMultiStepPage() {
         if (!location.trim()) {
             errors.location = "Байршлаа оруулна уу.";
         }
-
-        // --- Client-side Image Checks: Type + Size (10KB - 5MB) ---
         if (!profilePicture) {
             errors.profilePicture = "Профайл зураг оруулна уу.";
-        } else {
-            if (!profilePicture.type.startsWith("image/")) {
-                errors.profilePicture = "Буруу зураг файл. Зөв зураг оруулна уу.";
-            } else {
-                if (profilePicture.size < MIN_IMAGE_SIZE) {
-                    errors.profilePicture = "Зураг хамгийн багадаа 10KB байх ёстой.";
-                } else if (profilePicture.size > MAX_IMAGE_SIZE) {
-                    errors.profilePicture = "Зураг 5MB-с их хэмжээтэй байна.";
-                }
-            }
         }
 
         if (Object.keys(errors).length > 0) {
@@ -200,6 +188,42 @@ export default function RegisterMultiStepPage() {
             console.error("Register error:", err);
             setError(err.response?.data?.error || "Бүртгэлийн алдаа гарлаа");
         }
+    };
+
+    // ------------------------------------------------------------------
+    // CLIENT-SIDE FILE CHECK: ensure size (10KB–5MB) + image type
+    // ------------------------------------------------------------------
+    const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setError("");
+        setFieldErrors((prev) => ({ ...prev, profilePicture: "" }));
+
+        if (!e.target.files || e.target.files.length === 0) {
+            return;
+        }
+        const file = e.target.files[0];
+
+        // Check size
+        if (file.size < MIN_FILE_SIZE || file.size > MAX_FILE_SIZE) {
+            setFieldErrors((prev) => ({
+                ...prev,
+                profilePicture: `Зураг нь хамгийн багадаа 10KB, ихдээ 5MB байх ёстой (current: ${(file.size / 1024).toFixed(
+                    1
+                )} KB).`,
+            }));
+            return;
+        }
+
+        // Check MIME type
+        if (!file.type.startsWith("image/")) {
+            setFieldErrors((prev) => ({
+                ...prev,
+                profilePicture: "Зөвхөн зураг файл оруулах боломжтой.",
+            }));
+            return;
+        }
+
+        // If everything is good, store file
+        setProfilePicture(file);
     };
 
     // ---------- Utility: conditional className for inputs/selects ----------
@@ -308,11 +332,11 @@ export default function RegisterMultiStepPage() {
                                     ))}
                                 </select>
                             </div>
-                            {(fieldErrors.birthMonth || fieldErrors.birthDay || fieldErrors.birthYear) && (
+                            {(fieldErrors.birthMonth ||
+                                fieldErrors.birthDay ||
+                                fieldErrors.birthYear) && (
                                 <p className="text-red-500 text-sm mt-1">
-                                    {fieldErrors.birthMonth ||
-                                        fieldErrors.birthDay ||
-                                        fieldErrors.birthYear}
+                                    {fieldErrors.birthMonth || fieldErrors.birthDay || fieldErrors.birthYear}
                                 </p>
                             )}
                         </div>
@@ -368,7 +392,9 @@ export default function RegisterMultiStepPage() {
 
                         {/* LOCATION */}
                         <div>
-                            <label className="block text-sm font-medium text-black mb-1">Байршил</label>
+                            <label className="block text-sm font-medium text-black mb-1">
+                                Байршил
+                            </label>
                             <input
                                 type="text"
                                 className={getInputClass("location")}
@@ -381,27 +407,21 @@ export default function RegisterMultiStepPage() {
                             )}
                         </div>
 
-                        {/* PROFILE PICTURE */}
+                        {/* PROFILE PICTURE + LOCAL SIZE CHECK */}
                         <div>
                             <label className="block text-sm font-medium text-black mb-1">
                                 Профайл зураг
                             </label>
-                            {/* Mention the size warning right here */}
-                            <p className="text-xs text-gray-500 mb-2">
-                                Зураг 10KB ~ 5MB хооронд байх ёстой
-                            </p>
                             <input
                                 type="file"
                                 accept="image/*"
                                 className={getInputClass("profilePicture")}
-                                onChange={(e) => {
-                                    if (e.target.files && e.target.files[0]) {
-                                        setProfilePicture(e.target.files[0]);
-                                    }
-                                }}
+                                onChange={handleProfilePictureChange}
                             />
                             {fieldErrors.profilePicture && (
-                                <p className="text-red-500 text-xs mt-1">{fieldErrors.profilePicture}</p>
+                                <p className="text-red-500 text-xs mt-1">
+                                    {fieldErrors.profilePicture}
+                                </p>
                             )}
                         </div>
 
