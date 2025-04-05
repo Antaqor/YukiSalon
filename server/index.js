@@ -1,4 +1,4 @@
-require("dotenv").config({ path: "./server/.env" });
+require("dotenv").config({ path: "./server/.env" }); // If you use .env in ./server
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -7,17 +7,17 @@ const fs = require("fs");
 
 // Import routes
 const authRoutes = require("./routes/auth");
-const postRoutes = require("./routes/post");        // If you have these
-const userRoutes = require("./routes/user");        // If you have these
-const paymentRoutes = require("./routes/payment");  // If you have these
-const bookRoutes = require("./routes/bookRoutes");  // If you have these
+const postRoutes = require("./routes/post");       // If you have these
+const userRoutes = require("./routes/user");       // If you have these
+const paymentRoutes = require("./routes/payment"); // If you have these
+const bookRoutes = require("./routes/bookRoutes"); // If you have these
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 
 app.set("trust proxy", 1);
 
-// ----- CORS -----
+// --- CORS ---
 app.use(
     cors({
         origin: ["https://vone.mn", "https://www.vone.mn", "http://localhost:3000"],
@@ -25,20 +25,20 @@ app.use(
     })
 );
 
-// ----- Basic JSON parsing for non-file endpoints -----
+// --- Basic JSON parsing (for non-file routes) ---
 app.use(express.json());
 
-// ----- Ensure "uploads" folder is ready -----
+// --- Ensure "uploads" folder is ready ---
 const UPLOAD_DIR = path.join(__dirname, "uploads");
 if (!fs.existsSync(UPLOAD_DIR)) {
     fs.mkdirSync(UPLOAD_DIR, { recursive: true });
     console.log(`Created uploads folder at: ${UPLOAD_DIR}`);
 }
 
-// ----- Serve static files from "/uploads" -----
+// --- Serve static files from "/uploads" ---
 app.use("/uploads", express.static(UPLOAD_DIR));
 
-// ----- Connect to MongoDB -----
+// --- Connect to MongoDB ---
 mongoose
     .connect(process.env.MONGODB_URI)
     .then(() => {
@@ -48,7 +48,7 @@ mongoose
         console.error("MongoDB connection error:", err);
     });
 
-// ----- Mount your routes -----
+// --- Mount routes ---
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/users", userRoutes);
