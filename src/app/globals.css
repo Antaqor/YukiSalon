@@ -2,16 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom Geometric Background (Хэрэв хэрэгтэй бол нэмэх) */
+/* No dark background; let Tailwind's default or overridden classes handle it */
 .square-card {
-    border-radius: 0; /* Rounded байхгүй */
+    border-radius: 0; /* Example custom override */
 }
 
-/* Font family override */
+/* Override or add your custom light-theme styles here. */
 html,
 body {
     padding: 0;
     margin: 0;
-    font-family: 'Poppins', sans-serif; /* Tailwind-д шингээж удирдах */
-    background-color: inherit; /* Tailwind-д удирдах */
+    font-family: "Poppins", sans-serif;
+    background-color: inherit;
+}
+
+/* Minimal fade-in-up animation for sidebars */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Utility class for the fade-in animation */
+.fade-in-up {
+    animation: fadeInUp 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* Enhanced hover states for a modern Tesla-like approach */
+.tesla-hover:hover {
+    background: rgba(0, 0, 0, 0.04); /* Subtle gray overlay on hover */
+    transform: scale(1.02);          /* Slight scale up */
+}
+
+/* Extra-smooth transitions */
+.transition-smooth {
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }

@@ -56,7 +56,6 @@ export default function HomePage() {
     // 1) Fetch posts
     const fetchPosts = useCallback(async () => {
         try {
-            // GET -> http://localhost:5001/api/posts
             const res = await axios.get(`${BASE_URL}/api/posts`);
             setPosts(res.data);
             setAllPosts(res.data);
@@ -112,7 +111,6 @@ export default function HomePage() {
             formData.append("content", content);
             if (imageFile) formData.append("image", imageFile);
 
-            // POST -> http://localhost:5001/api/posts
             const res = await axios.post(`${BASE_URL}/api/posts`, formData, {
                 headers: {
                     Authorization: `Bearer ${user.accessToken}`,
@@ -147,7 +145,6 @@ export default function HomePage() {
     const handleLike = async (postId: string) => {
         if (!user?.accessToken) return;
         try {
-            // POST -> http://localhost:5001/api/posts/:postId/like
             const res = await axios.post(
                 `${BASE_URL}/api/posts/${postId}/like`,
                 {},
@@ -189,9 +186,7 @@ export default function HomePage() {
                 { headers: { Authorization: `Bearer ${user.accessToken}` } }
             );
             if (user.following) {
-                const updatedFollowing = user.following.filter(
-                    (id) => id !== targetUserId
-                );
+                const updatedFollowing = user.following.filter((id) => id !== targetUserId);
                 login({ ...user, following: updatedFollowing }, user.accessToken);
             }
         } catch (err: any) {
@@ -217,14 +212,19 @@ export default function HomePage() {
     }, [fetchPosts]);
 
     return (
-        <div className="min-h-screen bg-[#000000]">
-            <div className="max-w-2xl mx-auto px-4 py-6">
-                {/* Алдааны мессеж */}
+        <div className="min-h-screen bg-white">
+            {/*
+        Removed fixed max-width for small screens.
+        On bigger screens, it can center using md:mx-auto,
+        but for mobile, it's full bleed with comfortable side padding.
+      */}
+            <div className="w-full px-4 py-6 md:max-w-3xl md:mx-auto">
+                {/* Error Message */}
                 {error && (
                     <motion.div
                         initial={{ y: -20 }}
                         animate={{ y: 0 }}
-                        className="text-red-400 mb-4 p-3 bg-red-900 rounded border border-[#2f3336]"
+                        className="text-red-700 mb-4 p-4 bg-red-100 rounded border border-red-200 text-base"
                     >
                         {error}
                     </motion.div>
@@ -232,17 +232,17 @@ export default function HomePage() {
 
                 {/* Trending Hashtags */}
                 <div className="mb-6">
-                    <h2 className="flex items-center text-lg font-semibold mb-2">
-                        <FiCamera className="w-5 h-5 mr-2 text-[#1D9BF0]" />
+                    <h2 className="flex items-center text-xl font-semibold mb-3 text-gray-800">
+                        <FiCamera className="w-6 h-6 mr-2 text-[#1D9BF0]" />
                         Trending Hashtags
                     </h2>
                     <div className="flex flex-wrap gap-2">
                         <button
-                            className={`px-3 py-1 rounded border border-[#2f3336] ${
+                            className={`px-3 py-1 rounded border border-gray-300 ${
                                 filterHashtag === ""
                                     ? "bg-[#1D9BF0] text-white"
-                                    : "bg-[#000000] text-gray-300"
-                            }`}
+                                    : "bg-white text-gray-700"
+                            } text-sm`}
                             onClick={() => filterPostsByHashtag("")}
                         >
                             Бүх
@@ -250,11 +250,11 @@ export default function HomePage() {
                         {trendingHashtags.map((hashtag) => (
                             <button
                                 key={hashtag.tag}
-                                className={`px-3 py-1 rounded border border-[#2f3336] ${
+                                className={`px-3 py-1 rounded border border-gray-300 ${
                                     filterHashtag === hashtag.tag
                                         ? "bg-[#1D9BF0] text-white"
-                                        : "bg-[#000000] text-gray-300"
-                                }`}
+                                        : "bg-white text-gray-700"
+                                } text-sm`}
                                 onClick={() => filterPostsByHashtag(hashtag.tag)}
                             >
                                 {hashtag.tag} ({hashtag.count})
@@ -280,26 +280,24 @@ export default function HomePage() {
                             />
                             <button
                                 onClick={triggerFileInput}
-                                className="p-2 border border-[#2f3336] rounded-full hover:bg-[#2f3336]"
+                                className="p-3 border border-gray-300 rounded-full hover:bg-gray-100"
                             >
-                                <FiCamera className="w-6 h-6 text-gray-300" />
+                                <FiCamera className="w-6 h-6 text-gray-700" />
                             </button>
                             {imageFile && (
-                                <span className="text-sm text-gray-300">
-                                    {imageFile.name}
-                                </span>
+                                <span className="text-sm text-gray-700">{imageFile.name}</span>
                             )}
                         </div>
                         <textarea
                             placeholder="Контент бичнэ үү..."
-                            className="w-full border-b border-[#2f3336] p-2 focus:outline-none bg-[#000000] text-gray-100"
+                            className="w-full border-b border-gray-300 p-3 focus:outline-none bg-white text-gray-900 text-base"
                             rows={3}
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                         />
                         <button
                             onClick={createPost}
-                            className="bg-[#1D9BF0] text-white px-4 py-2 rounded hover:opacity-90 transition border border-[#2f3336]"
+                            className="bg-[#1D9BF0] text-white px-4 py-2 rounded hover:opacity-90 transition border border-transparent text-base"
                         >
                             Нийтлэх
                         </button>
@@ -316,42 +314,44 @@ export default function HomePage() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.05 }}
-                                className="border-b border-[#2f3336] pb-4"
+                                className="border-b border-gray-300 pb-4"
                             >
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <p className="text-gray-300">{post.content}</p>
+                                        <p className="text-gray-800 text-base leading-relaxed">
+                                            {post.content}
+                                        </p>
                                         {post.image && (
                                             <img
                                                 src={`${UPLOADS_URL}/${post.image}`}
                                                 alt="Post"
-                                                className="mt-2 max-w-full rounded border border-[#2f3336]"
+                                                className="mt-3 max-w-full rounded border border-gray-300"
                                                 onError={(e) => {
                                                     e.currentTarget.style.display = "none";
                                                 }}
                                             />
                                         )}
-                                        <div className="mt-2 text-sm text-gray-400 flex items-center gap-2">
+                                        <div className="mt-3 text-sm text-gray-600 flex flex-wrap items-center gap-2">
                                             {postUser ? (
                                                 <>
                                                     <Link href={`/profile/${postUser._id}`}>
-                                                        <span className="text-[#1D9BF0] hover:underline">
-                                                            {postUser.username}
-                                                        </span>
+                            <span className="text-[#1D9BF0] hover:underline">
+                              {postUser.username}
+                            </span>
                                                     </Link>
                                                     {loggedIn && user && user._id !== postUser._id && (
                                                         <>
                                                             {user.following?.includes(postUser._id) ? (
                                                                 <button
                                                                     onClick={() => handleUnfollow(postUser._id)}
-                                                                    className="text-sm text-green-400"
+                                                                    className="text-green-600"
                                                                 >
                                                                     Unfollow
                                                                 </button>
                                                             ) : (
                                                                 <button
                                                                     onClick={() => handleFollow(postUser._id)}
-                                                                    className="text-sm text-[#1D9BF0]"
+                                                                    className="text-[#1D9BF0]"
                                                                 >
                                                                     Follow
                                                                 </button>
@@ -362,13 +362,15 @@ export default function HomePage() {
                                             ) : (
                                                 <span>Unknown User</span>
                                             )}
-                                            <span>• {new Date(post.createdAt).toLocaleDateString()}</span>
+                                            <span>
+                        • {new Date(post.createdAt).toLocaleDateString()}
+                      </span>
                                         </div>
                                     </div>
                                     <button
                                         onClick={() => handleLike(post._id)}
                                         disabled={!loggedIn}
-                                        className="flex items-center gap-1 text-gray-500 hover:text-red-500"
+                                        className="flex items-center gap-1 text-gray-600 hover:text-red-500"
                                     >
                                         {post.likes.includes(user?._id || "") ? (
                                             <FaHeart className="text-red-500" />

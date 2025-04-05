@@ -40,7 +40,7 @@ export default function BookDetailPage() {
 
     if (!book) {
         return (
-            <div className="min-h-screen bg-black text-gray-100 p-8">
+            <div className="min-h-screen bg-black text-black p-8">
                 <p className="text-center text-red-500">{status || "Уншиж байна..."}</p>
             </div>
         );
@@ -49,7 +49,7 @@ export default function BookDetailPage() {
     const finalPrice = book.saleActive ? book.salePrice : book.price;
 
     return (
-        <main className="min-h-screen bg-black text-gray-100 py-8 px-4">
+        <main className="min-h-screen bg-white text-black py-8 px-4">
             <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-10">
                 <div className="w-full md:w-1/2 bg-[#16181C] rounded flex items-center justify-center overflow-hidden">
                     {book.coverImageUrl ? (
@@ -67,7 +67,7 @@ export default function BookDetailPage() {
                         <h1 className="text-3xl font-bold uppercase tracking-wide">{book.title}</h1>
                         <p className="text-gray-400 text-sm">Зохиогч: {book.author}</p>
                     </div>
-                    <div className="text-sm text-gray-300 leading-relaxed">
+                    <div className="text-sm text-black leading-relaxed">
                         <h2 className="text-lg font-semibold mb-2 uppercase tracking-wider text-[#1D9BF0]">
                             Номын Танилцуулга
                         </h2>
@@ -84,7 +84,7 @@ export default function BookDetailPage() {
                                 </p>
                             </div>
                         ) : (
-                            <p className="text-xl font-bold text-gray-200">
+                            <p className="text-xl font-bold text-black">
                                 Үнэ: {finalPrice.toLocaleString("mn-MN")}₮
                             </p>
                         )}

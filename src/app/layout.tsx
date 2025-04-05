@@ -59,32 +59,36 @@ export const metadata: Metadata = {
     },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+                                       children,
+                                   }: {
+    children: React.ReactNode;
+}) {
     return (
         <html lang="mn">
         <body
-            className={`${inter.className} flex flex-col min-h-screen bg-[#000000] text-[#E1E8ED]`}
+            className={`${inter.className} flex flex-col min-h-screen bg-white text-gray-900`}
         >
         <AuthProvider>
-            {/* Header болон Main-ыг багтаасан нийтлэг контайнер */}
             <div className="max-w-7xl w-full mx-auto px-6">
-                {/* Толгой хэсэг */}
                 <Header />
 
                 {/* Үндсэн Layout */}
                 <main className="flex-grow flex flex-col md:flex-row gap-0 pt-16">
                     {/* Зүүн талын Sidebar */}
-                    <aside className="hidden md:block w-full md:w-1/4 border-r border-[#2f3336] sticky top-16 h-[calc(100vh-80px)] overflow-y-auto">
+                    <aside className="hidden md:block w-full md:w-1/4 border-r border-gray-300 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto fade-in-up">
                         <nav>
-                            <ul className="space-y-3">
+                            <ul className="space-y-1">
                                 <li>
                                     <Link
                                         href="/"
-                                        className="group flex items-center p-4 pl-0 text-xl font-bold transition-colors duration-200 hover:bg-[#2f3336] focus:outline-none focus:ring-2 focus:ring-[#1D9BF0]"
+                                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold
+                                   text-gray-700 transition-smooth focus:outline-none
+                                   focus:ring-2 focus:ring-[#1D9BF0]"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="w-6 h-6 mr-2 text-[#E1E8ED] group-hover:text-[#1D9BF0] group-hover:scale-110 transition-all duration-200"
+                                            className="w-6 h-6 group-hover:text-[#1D9BF0]"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
@@ -93,20 +97,27 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
                                                 strokeWidth="2"
-                                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                                                d="M3 12l2-2m0 0l7-7 7 7M5
+                               10v10a1 1 0 001 1h3m10-11l2
+                               2m-2-2v10a1 1 0 01-1 1h-3m-6
+                               0a1 1 0 001-1v-4a1 1 0 011-1h2a1
+                               1 0 011 1v4a1 1 0 001 1m-6
+                               0h6"
                                             />
                                         </svg>
-                                        Нүүр
+                                        <span>Нүүр</span>
                                     </Link>
                                 </li>
                                 <li>
                                     <Link
                                         href="/book"
-                                        className="group flex items-center p-4 pl-0 text-xl font-bold transition-colors duration-200 hover:bg-[#2f3336] focus:outline-none focus:ring-2 focus:ring-[#1D9BF0]"
+                                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold
+                                   text-gray-700 transition-smooth focus:outline-none
+                                   focus:ring-2 focus:ring-[#1D9BF0]"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="w-6 h-6 mr-2 text-[#E1E8ED] group-hover:text-[#1D9BF0] group-hover:scale-110 transition-all duration-200"
+                                            className="w-6 h-6 group-hover:text-[#1D9BF0]"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
@@ -115,20 +126,30 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
                                                 strokeWidth="2"
-                                                d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 006 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
+                                                d="M12 6.042A8.967 8.967 0
+                               006 3.75c-1.052 0-2.062.18-3
+                               .512v14.25A8.987 8.987 0
+                               006 18c2.305 0 4.408.867
+                               6 2.292m0-14.25a8.966
+                               8.966 0 016-2.292c1.052
+                               0 2.062.18 3 .512v14.25A8.987
+                               8.987 0 0018 18a8.967 8.967
+                               0 00-6 2.292m0-14.25v14.25"
                                             />
                                         </svg>
-                                        Ном
+                                        <span>Ном</span>
                                     </Link>
                                 </li>
                                 <li>
                                     <Link
                                         href="/notifications"
-                                        className="group flex items-center p-4 pl-0 text-xl font-bold transition-colors duration-200 hover:bg-[#2f3336] focus:outline-none focus:ring-2 focus:ring-[#1D9BF0]"
+                                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold
+                                   text-gray-700 transition-smooth  focus:outline-none
+                                   focus:ring-2 focus:ring-[#1D9BF0]"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="w-6 h-6 mr-2 text-[#E1E8ED] group-hover:text-[#1D9BF0] group-hover:scale-110 transition-all duration-200"
+                                            className="w-6 h-6 group-hover:text-[#1D9BF0]"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
@@ -137,20 +158,27 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
                                                 strokeWidth="2"
-                                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                                                d="M19 20H5a2 2 0
+                               01-2-2V6a2 2 0 012-2h10a2
+                               2 0 012 2v1m2 13a2 2 0
+                               01-2-2V7m2 13a2 2 0 002-2V9a2
+                               2 0 00-2-2h-2m-4-3H9M7
+                               16h6M7 8h6v4H7V8z"
                                             />
                                         </svg>
-                                        Мэдэгдэл
+                                        <span>Мэдээлэл</span>
                                     </Link>
                                 </li>
                                 <li>
                                     <Link
-                                        href="/messages"
-                                        className="group flex items-center p-4 pl-0 text-xl font-bold transition-colors duration-200 hover:bg-[#2f3336] focus:outline-none focus:ring-2 focus:ring-[#1D9BF0]"
+                                        href="/shop"
+                                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold
+                                   text-gray-700 transition-smooth focus:outline-none
+                                   focus:ring-2 focus:ring-[#1D9BF0]"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="w-6 h-6 mr-2 text-[#E1E8ED] group-hover:text-[#1D9BF0] group-hover:scale-110 transition-all duration-200"
+                                            className="w-6 h-6 group-hover:text-[#1D9BF0]"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
@@ -159,20 +187,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
                                                 strokeWidth="2"
-                                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                                d="M16 11V7a4 4
+                               0 00-8 0v4M5 9h14l1 12H4L5
+                               9z"
                                             />
                                         </svg>
-                                        Зурвас
+                                        <span>Дэлгүүр</span>
                                     </Link>
                                 </li>
                                 <li>
                                     <Link
                                         href="/profile"
-                                        className="group flex items-center p-4 pl-0 text-xl font-bold transition-colors duration-200 hover:bg-[#2f3336] focus:outline-none focus:ring-2 focus:ring-[#1D9BF0]"
+                                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold
+                                   text-gray-700 transition-smooth focus:outline-none
+                                   focus:ring-2 focus:ring-[#1D9BF0]"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="w-6 h-6 mr-2 text-[#E1E8ED] group-hover:text-[#1D9BF0] group-hover:scale-110 transition-all duration-200"
+                                            className="w-6 h-6 group-hover:text-[#1D9BF0]"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
@@ -181,38 +213,72 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
                                                 strokeWidth="2"
-                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                                d="M16 7a4 4 0
+                               11-8 0 4 4 0 018 0zM12
+                               14a7 7 0 00-7 7h14a7
+                               7 0 00-7-7z"
                                             />
                                         </svg>
-                                        Профайл
+                                        <span>Гишүүд</span>
                                     </Link>
                                 </li>
                                 <li>
                                     <Link
                                         href="/settings"
-                                        className="group flex items-center p-4 pl-0 text-xl font-bold transition-colors duration-200 hover:bg-[#2f3336] focus:outline-none focus:ring-2 focus:ring-[#1D9BF0]"
+                                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold
+                                   text-gray-700 transition-smooth focus:outline-none
+                                   focus:ring-2 focus:ring-[#1D9BF0]"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="w-6 h-6 mr-2 text-[#E1E8ED] group-hover:text-[#1D9BF0] group-hover:scale-110 transition-all duration-200"
-                                            fill="none"
                                             viewBox="0 0 24 24"
-                                            stroke="currentColor"
+                                            fill="currentColor"
+                                            className="w-6 h-6 group-hover:text-[#1D9BF0]"
                                         >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth="2"
-                                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                                            />
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth="2"
-                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                            />
+                                            <path d="M3 4.5C3 3.12 4.12
+                                  2 5.5 2h13C19.88 2
+                                  21 3.12 21
+                                  4.5v15c0 1.38-1.12
+                                  2.5-2.5 2.5h-13C4.12 22 3
+                                  20.88 3
+                                  19.5v-15zM5.5 4c-.28 0-.5.22-.5.5v15c0
+                                  .28.22.5.5.5h13c.28 0
+                                  .5-.22.5-.5v-15c0-.28-.22-.5-.5-.5h-13zM16
+                                  10H8V8h8v2zm-8 2h8v2H8v-2z" />
                                         </svg>
-                                        Тохиргоо
+                                        <span>Таск</span>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        href="/settings"
+                                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold
+                                   text-gray-700 transition-smooth focus:outline-none
+                                   focus:ring-2 focus:ring-[#1D9BF0]"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            fill="currentColor"
+                                            className="w-6 h-6 group-hover:text-[#1D9BF0]"
+                                        >
+                                            <path d="M19.5 6H17V4.5C17
+                                  3.12 15.88 2 14.5
+                                  2h-5C8.12 2 7 3.12 7
+                                  4.5V6H4.5C3.12 6 2 7.12 2
+                                  8.5v10C2 19.88 3.12 21 4.5
+                                  21h15c1.38 0 2.5-1.12 2.5-2.5v-10C22
+                                  7.12 20.88 6 19.5 6zM9 4.5c0-.28.23-.5.5-.5h5c.28
+                                  0 .5.22.5.5V6H9V4.5zm11
+                                  14c0 .28-.22.5-.5.5h-15c-.27
+                                  0-.5-.22-.5-.5v-3.04c.59.35
+                                  1.27.54 2 .54h5v1h2v-1h5c.73
+                                  0 1.41-.19 2-.54v3.04zm0-6.49c0
+                                  1.1-.9 1.99-2 1.99h-5v-1h-2v1H6c-1.1
+                                  0-2-.9-2-2V8.5c0-.28.23-.5.5-.5h15c.28
+                                  0 .5.22.5.5v3.51z"/>
+                                        </svg>
+                                        <span>Ажил</span>
                                     </Link>
                                 </li>
                             </ul>
@@ -220,12 +286,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     </aside>
 
                     {/* Үндсэн контент */}
-                    <div className="w-full md:w-1/2 border-r border-[#2f3336]">
+                    <div className="w-full md:w-1/2 border-r border-gray-300">
                         <div className="p-4 space-y-6">{children}</div>
                     </div>
 
                     {/* Баруун талын Sidebar */}
-                    <aside className="hidden md:block w-full md:w-1/4 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto p-2">
+                    <aside className="hidden md:block w-full md:w-1/4 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto p-2 fade-in-up">
                         <div className="space-y-6">
                             {/* Идэвхтэй сэдвүүд */}
                             <div className="p-4 transition-shadow duration-200 hover:shadow-md">
@@ -241,7 +307,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
                                             strokeWidth="2"
-                                            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                                            d="M13 7h8m0
+                             0v8m0-8l-8 8-4-4-6
+                             6"
                                         />
                                     </svg>
                                     Идэвхтэй сэдвүүд
@@ -288,7 +356,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
                                             strokeWidth="2"
-                                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                                            d="M18 9v3m0
+                             0v3m0-3h3m-3
+                             0h-3m-2-5a4 4 0
+                             11-8 0 4 4 0
+                             018 0zM3 20a6
+                             6 0 0112 0v1H3v-1z"
                                         />
                                     </svg>
                                     Зөвлөмж болгож буй хэрэглэгчид
@@ -302,7 +375,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                         />
                                         <div className="flex-1">
                                             <p className="font-semibold">Хэрэглэгч Нэг</p>
-                                            <p className="text-gray-400 text-sm">@userone</p>
+                                            <p className="text-gray-500 text-sm">@userone</p>
                                         </div>
                                         <button className="bg-[#1D9BF0] text-white px-4 py-1 rounded-full hover:scale-105 transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-[#1D9BF0]">
                                             Дагах
@@ -316,8 +389,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
 
             {/* Хөл хэсэг */}
-            <footer className="w-full text-sm text-center py-4 border-t border-[#2f3336]">
-                <p className="text-gray-400">
+            <footer className="w-full text-sm text-center py-4 border-t border-gray-300">
+                <p className="text-gray-600">
                     © 2025 THE VONE CLAN. Бүх эрх хуулиар хамгаалагдсан.
                 </p>
             </footer>

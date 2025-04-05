@@ -18,11 +18,8 @@ const UserSchema = new Schema(
             type: String,
             required: true,
         },
-        // Replacing firstName + lastName with a single "name"
-        name: {
-            type: String,
-            required: true,
-        },
+        // REMOVED "name" completely
+
         phoneNumber: {
             type: String,
             required: true,

@@ -3,16 +3,24 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import axios from "axios";
 
+/**
+ * Matches your new user schema (no "name" field).
+ * We can optionally include other fields like phoneNumber or location.
+ */
 interface UserData {
     _id: string;
     username: string;
-    email?: string;
     profilePicture?: string;
     rating?: number;
     followers?: string[];
     following?: string[];
+    location?: string;
 }
 
+/**
+ * If your posts actually have "title" + "content", keep them.
+ * Otherwise remove "title" references.
+ */
 interface PostData {
     _id: string;
     title: string;
@@ -43,12 +51,15 @@ export default function PublicProfilePage() {
             })
             .catch((err) => {
                 console.error("Fetch user error:", err.response?.data || err.message);
-                setError(err.response?.data?.error || "Хэрэглэгчийн профайл татаж авахад алдаа гарлаа.");
+                setError(
+                    err.response?.data?.error ||
+                    "Хэрэглэгчийн профайл татаж авахад алдаа гарлаа."
+                );
             })
             .finally(() => setLoading(false));
     }, [userId, BASE_URL]);
 
-    // Fetch that user’s posts
+    // ---------------- FETCH USER POSTS ----------------
     useEffect(() => {
         if (!userId) return;
         setPostLoading(true);
@@ -63,66 +74,93 @@ export default function PublicProfilePage() {
             .finally(() => setPostLoading(false));
     }, [userId, BASE_URL]);
 
+    // ---------------- RENDER LOGIC ----------------
     if (loading) {
-        return <div className="p-4">Уншиж байна...</div>;
+        return <div className="p-4 text-center">Уншиж байна...</div>;
     }
     if (error) {
-        return <div className="p-4 text-red-500">{error}</div>;
+        return <div className="p-4 text-red-500 text-center">{error}</div>;
     }
     if (!userData) {
-        return <div className="p-4">Профайл олдсонгүй</div>;
+        return <div className="p-4 text-center">Профайл олдсонгүй</div>;
     }
 
+    // ---------------- UI ----------------
     return (
-        <div className="p-4">
-            {/* Display user info */}
-            <div className="text-center mb-6">
-                {userData.profilePicture ? (
-                    <img
-                        src={userData.profilePicture}
-                        alt="Profile"
-                        className="w-20 h-20 mx-auto rounded-full object-cover mb-2"
-                    />
-                ) : (
-                    <div className="w-20 h-20 mx-auto bg-gray-200 rounded-full mb-2" />
-                )}
-                <h2 className="text-lg font-semibold">{userData.username}</h2>
+        <div className="min-h-screen bg-white px-4 py-6 flex flex-col items-center">
+            {/* Profile Header */}
+            <div className="w-full max-w-xl bg-white rounded-md shadow-sm p-6 flex flex-col items-center">
+                {/* Profile Picture */}
+                <div className="relative w-32 h-32 mb-4">
+                    {userData.profilePicture ? (
+                        <img
+                            src={userData.profilePicture}
+                            alt="Profile"
+                            className="w-32 h-32 rounded-full object-cover border border-gray-300"
+                        />
+                    ) : (
+                        <div className="w-32 h-32 rounded-full bg-gray-200" />
+                    )}
+                </div>
+
+                {/* Username + Rating */}
+                <h1 className="text-2xl font-bold text-gray-800">{userData.username}</h1>
                 {userData.rating && (
-                    <p className="text-sm text-gray-600">★ {userData.rating} үнэлгээ</p>
+                    <p className="text-sm text-gray-600 mt-1">★ {userData.rating} үнэлгээ</p>
                 )}
-                {/* Display follow counts */}
-                <div className="flex justify-center gap-6 mt-3">
-                    <div>
-            <span className="font-bold">
-              {userData.followers ? userData.followers.length : 0}
-            </span>{" "}
-                        Followers
+
+                {/* Optionally show user location if you want */}
+                {userData.location && (
+                    <p className="text-sm text-gray-500 mt-1">Байршил: {userData.location}</p>
+                )}
+
+                {/* Follower/Following Stats */}
+                <div className="flex items-center gap-6 mt-4">
+                    <div className="text-center">
+                        <p className="text-lg font-semibold text-gray-800">
+                            {userData.followers ? userData.followers.length : 0}
+                        </p>
+                        <p className="text-sm text-gray-500">Followers</p>
                     </div>
-                    <div>
-            <span className="font-bold">
-              {userData.following ? userData.following.length : 0}
-            </span>{" "}
-                        Following
+                    <div className="text-center">
+                        <p className="text-lg font-semibold text-gray-800">
+                            {userData.following ? userData.following.length : 0}
+                        </p>
+                        <p className="text-sm text-gray-500">Following</p>
                     </div>
                 </div>
             </div>
 
-            {/* That user's posts */}
-            <div>
-                <h3 className="font-bold text-lg mb-3">Нийтлэлүүд</h3>
-                {postLoading && <p className="text-gray-600">Ачааллаж байна...</p>}
+            {/* Posts Section */}
+            <div className="w-full max-w-xl mt-8">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                    Нийтлэлүүд
+                </h2>
+                {postLoading && (
+                    <p className="text-gray-600 mb-2">Ачааллаж байна...</p>
+                )}
                 {!postLoading && userPosts.length === 0 && (
                     <p className="text-gray-600">Энэ хэрэглэгч нийтлэлгүй байна.</p>
                 )}
-                {userPosts.map((post) => (
-                    <div key={post._id} className="border-b border-gray-200 pb-2 mb-2">
-                        <h4 className="font-semibold">{post.title}</h4>
-                        <p className="text-sm text-gray-600">{post.content}</p>
-                        <p className="text-xs text-gray-400">
-                            {new Date(post.createdAt).toLocaleString()}
-                        </p>
-                    </div>
-                ))}
+                <div className="space-y-4">
+                    {userPosts.map((post) => (
+                        <div
+                            key={post._id}
+                            className="p-4 bg-white rounded-md shadow-sm border border-gray-100"
+                        >
+                            {/* Post Title */}
+                            <h3 className="text-md font-bold text-gray-800 mb-1">
+                                {post.title}
+                            </h3>
+                            {/* Post Content */}
+                            <p className="text-sm text-gray-700 mb-2">{post.content}</p>
+                            {/* Post Date */}
+                            <p className="text-xs text-gray-400">
+                                {new Date(post.createdAt).toLocaleString()}
+                            </p>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

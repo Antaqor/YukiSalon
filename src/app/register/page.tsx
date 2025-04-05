@@ -4,7 +4,6 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 
 /** Helper validations **/
-// Accepts either 8 digits (e.g. 94641031) or optional "+" plus 8–15 digits
 const isValidPhoneNumber = (phone: string) => {
     const regex = /^\+?\d{8,15}$/;
     return regex.test(phone);
@@ -18,19 +17,14 @@ export default function RegisterMultiStepPage() {
     const router = useRouter();
 
     // ---------- STEP CONTROL ----------
-    // step 1: basic info; step 1.5: phone verification; step 2: additional details
     const [step, setStep] = useState(1);
 
-    // ---------- STEP 1 FIELDS ----------
-    const [name, setName] = useState("");
+    // ---------- STEP 1 FIELDS (NO name) ----------
+    const [username, setUsername] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [birthMonth, setBirthMonth] = useState("");
     const [birthDay, setBirthDay] = useState("");
     const [birthYear, setBirthYear] = useState("");
-
-    // New: Phone verification fields
-    const [verificationSent, setVerificationSent] = useState(false);
-    const [verificationCode, setVerificationCode] = useState("");
 
     // ---------- STEP 2 FIELDS ----------
     const [password, setPassword] = useState("");
@@ -46,7 +40,7 @@ export default function RegisterMultiStepPage() {
     const [fieldErrors, setFieldErrors] = useState<{
         [key: string]: string;
     }>({
-        name: "",
+        username: "",
         phoneNumber: "",
         birthMonth: "",
         birthDay: "",
@@ -55,19 +49,18 @@ export default function RegisterMultiStepPage() {
         gender: "",
         location: "",
         profilePicture: "",
-        verificationCode: "",
     });
 
     const BASE_URL = "https://vone.mn";
 
     // ------------------------------------------------------------------
-    // STEP 1: Validate Basic Fields & Send Verification Message
+    // STEP 1: Validate Basic Fields and proceed to next step
     // ------------------------------------------------------------------
-    const handleNext = async () => {
+    const handleNext = () => {
         setError("");
         setSuccess("");
         setFieldErrors({
-            name: "",
+            username: "",
             phoneNumber: "",
             birthMonth: "",
             birthDay: "",
@@ -76,13 +69,12 @@ export default function RegisterMultiStepPage() {
             gender: "",
             location: "",
             profilePicture: "",
-            verificationCode: "",
         });
 
         const errors: { [key: string]: string } = {};
 
-        if (!name.trim()) {
-            errors.name = "Нэрээ оруулна уу.";
+        if (!username.trim()) {
+            errors.username = "Хэрэглэгчийн нэр оруулна уу.";
         }
         if (!isValidPhoneNumber(phoneNumber)) {
             errors.phoneNumber = "Утасны дугаар буруу байна.";
@@ -102,53 +94,8 @@ export default function RegisterMultiStepPage() {
             return;
         }
 
-        // Send verification SMS
-        try {
-            const res = await axios.post(`${BASE_URL}/api/auth/sendVerification`, {
-                phoneNumber,
-            });
-            if (res.status === 200) {
-                setSuccess("Баталгаажуулах код илгээлээ. Та кодоо оруулна уу.");
-                setVerificationSent(true);
-            }
-        } catch (err: any) {
-            console.error("Verification send error:", err);
-            setError(err.response?.data?.error || "Баталгаажуулах код илгээхэд алдаа гарлаа.");
-        }
-    };
-
-    // ------------------------------------------------------------------
-    // Phone Verification: Check the code sent via SMS
-    // ------------------------------------------------------------------
-    const handleVerify = async () => {
-        setError("");
-        setSuccess("");
-        setFieldErrors((prev) => ({ ...prev, verificationCode: "" }));
-
-        if (!verificationCode.trim()) {
-            setFieldErrors((prev) => ({
-                ...prev,
-                verificationCode: "Баталгаажуулах кодоо оруулна уу.",
-            }));
-            return;
-        }
-
-        try {
-            const res = await axios.post(`${BASE_URL}/api/auth/verifyCode`, {
-                phoneNumber,
-                verificationCode,
-            });
-            if (res.status === 200 && res.data.verified === true) {
-                setSuccess("Утасны дугаар баталгаажлаа.");
-                // Proceed to next step (Step 2)
-                setStep(2);
-            } else {
-                setError("Баталгаажуулах код буруу байна.");
-            }
-        } catch (err: any) {
-            console.error("Verification error:", err);
-            setError(err.response?.data?.error || "Баталгаажуулах код шалгахад алдаа гарлаа.");
-        }
+        // Proceed to Step 2
+        setStep(2);
     };
 
     // ------------------------------------------------------------------
@@ -159,7 +106,7 @@ export default function RegisterMultiStepPage() {
         setError("");
         setSuccess("");
         setFieldErrors({
-            name: "",
+            username: "",
             phoneNumber: "",
             birthMonth: "",
             birthDay: "",
@@ -168,7 +115,6 @@ export default function RegisterMultiStepPage() {
             gender: "",
             location: "",
             profilePicture: "",
-            verificationCode: "",
         });
 
         const errors: { [key: string]: string } = {};
@@ -198,7 +144,7 @@ export default function RegisterMultiStepPage() {
             const formData = new FormData();
 
             // Step 1 data
-            formData.append("name", name);
+            formData.append("username", username);
             formData.append("phoneNumber", phoneNumber);
             formData.append(
                 "birthday",
@@ -213,7 +159,9 @@ export default function RegisterMultiStepPage() {
             formData.append("password", password);
             formData.append("gender", gender);
             formData.append("location", location);
-            formData.append("profilePicture", profilePicture!);
+            if (profilePicture) {
+                formData.append("profilePicture", profilePicture);
+            }
 
             const res = await axios.post(`${BASE_URL}/api/auth/register`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
@@ -221,9 +169,9 @@ export default function RegisterMultiStepPage() {
 
             if (res.status === 201) {
                 setSuccess("Ажилттай бүртгэл үүсгэлээ");
-                // Clear all fields and reset state
+                // Clear all fields
                 setStep(1);
-                setName("");
+                setUsername("");
                 setPhoneNumber("");
                 setBirthMonth("");
                 setBirthDay("");
@@ -232,8 +180,6 @@ export default function RegisterMultiStepPage() {
                 setGender("");
                 setLocation("");
                 setProfilePicture(null);
-                setVerificationSent(false);
-                setVerificationCode("");
             }
         } catch (err: any) {
             console.error("Register error:", err);
@@ -243,41 +189,43 @@ export default function RegisterMultiStepPage() {
 
     // ---------- Utility: conditional className for inputs/selects ----------
     const getInputClass = (fieldName: string) => {
-        return `w-full rounded-md px-3 py-2 text-white bg-[#111] focus:outline-none focus:ring-2 ${
+        return `w-full rounded-md px-3 py-2 text-black bg-white focus:outline-none focus:ring-2 ${
             fieldErrors[fieldName]
                 ? "border border-red-500 focus:ring-red-500"
-                : "border border-gray-700 focus:ring-gray-500"
+                : "border border-gray-300 focus:ring-blue-500"
         }`;
     };
 
     return (
-        <div className="min-h-screen bg-black flex items-center justify-center px-4">
+        <div className="min-h-screen bg-white flex items-center justify-center px-4">
             <div className="w-full max-w-md space-y-6">
                 {error && <p className="text-red-600">{error}</p>}
                 {success && <p className="text-green-600">{success}</p>}
 
                 {step === 1 && (
                     <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
-                        <h1 className="text-3xl font-bold text-white">Create your account</h1>
+                        <h1 className="text-3xl font-bold text-black">Create your account</h1>
 
-                        {/* NAME */}
+                        {/* USERNAME */}
                         <div>
-                            <label className="block font-medium text-white mb-1">Name</label>
+                            <label className="block font-medium text-black mb-1">Username</label>
                             <input
                                 type="text"
-                                className={getInputClass("name")}
-                                placeholder="Tesudei"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                className={getInputClass("username")}
+                                placeholder="mycoolusername"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
                             />
-                            {fieldErrors.name && (
-                                <p className="text-red-500 text-sm mt-1">{fieldErrors.name}</p>
+                            {fieldErrors.username && (
+                                <p className="text-red-500 text-sm mt-1">{fieldErrors.username}</p>
                             )}
                         </div>
 
                         {/* PHONE NUMBER */}
                         <div>
-                            <label className="block font-medium text-white mb-1">Phone number</label>
+                            <label className="block font-medium text-black mb-1">
+                                Phone number
+                            </label>
                             <input
                                 type="text"
                                 className={getInputClass("phoneNumber")}
@@ -292,8 +240,10 @@ export default function RegisterMultiStepPage() {
 
                         {/* DATE OF BIRTH */}
                         <div>
-                            <label className="block font-medium text-white mb-1">Date of birth</label>
-                            <p className="text-xs text-gray-400 mb-2">
+                            <label className="block font-medium text-black mb-1">
+                                Date of birth
+                            </label>
+                            <p className="text-xs text-gray-500 mb-2">
                                 This will not be shown publicly. Confirm your own age.
                             </p>
                             <div className="flex space-x-2">
@@ -347,57 +297,32 @@ export default function RegisterMultiStepPage() {
                                     ))}
                                 </select>
                             </div>
-                            {(fieldErrors.birthMonth || fieldErrors.birthDay || fieldErrors.birthYear) && (
+                            {(fieldErrors.birthMonth ||
+                                fieldErrors.birthDay ||
+                                fieldErrors.birthYear) && (
                                 <p className="text-red-500 text-sm mt-1">
-                                    {fieldErrors.birthMonth || fieldErrors.birthDay || fieldErrors.birthYear}
+                                    {fieldErrors.birthMonth ||
+                                        fieldErrors.birthDay ||
+                                        fieldErrors.birthYear}
                                 </p>
                             )}
                         </div>
 
-                        {/* If verification has not yet been sent, show the "Next" button */}
-                        {!verificationSent ? (
-                            <button
-                                type="button"
-                                onClick={handleNext}
-                                className="w-full bg-white text-black font-semibold py-3 rounded-md hover:bg-gray-300 transition"
-                            >
-                                Next
-                            </button>
-                        ) : (
-                            // If verification SMS has been sent, show input for verification code
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block font-medium text-white mb-1">
-                                        Enter Verification Code
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className={getInputClass("verificationCode")}
-                                        placeholder="Verification Code"
-                                        value={verificationCode}
-                                        onChange={(e) => setVerificationCode(e.target.value)}
-                                    />
-                                    {fieldErrors.verificationCode && (
-                                        <p className="text-red-500 text-sm mt-1">{fieldErrors.verificationCode}</p>
-                                    )}
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={handleVerify}
-                                    className="w-full bg-white text-black font-semibold py-3 rounded-md hover:bg-gray-300 transition"
-                                >
-                                    Verify Phone
-                                </button>
-                            </div>
-                        )}
+                        <button
+                            type="button"
+                            onClick={handleNext}
+                            className="w-full bg-blue-500 text-white font-semibold py-3 rounded-md hover:bg-blue-600 transition"
+                        >
+                            Next
+                        </button>
                     </form>
                 )}
 
                 {step === 2 && (
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        <h1 className="text-3xl font-bold text-white">Additional Details</h1>
+                        <h1 className="text-3xl font-bold text-black">Additional Details</h1>
 
-                        {/* LOGIN PASSWORD (Blue label) */}
+                        {/* LOGIN PASSWORD */}
                         <div>
                             <label className="block text-sm font-medium text-blue-500 mb-1">
                                 Login Password
@@ -416,7 +341,9 @@ export default function RegisterMultiStepPage() {
 
                         {/* GENDER */}
                         <div>
-                            <label className="block text-sm font-medium text-white mb-1">Хүйс</label>
+                            <label className="block text-sm font-medium text-black mb-1">
+                                Хүйс
+                            </label>
                             <select
                                 className={getInputClass("gender")}
                                 value={gender}
@@ -434,7 +361,9 @@ export default function RegisterMultiStepPage() {
 
                         {/* LOCATION */}
                         <div>
-                            <label className="block text-sm font-medium text-white mb-1">Байршил</label>
+                            <label className="block text-sm font-medium text-black mb-1">
+                                Байршил
+                            </label>
                             <input
                                 type="text"
                                 className={getInputClass("location")}
@@ -449,7 +378,7 @@ export default function RegisterMultiStepPage() {
 
                         {/* PROFILE PICTURE */}
                         <div>
-                            <label className="block text-sm font-medium text-white mb-1">
+                            <label className="block text-sm font-medium text-black mb-1">
                                 Профайл зураг
                             </label>
                             <input
@@ -463,7 +392,9 @@ export default function RegisterMultiStepPage() {
                                 }}
                             />
                             {fieldErrors.profilePicture && (
-                                <p className="text-red-500 text-xs mt-1">{fieldErrors.profilePicture}</p>
+                                <p className="text-red-500 text-xs mt-1">
+                                    {fieldErrors.profilePicture}
+                                </p>
                             )}
                         </div>
 
@@ -472,26 +403,19 @@ export default function RegisterMultiStepPage() {
                             <button
                                 type="button"
                                 onClick={() => setStep(1)}
-                                className="flex-1 bg-gray-300 text-black py-3 rounded-md font-semibold hover:bg-gray-500 transition"
+                                className="flex-1 bg-gray-200 text-black py-3 rounded-md font-semibold hover:bg-gray-300 transition"
                             >
                                 Буцах
                             </button>
                             <button
                                 type="submit"
-                                className="flex-1 bg-white text-black py-3 rounded-md font-semibold hover:bg-gray-300 transition"
+                                className="flex-1 bg-blue-500 text-white py-3 rounded-md font-semibold hover:bg-blue-600 transition"
                             >
                                 Бүртгүүлэх
                             </button>
                         </div>
                     </form>
                 )}
-
-                <button
-                    onClick={() => router.push("/")}
-                    className="block text-sm text-gray-500 underline hover:text-gray-300 mt-6"
-                >
-                    Нүүр хуудас
-                </button>
             </div>
         </div>
     );

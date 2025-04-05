@@ -5,55 +5,81 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const authenticateToken = require("../middleware/authMiddleware");
 
-// Register
-router.post("/register", async (req, res) => {
+// -------------- MULTER FOR FILE UPLOADS --------------
+const multer = require("multer");
+const path = require("path");
+
+const upload = multer({
+    dest: path.join(__dirname, "..", "uploads"),
+});
+
+// -------------- REGISTER --------------
+router.post("/register", upload.single("profilePicture"), async (req, res) => {
     try {
-        // Destructure all fields from the request body
+        // Debug logs: see exactly what's in req.body / req.file
+        console.log("------ REGISTER BODY ------");
+        console.log(req.body);
+        console.log("------ REGISTER FILE ------");
+        console.log(req.file);
+
+        // Because it's multipart, fields are in req.body, file in req.file
         const {
             username,
             password,
-            name,
             phoneNumber,
             location,
             gender,
-            birthday, // expects { year, month, day }
         } = req.body;
 
-        // Validate all required fields
+        // The birthday was sent as a JSON string => parse it
+        let birthday = {};
+        try {
+            birthday = JSON.parse(req.body.birthday);
+        } catch (err) {
+            return res.status(400).json({ error: "Invalid birthday format" });
+        }
+
+        // If file was uploaded, build a path
+        let profilePicturePath = "";
+        if (req.file) {
+            profilePicturePath = "/uploads/" + req.file.filename;
+        }
+
+        // Validate required fields (NO 'name')
         if (
             !username ||
             !password ||
-            !name ||
             !phoneNumber ||
             !location ||
             !gender ||
-            !birthday ||
             !birthday.year ||
             !birthday.month ||
             !birthday.day
         ) {
             return res.status(400).json({
-                error: "username, password, name, phoneNumber, location, gender, and birthday (year, month, day) are required",
+                error:
+                    "Missing required fields (username, password, phoneNumber, location, gender, birthday)",
             });
         }
 
-        // Check for existing user with same username
+        // Check if username is taken
         const existing = await User.findOne({ username });
         if (existing) {
             return res.status(400).json({ error: "Username already in use" });
         }
 
+        // Hash the password
         const hashedPw = await bcrypt.hash(password, 10);
 
-        // Create new user with all the fields
+        // Create new user (NO 'name')
         const newUser = await User.create({
             username,
             password: hashedPw,
-            name,
             phoneNumber,
             location,
             gender,
             birthday,
+            profilePicture: profilePicturePath,
         });
 
         return res.status(201).json({
@@ -61,7 +87,6 @@ router.post("/register", async (req, res) => {
             user: {
                 _id: newUser._id,
                 username: newUser.username,
-                name: newUser.name,
                 phoneNumber: newUser.phoneNumber,
                 location: newUser.location,
                 gender: newUser.gender,
@@ -76,7 +101,7 @@ router.post("/register", async (req, res) => {
     }
 });
 
-// Login
+// -------------- LOGIN --------------
 router.post("/login", async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -104,7 +129,6 @@ router.post("/login", async (req, res) => {
             user: {
                 _id: user._id,
                 username: user.username,
-                name: user.name,
                 phoneNumber: user.phoneNumber,
                 location: user.location,
                 gender: user.gender,
@@ -123,11 +147,11 @@ router.post("/login", async (req, res) => {
     }
 });
 
-// Get public user profile
+// -------------- PUBLIC PROFILE (by ID) --------------
 router.get("/user/:id", async (req, res) => {
     try {
         const user = await User.findById(req.params.id).select(
-            "username name phoneNumber location gender birthday profilePicture rating subscriptionExpiresAt following followers"
+            "username phoneNumber location gender birthday profilePicture rating subscriptionExpiresAt following followers"
         );
         if (!user) {
             return res.status(404).json({ error: "User not found" });
@@ -139,12 +163,12 @@ router.get("/user/:id", async (req, res) => {
     }
 });
 
-// Get own profile
+// -------------- GET OWN PROFILE --------------
 router.get("/profile", authenticateToken, async (req, res) => {
     try {
         const userId = req.user._id || req.user.id;
         const user = await User.findById(userId).select(
-            "username name phoneNumber location gender birthday profilePicture rating subscriptionExpiresAt following followers"
+            "username phoneNumber location gender birthday profilePicture rating subscriptionExpiresAt following followers"
         );
         if (!user) {
             return res.status(404).json({ error: "User not found" });
