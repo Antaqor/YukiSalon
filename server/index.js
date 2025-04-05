@@ -7,10 +7,10 @@ const fs = require("fs");
 
 // Import routes
 const authRoutes = require("./routes/auth");
-const postRoutes = require("./routes/post");        // Only if you have these
-const userRoutes = require("./routes/user");        // Only if you have these
-const paymentRoutes = require("./routes/payment");  // Only if you have these
-const bookRoutes = require("./routes/bookRoutes");  // Only if you have these
+const postRoutes = require("./routes/post");        // If you have these
+const userRoutes = require("./routes/user");        // If you have these
+const paymentRoutes = require("./routes/payment");  // If you have these
+const bookRoutes = require("./routes/bookRoutes");  // If you have these
 
 const app = express();
 const PORT = process.env.PORT || 5001;

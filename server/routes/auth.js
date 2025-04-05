@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-// const sizeOf = require("image-size"); // We no longer need this if dimension checks are removed.
+const sizeOf = require("image-size"); // for reading pixel dimensions
 
 const User = require("../models/User");
 const authenticateToken = require("../middleware/authMiddleware");
@@ -14,10 +14,16 @@ const authenticateToken = require("../middleware/authMiddleware");
 const MIN_FILE_SIZE = 10 * 1024;        // 10KB
 const MAX_FILE_SIZE = 5 * 1024 * 1024;  // 5MB
 
+// ---------------------- PIXEL DIMENSION LIMITS ----------------------
+const MIN_WIDTH_PX = 300;
+const MIN_HEIGHT_PX = 300;
+const MAX_WIDTH_PX = 3000;
+const MAX_HEIGHT_PX = 3000;
+
 // ---------------------- MULTER CONFIG ----------------------
 const upload = multer({
     dest: path.join(__dirname, "..", "uploads"),
-    limits: { fileSize: MAX_FILE_SIZE }, // reject bigger than 5MB
+    limits: { fileSize: MAX_FILE_SIZE },
     fileFilter: (req, file, cb) => {
         if (!file.mimetype.startsWith("image/")) {
             return cb(new Error("Only image files are allowed"), false);
@@ -37,23 +43,37 @@ function removeUploadedFile(file) {
 router.post("/register", (req, res) => {
     // Wrap single-file upload so we can catch Multer errors
     upload.single("profilePicture")(req, res, async (err) => {
-        // If Multer threw an error (e.g., file > 5MB, not an image, etc.)
         if (err) {
             if (err.code === "LIMIT_FILE_SIZE") {
                 return res.status(400).json({
-                    error: "File exceeds 5MB limit.",
+                    error: "Зурагны хэмжээ хамгийн ихдээ 5MB байх ёстой.",
                 });
             }
             return res.status(400).json({ error: err.message });
         }
 
         try {
-            // If user uploaded a file, do the min-size check (10KB)
+            // If user uploaded a file, perform checks:
             if (req.file) {
+                // Check minimum file size
                 if (req.file.size < MIN_FILE_SIZE) {
                     removeUploadedFile(req.file);
                     return res.status(400).json({
-                        error: "Image must be at least 10KB.",
+                        error: "Зурагны хэмжээ хамгийн багадаа 10KB байх ёстой.",
+                    });
+                }
+
+                // Get pixel dimensions
+                const dimensions = sizeOf(req.file.path);
+                if (
+                    dimensions.width < MIN_WIDTH_PX ||
+                    dimensions.height < MIN_HEIGHT_PX ||
+                    dimensions.width > MAX_WIDTH_PX ||
+                    dimensions.height > MAX_HEIGHT_PX
+                ) {
+                    removeUploadedFile(req.file);
+                    return res.status(400).json({
+                        error: `Image dimensions out of range. The image must be between ${MIN_WIDTH_PX}x${MIN_HEIGHT_PX} and ${MAX_WIDTH_PX}x${MAX_HEIGHT_PX} pixels.`,
                     });
                 }
             }
@@ -65,8 +85,6 @@ router.post("/register", (req, res) => {
 
             // Destructure fields
             const { username, password, phoneNumber, location, gender } = req.body;
-
-            // Parse birthday
             let birthday = {};
             try {
                 birthday = JSON.parse(req.body.birthday);
@@ -75,13 +93,11 @@ router.post("/register", (req, res) => {
                 return res.status(400).json({ error: "Invalid birthday format" });
             }
 
-            // If a file was uploaded, build a path to it
             let profilePicturePath = "";
             if (req.file) {
                 profilePicturePath = "/uploads/" + req.file.filename;
             }
 
-            // Check required fields
             if (
                 !username ||
                 !password ||
@@ -106,10 +122,8 @@ router.post("/register", (req, res) => {
                 return res.status(400).json({ error: "Username already in use" });
             }
 
-            // Hash password
+            // Hash password and create new user
             const hashedPw = await bcrypt.hash(password, 10);
-
-            // Create new user
             const newUser = await User.create({
                 username,
                 password: hashedPw,
@@ -120,7 +134,6 @@ router.post("/register", (req, res) => {
                 profilePicture: profilePicturePath,
             });
 
-            // Success!
             return res.status(201).json({
                 message: "User registered!",
                 user: {
