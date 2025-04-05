@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const sizeOf = require("image-size"); // <-- for reading pixel dimensions
+// const sizeOf = require("image-size"); // We no longer need this if dimension checks are removed.
 
 const User = require("../models/User");
 const authenticateToken = require("../middleware/authMiddleware");
@@ -14,25 +14,10 @@ const authenticateToken = require("../middleware/authMiddleware");
 const MIN_FILE_SIZE = 10 * 1024;        // 10KB
 const MAX_FILE_SIZE = 5 * 1024 * 1024;  // 5MB
 
-// ---------------------- DIMENSION LIMITS (in mm) ----------------------
-// Suppose we want the width at least 50 mm, at most 500 mm, etc.
-const MIN_WIDTH_MM = 50;
-const MIN_HEIGHT_MM = 50;
-const MAX_WIDTH_MM = 500;
-const MAX_HEIGHT_MM = 500;
-
-// For dimension checks, we need to convert px → mm, so we guess a DPI (dots/inch).
-// 1 inch = 25.4 mm => mm = (px / DPI) * 25.4
-const ASSUMED_DPI = 300; // or 72, or read from EXIF if you want the real value
-
-function pxToMm(px, dpi = 300) {
-    return (px / dpi) * 25.4;
-}
-
 // ---------------------- MULTER CONFIG ----------------------
 const upload = multer({
     dest: path.join(__dirname, "..", "uploads"),
-    limits: { fileSize: MAX_FILE_SIZE }, // reject bigger than 5MB immediately
+    limits: { fileSize: MAX_FILE_SIZE }, // reject bigger than 5MB
     fileFilter: (req, file, cb) => {
         if (!file.mimetype.startsWith("image/")) {
             return cb(new Error("Only image files are allowed"), false);
@@ -52,15 +37,13 @@ function removeUploadedFile(file) {
 router.post("/register", (req, res) => {
     // Wrap single-file upload so we can catch Multer errors
     upload.single("profilePicture")(req, res, async (err) => {
-        // If Multer threw an error (e.g., bigger than 5MB, not an image, etc.)
+        // If Multer threw an error (e.g., file > 5MB, not an image, etc.)
         if (err) {
             if (err.code === "LIMIT_FILE_SIZE") {
-                // File is bigger than 5MB
                 return res.status(400).json({
-                    error: "Зурагны хэмжээ хамгийн ихдээ 5MB байх ёстой.",
+                    error: "File exceeds 5MB limit.",
                 });
             }
-            // Some other Multer or fileFilter error
             return res.status(400).json({ error: err.message });
         }
 
@@ -70,28 +53,7 @@ router.post("/register", (req, res) => {
                 if (req.file.size < MIN_FILE_SIZE) {
                     removeUploadedFile(req.file);
                     return res.status(400).json({
-                        error: "Зурагны хэмжээ хамгийн багадаа 10KB байх ёстой.",
-                    });
-                }
-
-                // 1) Get pixel dimensions using image-size
-                const dimensions = sizeOf(req.file.path);
-                // e.g. dimensions = { width: 1920, height: 1080, type: 'png', ... }
-
-                // 2) Convert pixels → mm
-                const widthMm = pxToMm(dimensions.width, ASSUMED_DPI);
-                const heightMm = pxToMm(dimensions.height, ASSUMED_DPI);
-
-                // 3) Check if within min/max dimension constraints
-                if (
-                    widthMm < MIN_WIDTH_MM ||
-                    heightMm < MIN_HEIGHT_MM ||
-                    widthMm > MAX_WIDTH_MM ||
-                    heightMm > MAX_HEIGHT_MM
-                ) {
-                    removeUploadedFile(req.file);
-                    return res.status(400).json({
-                        error: `Dimensions out of range. Image must be between ${MIN_WIDTH_MM}–${MAX_WIDTH_MM} mm wide and ${MIN_HEIGHT_MM}–${MAX_HEIGHT_MM} mm tall (assuming ${ASSUMED_DPI} DPI).`,
+                        error: "Image must be at least 10KB.",
                     });
                 }
             }
@@ -104,7 +66,7 @@ router.post("/register", (req, res) => {
             // Destructure fields
             const { username, password, phoneNumber, location, gender } = req.body;
 
-            // Parse birthday from JSON string
+            // Parse birthday
             let birthday = {};
             try {
                 birthday = JSON.parse(req.body.birthday);
@@ -113,13 +75,13 @@ router.post("/register", (req, res) => {
                 return res.status(400).json({ error: "Invalid birthday format" });
             }
 
-            // Build file path if a file was uploaded
+            // If a file was uploaded, build a path to it
             let profilePicturePath = "";
             if (req.file) {
                 profilePicturePath = "/uploads/" + req.file.filename;
             }
 
-            // Validate required fields
+            // Check required fields
             if (
                 !username ||
                 !password ||
