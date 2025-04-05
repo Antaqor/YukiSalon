@@ -20,6 +20,7 @@ router.post("/:id/follow", authenticateToken, async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
 
+        // If already following, do nothing (idempotent)
         if (currentUser.following.includes(targetUserId)) {
             return res.json({ message: "Already following this user" });
         }
@@ -54,6 +55,7 @@ router.post("/:id/unfollow", authenticateToken, async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
 
+        // If not following in the first place, do nothing
         if (!currentUser.following.includes(targetUserId)) {
             return res.json({ message: "User unfollowed successfully" });
         }

@@ -13,13 +13,17 @@ const isValidPassword = (password: string) => {
     return password.length >= 6;
 };
 
+// Limits for images
+const MIN_IMAGE_SIZE = 10 * 1024;       // 10 KB
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
+
 export default function RegisterMultiStepPage() {
     const router = useRouter();
 
     // ---------- STEP CONTROL ----------
     const [step, setStep] = useState(1);
 
-    // ---------- STEP 1 FIELDS (NO name) ----------
+    // ---------- STEP 1 FIELDS ----------
     const [username, setUsername] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [birthMonth, setBirthMonth] = useState("");
@@ -51,6 +55,7 @@ export default function RegisterMultiStepPage() {
         profilePicture: "",
     });
 
+    // Update this to your actual server endpoint
     const BASE_URL = "https://vone.mn";
 
     // ------------------------------------------------------------------
@@ -128,10 +133,20 @@ export default function RegisterMultiStepPage() {
         if (!location.trim()) {
             errors.location = "Байршлаа оруулна уу.";
         }
+
+        // --- Client-side Image Checks: Type + Size (10KB - 5MB) ---
         if (!profilePicture) {
             errors.profilePicture = "Профайл зураг оруулна уу.";
-        } else if (!profilePicture.type.startsWith("image/")) {
-            errors.profilePicture = "Буруу зураг файл. Зөв зураг оруулна уу.";
+        } else {
+            if (!profilePicture.type.startsWith("image/")) {
+                errors.profilePicture = "Буруу зураг файл. Зөв зураг оруулна уу.";
+            } else {
+                if (profilePicture.size < MIN_IMAGE_SIZE) {
+                    errors.profilePicture = "Зураг хамгийн багадаа 10KB байх ёстой.";
+                } else if (profilePicture.size > MAX_IMAGE_SIZE) {
+                    errors.profilePicture = "Зураг 5MB-с их хэмжээтэй байна.";
+                }
+            }
         }
 
         if (Object.keys(errors).length > 0) {
@@ -223,9 +238,7 @@ export default function RegisterMultiStepPage() {
 
                         {/* PHONE NUMBER */}
                         <div>
-                            <label className="block font-medium text-black mb-1">
-                                Phone number
-                            </label>
+                            <label className="block font-medium text-black mb-1">Phone number</label>
                             <input
                                 type="text"
                                 className={getInputClass("phoneNumber")}
@@ -240,9 +253,7 @@ export default function RegisterMultiStepPage() {
 
                         {/* DATE OF BIRTH */}
                         <div>
-                            <label className="block font-medium text-black mb-1">
-                                Date of birth
-                            </label>
+                            <label className="block font-medium text-black mb-1">Date of birth</label>
                             <p className="text-xs text-gray-500 mb-2">
                                 This will not be shown publicly. Confirm your own age.
                             </p>
@@ -297,9 +308,7 @@ export default function RegisterMultiStepPage() {
                                     ))}
                                 </select>
                             </div>
-                            {(fieldErrors.birthMonth ||
-                                fieldErrors.birthDay ||
-                                fieldErrors.birthYear) && (
+                            {(fieldErrors.birthMonth || fieldErrors.birthDay || fieldErrors.birthYear) && (
                                 <p className="text-red-500 text-sm mt-1">
                                     {fieldErrors.birthMonth ||
                                         fieldErrors.birthDay ||
@@ -341,9 +350,7 @@ export default function RegisterMultiStepPage() {
 
                         {/* GENDER */}
                         <div>
-                            <label className="block text-sm font-medium text-black mb-1">
-                                Хүйс
-                            </label>
+                            <label className="block text-sm font-medium text-black mb-1">Хүйс</label>
                             <select
                                 className={getInputClass("gender")}
                                 value={gender}
@@ -361,9 +368,7 @@ export default function RegisterMultiStepPage() {
 
                         {/* LOCATION */}
                         <div>
-                            <label className="block text-sm font-medium text-black mb-1">
-                                Байршил
-                            </label>
+                            <label className="block text-sm font-medium text-black mb-1">Байршил</label>
                             <input
                                 type="text"
                                 className={getInputClass("location")}
@@ -381,6 +386,10 @@ export default function RegisterMultiStepPage() {
                             <label className="block text-sm font-medium text-black mb-1">
                                 Профайл зураг
                             </label>
+                            {/* Mention the size warning right here */}
+                            <p className="text-xs text-gray-500 mb-2">
+                                Зураг 10KB ~ 5MB хооронд байх ёстой
+                            </p>
                             <input
                                 type="file"
                                 accept="image/*"
@@ -392,9 +401,7 @@ export default function RegisterMultiStepPage() {
                                 }}
                             />
                             {fieldErrors.profilePicture && (
-                                <p className="text-red-500 text-xs mt-1">
-                                    {fieldErrors.profilePicture}
-                                </p>
+                                <p className="text-red-500 text-xs mt-1">{fieldErrors.profilePicture}</p>
                             )}
                         </div>
 

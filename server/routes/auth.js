@@ -4,31 +4,58 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 
 const User = require("../models/User");
 const authenticateToken = require("../middleware/authMiddleware");
 
 // ---------------------- MULTER CONFIG ----------------------
-// Limit file size to 5 MB. Adjust as needed.
+// We'll limit files to 5 MB max. Then we’ll do an *additional* min-size check afterward (10 KB).
 const upload = multer({
     dest: path.join(__dirname, "..", "uploads"),
     limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+    fileFilter: (req, file, cb) => {
+        // Only allow image mime types
+        if (!file.mimetype.startsWith("image/")) {
+            return cb(new Error("Only image files are allowed"), false);
+        }
+        cb(null, true);
+    },
 });
+
+// Helper for removing an unwanted file (e.g. if we fail validation after upload)
+function removeUploadedFile(file) {
+    if (file && file.path && fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
+    }
+}
 
 // ---------------------- REGISTER ----------------------
 router.post("/register", (req, res) => {
     // Wrap the single-file upload so we can properly catch Multer errors
     upload.single("profilePicture")(req, res, async (err) => {
         if (err) {
-            // If Multer file-size limit was triggered:
+            // Multer-specific error -> check if it's a file-size limit
             if (err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE") {
-                return res.status(400).json({ error: "Файл хэтэрхий том байна (5MB max)!" });
+                return res.status(400).json({
+                    error: "Image size must be between 10KB and 5MB.",
+                });
             }
-            // Some other Multer error
+            // Some other Multer error (mime type, etc.)
             return res.status(400).json({ error: err.message });
         }
 
         try {
+            // If we have a file, do the min-size check (10KB)
+            if (req.file) {
+                if (req.file.size < 10 * 1024) {
+                    removeUploadedFile(req.file);
+                    return res.status(400).json({
+                        error: "Image size must be between 10KB and 5MB.",
+                    });
+                }
+            }
+
             // Debug logs to see what’s incoming
             console.log("------ REGISTER BODY ------");
             console.log(req.body);
@@ -42,7 +69,9 @@ router.post("/register", (req, res) => {
             let birthday = {};
             try {
                 birthday = JSON.parse(req.body.birthday);
-            } catch (err) {
+            } catch (parseErr) {
+                // If we fail, remove file so it doesn't linger
+                removeUploadedFile(req.file);
                 return res.status(400).json({ error: "Invalid birthday format" });
             }
 
@@ -63,6 +92,8 @@ router.post("/register", (req, res) => {
                 !birthday.month ||
                 !birthday.day
             ) {
+                // If fails, remove file
+                removeUploadedFile(req.file);
                 return res.status(400).json({
                     error:
                         "Missing required fields (username, password, phoneNumber, location, gender, birthday)",
@@ -72,6 +103,7 @@ router.post("/register", (req, res) => {
             // Check if username is taken
             const existing = await User.findOne({ username });
             if (existing) {
+                removeUploadedFile(req.file);
                 return res.status(400).json({ error: "Username already in use" });
             }
 
@@ -103,8 +135,10 @@ router.post("/register", (req, res) => {
                     subscriptionExpiresAt: newUser.subscriptionExpiresAt,
                 },
             });
-        } catch (err) {
-            console.error("Register error:", err);
+        } catch (error) {
+            console.error("Register error:", error);
+            // On any server error, remove file
+            removeUploadedFile(req.file);
             return res.status(500).json({ error: "Server error" });
         }
     });
