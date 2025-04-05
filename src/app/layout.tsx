@@ -70,13 +70,14 @@ export default function RootLayout({
             className={`${inter.className} flex flex-col min-h-screen bg-white text-gray-900`}
         >
         <AuthProvider>
-            <div className="max-w-7xl w-full mx-auto px-6">
-                <Header />
+            <div className="max-w-7xl w-full mx-auto md:px-6">
+
+            <Header />
 
                 {/* Үндсэн Layout */}
                 <main className="flex-grow flex flex-col md:flex-row gap-0 pt-16">
                     {/* Зүүн талын Sidebar */}
-                    <aside className="hidden md:block w-full md:w-1/4 border-r border-gray-300 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto fade-in-up">
+                    <aside className="hidden md:block w-full md:w-1/4 border-r border-gray-200 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto fade-in-up">
                         <nav>
                             <ul className="space-y-1">
                                 <li>
@@ -286,7 +287,7 @@ export default function RootLayout({
                     </aside>
 
                     {/* Үндсэн контент */}
-                    <div className="w-full md:w-1/2 border-r border-gray-300">
+                    <div className="w-full md:w-1/2 md:border-r md:border-gray-200">
                         <div className="space-y-6">{children}</div>
                     </div>
 

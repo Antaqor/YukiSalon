@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback, ChangeEvent, useRef } from "re
 import axios from "axios";
 import Link from "next/link";
 import { useAuth } from "./context/AuthContext";
-import { FaComment, FaShare, FaHeart, FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaComment, FaShare } from "react-icons/fa";
 import { FiCamera } from "react-icons/fi";
 import { motion } from "framer-motion";
 
@@ -40,9 +40,7 @@ export default function HomePage() {
     const [trendingHashtags, setTrendingHashtags] = useState<Hashtag[]>([]);
     const [filterHashtag, setFilterHashtag] = useState("");
 
-    // For local development, adjust BASE_URL to your backend.
-    const BASE_URL = " https://vone.mn";
-    // Express serves static files (uploads) at BASE_URL + "/uploads"
+    const BASE_URL = "http://localhost:5001";
     const UPLOADS_URL = `${BASE_URL}/uploads`;
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -98,7 +96,6 @@ export default function HomePage() {
             setError("Нэвтэрч ороогүй байна.");
             return;
         }
-
         try {
             const formData = new FormData();
             formData.append("content", content);
@@ -152,7 +149,7 @@ export default function HomePage() {
         }
     };
 
-    // Follow/Unfollow
+    // Follow / Unfollow
     const handleFollow = async (targetUserId: string) => {
         if (!user?.accessToken) return;
         try {
@@ -183,213 +180,215 @@ export default function HomePage() {
                 login({ ...user, following: updatedFollowing }, user.accessToken);
             }
         } catch (err: any) {
-            if (
-                err.response?.status === 400 &&
-                err.response.data?.error === "You are not following this user"
-            ) {
-                if (user.following) {
-                    const updatedFollowing = user.following.filter((id) => id !== targetUserId);
-                    login({ ...user, following: updatedFollowing }, user.accessToken);
-                }
-            } else {
-                console.error("Unfollow error:", err);
-            }
+            console.error("Unfollow error:", err);
         }
     };
 
+    // Fetch posts on mount
     useEffect(() => {
         fetchPosts();
     }, [fetchPosts]);
 
     return (
-        <div className="min-h-screen bg-gray-50 text-gray-800">
-            {/* Centered feed container */}
-            <div className="mx-auto max-w-2xl w-full px-4 py-6">
-                {/* Error display */}
-                {error && (
-                    <motion.div
-                        initial={{ y: -20 }}
-                        animate={{ y: 0 }}
-                        className="bg-red-100 text-red-700 p-3 mb-4 rounded border border-red-200 text-sm"
-                    >
-                        {error}
-                    </motion.div>
-                )}
-
-                {/* Trending Hashtags */}
-                <div className="mb-6">
-                    <h2 className="flex items-center text-xl font-semibold mb-3 text-gray-900">
-                        <FiCamera className="w-6 h-6 mr-2 text-[#1D9BF0]" />
-                        Trending Hashtags
-                    </h2>
-                    <div className="flex flex-wrap gap-2">
-                        <button
-                            className={`px-3 py-1 rounded-full border border-gray-300 text-sm ${
-                                filterHashtag === ""
-                                    ? "bg-[#1D9BF0] text-white"
-                                    : "bg-white text-gray-700"
-                            }`}
-                            onClick={() => filterPostsByHashtag("")}
-                        >
-                            Бүх
-                        </button>
-                        {trendingHashtags.map((hashtag) => (
-                            <button
-                                key={hashtag.tag}
-                                className={`px-3 py-1 rounded-full border border-gray-300 text-sm ${
-                                    filterHashtag === hashtag.tag
-                                        ? "bg-[#1D9BF0] text-white"
-                                        : "bg-white text-gray-700"
-                                }`}
-                                onClick={() => filterPostsByHashtag(hashtag.tag)}
-                            >
-                                {hashtag.tag} ({hashtag.count})
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Create new post */}
-                {loggedIn && (
-                    <motion.div
-                        className="mb-6 bg-white p-4 rounded-md border border-gray-200 shadow-sm"
-                        initial={{ y: -20 }}
-                        animate={{ y: 0 }}
-                    >
-                        <div className="flex items-center gap-3">
-                            <input
-                                type="file"
-                                accept="image/*"
-                                ref={fileInputRef}
-                                onChange={handleFileChange}
-                                className="hidden"
-                            />
-                            <button
-                                onClick={triggerFileInput}
-                                className="p-2 border border-gray-300 rounded-full hover:bg-gray-100"
-                            >
-                                <FiCamera className="w-5 h-5 text-gray-700" />
-                            </button>
-                            {imageFile && (
-                                <span className="text-sm text-gray-700 truncate">
-                  {imageFile.name}
-                </span>
-                            )}
+        <div className="min-h-screen bg-gray-100 text-gray-900">
+            {/* Outer Grid Layout */}
+            <div
+                className="mx-auto max-w-5xl w-full grid"
+                style={{
+                    gridTemplateColumns:
+                        "var(--barcelona-threadline-column-width) minmax(0, 1fr)",
+                }}
+            >
+                {/* Sidebar: Trending Hashtags */}
+                <aside>
+                    <div className="bg-white p-4 grid gap-3">
+                        <div className="grid grid-cols-[auto,1fr] items-center gap-2">
+                            <FiCamera className="w-5 h-5 text-[#1D9BF0]" />
+                            <h2 className="text-base font-semibold">Trending Hashtags</h2>
                         </div>
-                        <textarea
-                            placeholder="What's on your mind?"
-                            className="w-full mt-3 p-2 border border-gray-300 rounded focus:outline-none bg-white text-sm text-gray-900"
-                            rows={3}
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                        />
-                        <button
-                            onClick={createPost}
-                            className="mt-3 bg-[#1D9BF0] text-white px-4 py-2 rounded-md hover:opacity-90 transition text-sm"
+                        <div
+                            className="gap-2"
+                            style={{
+                                display: "grid",
+                                gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
+                            }}
                         >
-                            Post
-                        </button>
-                    </motion.div>
-                )}
-
-                {/* Post List */}
-                <div className="space-y-6">
-                    {posts.map((post, index) => {
-                        const postUser = post.user;
-                        return (
-                            <motion.div
-                                key={post._id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.03 }}
-                                className="bg-white rounded-md border border-gray-200 p-4 shadow-sm"
+                            <button
+                                className="px-3 py-1 text-xs bg-gray-200 rounded-full hover:bg-gray-300"
+                                onClick={() => filterPostsByHashtag("")}
                             >
-                                {/* User info row */}
-                                <div className="flex items-center gap-3 mb-3">
-                                    {postUser?.profilePicture ? (
-                                        <img
-                                            src={`${BASE_URL}${postUser.profilePicture}`}
-                                            alt="Avatar"
-                                            className="w-10 h-10 rounded-full object-cover border border-gray-300"
-                                        />
-                                    ) : (
-                                        <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse" />
-                                    )}
-                                    <div className="flex flex-col">
-                                        <Link href={`/profile/${postUser?._id || ""}`}>
-                      <span className="text-sm font-semibold text-gray-800 hover:underline">
-                        {postUser?.username || "Unknown User"}
-                      </span>
-                                        </Link>
-                                    </div>
-                                </div>
+                                Бүх
+                            </button>
+                            {trendingHashtags.map((hashtag) => (
+                                <button
+                                    key={hashtag.tag}
+                                    className="px-3 py-1 text-xs bg-gray-200 rounded-full hover:bg-gray-300"
+                                    onClick={() => filterPostsByHashtag(hashtag.tag)}
+                                >
+                                    {hashtag.tag} ({hashtag.count})
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </aside>
 
-                                {/* Post content */}
-                                <p className="text-sm text-gray-800 whitespace-pre-wrap">
-                                    {post.content}
-                                </p>
-
-                                {/* Post image(s) */}
-                                {post.image && (
-                                    <img
-                                        src={`${UPLOADS_URL}/${post.image}`}
-                                        alt="Post"
-                                        className="mt-3 w-full h-auto rounded-md border border-gray-200 object-cover"
-                                        onError={(e) => {
-                                            e.currentTarget.style.display = "none";
-                                        }}
-                                    />
+                {/* Main Content: Create Post & Posts List */}
+                <main>
+                    {loggedIn && (
+                        <div className="bg-white grid gap-4 p-6">
+                            <div className="grid grid-cols-[auto,1fr] items-center gap-2">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    ref={fileInputRef}
+                                    onChange={handleFileChange}
+                                    className="hidden"
+                                />
+                                <button
+                                    onClick={triggerFileInput}
+                                    className="p-2 border border-gray-200 rounded-full hover:bg-gray-100"
+                                >
+                                    <FiCamera className="w-5 h-5 text-gray-600" />
+                                </button>
+                                {imageFile && (
+                                    <span className="text-xs text-gray-700 truncate">
+                                        {imageFile.name}
+                                    </span>
                                 )}
-                                {post.images && post.images.length > 0 && (
-                                    <div className="mt-3 flex flex-wrap gap-2">
-                                        {post.images.map((imgSrc: string, idx: number) => (
-                                            <img
-                                                key={idx}
-                                                src={`${UPLOADS_URL}/${imgSrc}`}
-                                                alt="Post"
-                                                className="w-full h-auto rounded-md border border-gray-200 object-cover"
-                                                onError={(e) => {
-                                                    e.currentTarget.style.display = "none";
-                                                }}
-                                            />
-                                        ))}
-                                    </div>
-                                )}
+                            </div>
+                            <textarea
+                                placeholder="What's on your mind?"
+                                className="w-full text-sm text-gray-900 border border-gray-200 rounded p-2 focus:outline-none"
+                                rows={3}
+                                value={content}
+                                onChange={(e) => setContent(e.target.value)}
+                            />
+                            {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+                            <button
+                                onClick={createPost}
+                                className="mt-3 bg-[#1D9BF0] text-white text-xs px-4 py-2 rounded hover:bg-[#1A8CD8]"
+                            >
+                                Post
+                            </button>
+                        </div>
+                    )}
 
+                    {/* Posts List */}
+                    <div className="m-0 p-0">
+                        {posts.map((post, idx) => {
+                            const postUser = post.user;
+                            return (
+                                <motion.div
+                                    key={post._id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: idx * 0.02 }}
+                                    className="bg-white p-6 grid gap-4 border-b border-gray-200"
+                                >
+                                    <div className="grid grid-cols-[auto,1fr] gap-5">
+                                        {/* Profile Picture with Skeleton Fallback */}
+                                        <div className="self-start">
+                                            {postUser?.profilePicture ? (
+                                                <img
+                                                    src={`${BASE_URL}${postUser.profilePicture}`}
+                                                    alt="Avatar"
+                                                    className="w-12 h-12 object-cover rounded-full"
+                                                    onError={(e) => {
+                                                        e.currentTarget.style.display = "none";
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div className="w-12 h-12 rounded-full bg-gray-300 animate-pulse" />
+                                            )}
+                                        </div>
 
-                                {/* Stats row */}
-                                <div className="mt-3 flex items-center justify-between text-xs text-gray-600">
-                                    <div className="flex items-center gap-3">
-                                        <button onClick={() => handleLike(post._id)} disabled={!loggedIn} className="hover:text-gray-800">
-                                            Likes {post.likes.length}
+                                        {/* Post Content */}
+                                        <div className="grid gap-2">
+                                            <div className="grid grid-cols-[1fr,auto] items-center">
+                                                <Link href={`/profile/${postUser?._id || ""}`}>
+                                                    <span className="text-sm font-semibold hover:underline">
+                                                        {postUser?.username || "Unknown User"}
+                                                    </span>
+                                                </Link>
+                                                {postUser && user && user._id !== postUser._id && (
+                                                    <div>
+                                                        {user.following?.includes(postUser._id) ? (
+                                                            <button
+                                                                onClick={() => handleUnfollow(postUser._id)}
+                                                                className="text-green-600 text-xs"
+                                                            >
+                                                                Unfollow
+                                                            </button>
+                                                        ) : (
+                                                            <button
+                                                                onClick={() => handleFollow(postUser._id)}
+                                                                className="text-[#1D9BF0] text-xs"
+                                                            >
+                                                                Follow
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <span className="text-xs text-gray-500">
+                                                {new Date(post.createdAt).toLocaleString()}
+                                            </span>
+                                            {post.content && (
+                                                <p className="text-base whitespace-pre-wrap">
+                                                    {post.content}
+                                                </p>
+                                            )}
+                                            {post.image && (
+                                                <div className="relative w-full overflow-hidden rounded-lg">
+                                                    <img
+                                                        src={`${UPLOADS_URL}/${post.image}`}
+                                                        alt="Post"
+                                                        className="w-full h-auto object-cover rounded-lg"
+                                                        onError={(e) => {
+                                                            e.currentTarget.style.display = "none";
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    {/* Stats Row */}
+                                    <div className="grid grid-cols-3 items-center text-xs text-gray-600 w-full mt-2">
+                                        {/* Like */}
+                                        <button
+                                            onClick={() => handleLike(post._id)}
+                                            disabled={!loggedIn}
+                                            className="flex items-center justify-center gap-1 hover:text-gray-800"
+                                            aria-label={`Like (${post.likes.length})`}
+                                        >
+                                            <FaHeart className="w-4 h-4" />
+                                            <span>{post.likes.length}</span>
                                         </button>
-                                        <button className="hover:text-gray-800">
-                                            Comments 0
+
+                                        {/* Comment */}
+                                        <button
+                                            className="flex items-center justify-center gap-1 hover:text-gray-800"
+                                            aria-label="Comment (0)"
+                                        >
+                                            <FaComment className="w-4 h-4" />
+                                            <span>0</span>
                                         </button>
-                                        <button className="hover:text-gray-800">
-                                            Shares 0
+
+                                        {/* Share */}
+                                        <button
+                                            className="flex items-center justify-center gap-1 hover:text-gray-800"
+                                            aria-label="Share (0)"
+                                        >
+                                            <FaShare className="w-4 h-4" />
+                                            <span>0</span>
                                         </button>
                                     </div>
-                                </div>
 
-                                {/* Follow/Unfollow (if applicable) */}
-                                {postUser && user && user._id !== postUser._id && (
-                                    <div className="mt-2">
-                                        {user.following?.includes(postUser._id) ? (
-                                            <button onClick={() => handleUnfollow(postUser._id)} className="text-green-600 text-xs">
-                                                Unfollow
-                                            </button>
-                                        ) : (
-                                            <button onClick={() => handleFollow(postUser._id)} className="text-[#1D9BF0] text-xs">
-                                                Follow
-                                            </button>
-                                        )}
-                                    </div>
-                                )}
-                            </motion.div>
-                        );
-                    })}
-                </div>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
+                </main>
             </div>
         </div>
     );

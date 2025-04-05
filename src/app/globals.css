@@ -27,7 +27,10 @@ body {
         transform: translateY(0);
     }
 }
-
+div {
+    padding: 0;
+    margin: 0;
+}
 /* Utility class for the fade-in animation */
 .fade-in-up {
     animation: fadeInUp 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
