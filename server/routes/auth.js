@@ -5,22 +5,35 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const sizeOf = require("image-size"); // <-- for reading pixel dimensions
 
 const User = require("../models/User");
 const authenticateToken = require("../middleware/authMiddleware");
 
 // ---------------------- FILE SIZE LIMITS (in bytes) ----------------------
-const MIN_FILE_SIZE = 10 * 1024;          // 10KB
-const MAX_FILE_SIZE = 5 * 1024 * 1024;    // 5MB
+const MIN_FILE_SIZE = 10 * 1024;        // 10KB
+const MAX_FILE_SIZE = 5 * 1024 * 1024;  // 5MB
+
+// ---------------------- DIMENSION LIMITS (in mm) ----------------------
+// Suppose we want the width at least 50 mm, at most 500 mm, etc.
+const MIN_WIDTH_MM = 50;
+const MIN_HEIGHT_MM = 50;
+const MAX_WIDTH_MM = 500;
+const MAX_HEIGHT_MM = 500;
+
+// For dimension checks, we need to convert px → mm, so we guess a DPI (dots/inch).
+// 1 inch = 25.4 mm => mm = (px / DPI) * 25.4
+const ASSUMED_DPI = 300; // or 72, or read from EXIF if you want the real value
+
+function pxToMm(px, dpi = 300) {
+    return (px / dpi) * 25.4;
+}
 
 // ---------------------- MULTER CONFIG ----------------------
-// We'll let Multer handle up to 5MB; for anything bigger, it fails immediately.
-// We'll also do our own min-size check AFTER Multer stores the file.
 const upload = multer({
     dest: path.join(__dirname, "..", "uploads"),
-    limits: { fileSize: MAX_FILE_SIZE },
+    limits: { fileSize: MAX_FILE_SIZE }, // reject bigger than 5MB immediately
     fileFilter: (req, file, cb) => {
-        // Only allow image mime types
         if (!file.mimetype.startsWith("image/")) {
             return cb(new Error("Only image files are allowed"), false);
         }
@@ -52,7 +65,7 @@ router.post("/register", (req, res) => {
         }
 
         try {
-            // If user actually uploaded a file, do the MIN size check (10KB)
+            // If user uploaded a file, do the min-size check (10KB)
             if (req.file) {
                 if (req.file.size < MIN_FILE_SIZE) {
                     removeUploadedFile(req.file);
@@ -60,9 +73,29 @@ router.post("/register", (req, res) => {
                         error: "Зурагны хэмжээ хамгийн багадаа 10KB байх ёстой.",
                     });
                 }
+
+                // 1) Get pixel dimensions using image-size
+                const dimensions = sizeOf(req.file.path);
+                // e.g. dimensions = { width: 1920, height: 1080, type: 'png', ... }
+
+                // 2) Convert pixels → mm
+                const widthMm = pxToMm(dimensions.width, ASSUMED_DPI);
+                const heightMm = pxToMm(dimensions.height, ASSUMED_DPI);
+
+                // 3) Check if within min/max dimension constraints
+                if (
+                    widthMm < MIN_WIDTH_MM ||
+                    heightMm < MIN_HEIGHT_MM ||
+                    widthMm > MAX_WIDTH_MM ||
+                    heightMm > MAX_HEIGHT_MM
+                ) {
+                    removeUploadedFile(req.file);
+                    return res.status(400).json({
+                        error: `Dimensions out of range. Image must be between ${MIN_WIDTH_MM}–${MAX_WIDTH_MM} mm wide and ${MIN_HEIGHT_MM}–${MAX_HEIGHT_MM} mm tall (assuming ${ASSUMED_DPI} DPI).`,
+                    });
+                }
             }
 
-            // Debug logs to see what’s incoming
             console.log("------ REGISTER BODY ------");
             console.log(req.body);
             console.log("------ REGISTER FILE ------");

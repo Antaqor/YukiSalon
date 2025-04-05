@@ -383,7 +383,6 @@ export default function RegisterMultiStepPage() {
                                 <option value="">Сонгоно уу</option>
                                 <option value="male">Эр</option>
                                 <option value="female">Эм</option>
-                                <option value="other">Бусад</option>
                             </select>
                             {fieldErrors.gender && (
                                 <p className="text-red-500 text-xs mt-1">{fieldErrors.gender}</p>
