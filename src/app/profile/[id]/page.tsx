@@ -39,7 +39,7 @@ export default function PublicProfilePage() {
     const [postLoading, setPostLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const BASE_URL = "https://vone.mn";
+    const BASE_URL = "http://localhost:5001";
 
     useEffect(() => {
         if (!userId) return;

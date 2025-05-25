@@ -21,7 +21,7 @@ export default function BookDetailPage() {
 
     const [book, setBook] = useState<Book | null>(null);
     const [status, setStatus] = useState("");
-    const BACKEND_URL = "https://vone.mn/api";
+    const BACKEND_URL = "http://localhost:5001/api";
 
     useEffect(() => {
         const fetchBook = async () => {
@@ -54,7 +54,7 @@ export default function BookDetailPage() {
                 <div className="w-full md:w-1/2 bg-[#16181C] rounded flex items-center justify-center overflow-hidden">
                     {book.coverImageUrl ? (
                         <img
-                            src={`https://vone.mn/${book.coverImageUrl}`}
+                            src={`http://localhost:5001/${book.coverImageUrl}`}
                             alt={book.title}
                             className="object-cover w-full h-auto hover:scale-[1.01] transition duration-300"
                         />

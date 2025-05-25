@@ -17,7 +17,7 @@ interface Book {
 export default function BooksListPage() {
     const [books, setBooks] = useState<Book[]>([]);
     const [status, setStatus] = useState("");
-    const BACKEND_URL = "https://vone.mn/api";
+    const BACKEND_URL = "http://localhost:5001/api";
 
     useEffect(() => {
         const fetchData = async () => {
@@ -54,7 +54,7 @@ export default function BooksListPage() {
                                 {book.coverImageUrl ? (
                                     <div className="relative w-full aspect-[3/4] overflow-hidden bg-white">
                                         <img
-                                            src={`https://vone.mn/${book.coverImageUrl}`}
+                                            src={`http://localhost:5001/${book.coverImageUrl}`}
                                             alt={book.title}
                                             className="w-full h-full object-cover group-hover:opacity-90 group-hover:scale-105 transition duration-300"
                                         />

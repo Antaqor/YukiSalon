@@ -15,7 +15,7 @@ interface Book {
     updatedAt?: string;
 }
 
-const BACKEND_URL = "https://vone.mn/api";
+const BACKEND_URL = "http://localhost:5001/api";
 
 export default function BookDashboardPage() {
     const [books, setBooks] = useState<Book[]>([]);
@@ -252,7 +252,7 @@ function BookRow({
             <div className="w-24 h-24 bg-[#222] flex-shrink-0 overflow-hidden">
                 {book.coverImageUrl ? (
                     <img
-                        src={`https://vone.mn/${book.coverImageUrl}`}
+                        src={`http://localhost:5001/${book.coverImageUrl}`}
                         alt={book.title}
                         className="w-full h-full object-cover"
                     />
