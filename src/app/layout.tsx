@@ -8,14 +8,14 @@ import Link from "next/link";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    metadataBase: new URL(" http://localhost:5001"),
+    metadataBase: new URL(" https://www.vone.mn"),
     title: {
         default: "VONE",
         template: "%s | VONE",
     },
     description: "VONE - Сүлжээ ба инновацийн дараагийн үеийн платформ.",
     keywords: ["VONE", "Community", "DAO", "Network", "Zaluusiin Network"],
-    authors: [{ name: "Vone Tech", url: " http://localhost:5001" }],
+    authors: [{ name: "Vone Tech", url: " https://www.vone.mn" }],
     verification: {
         google: "YOUR_GOOGLE_SITE_VERIFICATION_TOKEN",
         yandex: "YOUR_YANDEX_SITE_VERIFICATION_TOKEN",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "VONE – Дараагийн үеийн платформ",
         description: "VONE CLAN-д нэгдээрэй – Сүлжээ, инновацийн хамт олон.",
-        url: " http://localhost:5001",
+        url: " https://www.vone.mn",
         siteName: "VONE",
         images: [
             {
@@ -46,10 +46,10 @@ export const metadata: Metadata = {
         creator: "@your_twitter_handle",
     },
     alternates: {
-        canonical: " http://localhost:5001",
+        canonical: " https://www.vone.mn",
         languages: {
-            "mn-MN": " http://localhost:5001/mn-mn",
-            "en-US": " http://localhost:5001/en-us",
+            "mn-MN": " https://www.vone.mn/mn-mn",
+            "en-US": " https://www.vone.mn/en-us",
         },
     },
     icons: {

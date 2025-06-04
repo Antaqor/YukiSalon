@@ -56,7 +56,7 @@ export default function RegisterMultiStepPage() {
     });
 
     // Replace with your actual server endpoint
-    const BASE_URL = "http://localhost:5001";
+    const BASE_URL = "https://www.vone.mn";
 
     // ------------------------------------------------------------------
     // STEP 1: Validate Basic Fields and proceed to next step

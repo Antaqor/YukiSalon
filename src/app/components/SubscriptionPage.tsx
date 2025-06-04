@@ -18,7 +18,7 @@ export default function SubscriptionPage() {
     const [message, setMessage] = useState("");
     const [paid, setPaid] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
-    const BASE_URL = "http://localhost:5001";
+    const BASE_URL = "https://www.vone.mn";
 
     useEffect(() => {
         const userAgent = navigator.userAgent || navigator.vendor;
