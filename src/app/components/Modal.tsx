@@ -17,14 +17,14 @@ const Modal: React.FC<ModalProps> = ({ children, onClose }) => {
                 exit={{ opacity: 0 }}
             >
                 <motion.div
-                    className="bg-white square-card overflow-hidden shadow-lg max-w-lg w-full"
+                    className="bg-white dark:bg-gray-800 square-card overflow-hidden shadow-lg max-w-lg w-full"
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.8, opacity: 0 }}
                     transition={{ duration: 0.3 }}
                 >
                     <div className="flex justify-end p-2">
-                        <button onClick={onClose} className="text-gray-600 hover:text-gray-800">
+                        <button onClick={onClose} className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100">
                             <FaTimes size={20} />
                         </button>
                     </div>

@@ -34,18 +34,18 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-white flex items-center justify-center px-4">
+        <div className="min-h-screen bg-white dark:bg-dark text-black dark:text-white flex items-center justify-center px-4">
             <div className="w-full max-w-md space-y-6">
-                <h1 className="text-3xl font-bold text-black">Нэвтрэх</h1>
+                <h1 className="text-3xl font-bold text-black dark:text-white">Нэвтрэх</h1>
                 {error && <p className="text-red-600">{error}</p>}
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label className="block text-sm font-medium text-black mb-1">
+                        <label className="block text-sm font-medium text-black dark:text-white mb-1">
                             Хэрэглэгчийн нэр
                         </label>
                         <input
                             type="text"
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-black bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-black dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Хэрэглэгчийн нэр"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
@@ -53,20 +53,20 @@ export default function LoginPage() {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-black mb-1">
+                        <label className="block text-sm font-medium text-black dark:text-white mb-1">
                             Нууц үг
                         </label>
                         <input
                             type="password"
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-black bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-black dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Нууц үг"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
                     </div>
-                    <div className="flex items-center justify-between text-sm text-gray-700">
-                        <label className="flex items-center text-black">
+                    <div className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300">
+                        <label className="flex items-center text-black dark:text-white">
                             <input type="checkbox" className="h-4 w-4 mr-2" />
                             Сануулах
                         </label>

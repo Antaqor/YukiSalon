@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import logo from "@/app/img/logo.svg";
 import { useAuth } from "../context/AuthContext";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -20,7 +21,7 @@ export default function Header() {
                 `}</style>
             )}
 
-            <div className="fixed top-0 left-0 w-full z-[999] bg-white md:bg-white/80 backdrop-blur-md">
+            <div className="fixed top-0 left-0 w-full z-[999] bg-white dark:bg-dark md:bg-white/80 dark:md:bg-dark/80 backdrop-blur-md">
                 {/* NAV BAR */}
                 <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                     {/* Logo */}
@@ -30,15 +31,16 @@ export default function Header() {
                             alt="Лого"
                             className="h-8 w-auto object-contain transition-transform hover:scale-105"
                         />
-                        <span className="text-black font-bold text-lg">Vone</span>
+                        <span className="text-black dark:text-white font-bold text-lg">Vone</span>
                     </Link>
 
                     {/* Desktop Links */}
                     <div className="hidden md:flex items-center space-x-8 font-medium">
+                        <ThemeToggle />
                         {loggedIn ? (
                             <button
                                 onClick={logout}
-                                className="relative group text-gray-700 hover:text-[#1D9BF0]"
+                                className="relative group text-gray-700 dark:text-gray-300 hover:text-[#1D9BF0]"
                             >
                                 Гарах
                                 <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
@@ -47,14 +49,14 @@ export default function Header() {
                             <>
                                 <Link
                                     href="/login"
-                                    className="relative group text-gray-700 hover:text-[#1D9BF0]"
+                                    className="relative group text-gray-700 dark:text-gray-300 hover:text-[#1D9BF0]"
                                 >
                                     Нэвтрэх
                                     <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                                 </Link>
                                 <Link
                                     href="/register"
-                                    className="relative group text-gray-700 hover:text-[#1D9BF0]"
+                                    className="relative group text-gray-700 dark:text-gray-300 hover:text-[#1D9BF0]"
                                 >
                                     Бүртгүүлэх
                                     <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
@@ -69,9 +71,9 @@ export default function Header() {
                         onClick={() => setIsMenuOpen(true)}
                         aria-label="Toggle Menu"
                     >
-                        <span className="block w-6 h-0.5 bg-gray-800 mb-1" />
-                        <span className="block w-6 h-0.5 bg-gray-800 mb-1" />
-                        <span className="block w-6 h-0.5 bg-gray-800" />
+                        <span className="block w-6 h-0.5 bg-gray-800 dark:bg-gray-200 mb-1" />
+                        <span className="block w-6 h-0.5 bg-gray-800 dark:bg-gray-200 mb-1" />
+                        <span className="block w-6 h-0.5 bg-gray-800 dark:bg-gray-200" />
                     </button>
                 </nav>
 
@@ -79,7 +81,7 @@ export default function Header() {
                 <div
                     className={`
             fixed inset-0
-            bg-white
+            bg-white dark:bg-dark
             transition-transform duration-300
             z-[9999]
             overflow-y-auto
@@ -102,7 +104,7 @@ export default function Header() {
                                 />
                             </Link>
                             <button
-                                className="text-gray-500 text-3xl focus:outline-none hover:text-gray-700"
+                                className="text-gray-500 dark:text-gray-400 text-3xl focus:outline-none hover:text-gray-700 dark:hover:text-gray-200"
                                 onClick={() => setIsMenuOpen(false)}
                                 aria-label="Close Menu"
                             >
@@ -113,6 +115,9 @@ export default function Header() {
                         {/* Drawer Links */}
                         <nav className="mt-8 px-4">
                             <ul className="space-y-6">
+                                <li>
+                                    <ThemeToggle />
+                                </li>
                                 {loggedIn ? (
                                     <li>
                                         <button
@@ -120,7 +125,7 @@ export default function Header() {
                                                 logout();
                                                 setIsMenuOpen(false);
                                             }}
-                                            className="block text-left w-full text-xl font-medium text-gray-800 hover:text-[#1D9BF0]"
+                                            className="block text-left w-full text-xl font-medium text-gray-800 dark:text-gray-200 hover:text-[#1D9BF0]"
                                         >
                                             Гарах
                                         </button>
@@ -131,7 +136,7 @@ export default function Header() {
                                             <Link
                                                 href="/login"
                                                 onClick={() => setIsMenuOpen(false)}
-                                                className="block text-xl font-medium text-gray-800 hover:text-[#1D9BF0]"
+                                                className="block text-xl font-medium text-gray-800 dark:text-gray-200 hover:text-[#1D9BF0]"
                                             >
                                                 Нэвтрэх
                                             </Link>
@@ -140,7 +145,7 @@ export default function Header() {
                                             <Link
                                                 href="/register"
                                                 onClick={() => setIsMenuOpen(false)}
-                                                className="block text-xl font-medium text-gray-800 hover:text-[#1D9BF0]"
+                                                className="block text-xl font-medium text-gray-800 dark:text-gray-200 hover:text-[#1D9BF0]"
                                             >
                                                 Бүртгүүлэх
                                             </Link>
@@ -151,7 +156,7 @@ export default function Header() {
 
                             {/* Additional Nav Items */}
                             <div className="mt-10 border-t pt-6">
-                                <ul className="space-y-4 text-lg font-semibold text-gray-700">
+                                <ul className="space-y-4 text-lg font-semibold text-gray-700 dark:text-gray-300">
                                     <li>
                                         <Link
                                             href="/"

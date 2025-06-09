@@ -228,26 +228,26 @@ export default function RegisterMultiStepPage() {
 
     // ---------- Utility: conditional className for inputs/selects ----------
     const getInputClass = (fieldName: string) => {
-        return `w-full rounded-md px-3 py-2 text-black bg-white focus:outline-none focus:ring-2 ${
+        return `w-full rounded-md px-3 py-2 text-black dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${
             fieldErrors[fieldName]
                 ? "border border-red-500 focus:ring-red-500"
-                : "border border-gray-300 focus:ring-blue-500"
+                : "border border-gray-300 dark:border-gray-600 focus:ring-blue-500"
         }`;
     };
 
     return (
-        <div className="min-h-screen bg-white flex items-center justify-center px-4">
+        <div className="min-h-screen bg-white dark:bg-dark text-black dark:text-white flex items-center justify-center px-4">
             <div className="w-full max-w-md space-y-6">
                 {error && <p className="text-red-600">{error}</p>}
                 {success && <p className="text-green-600">{success}</p>}
 
                 {step === 1 && (
                     <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
-                        <h1 className="text-3xl font-bold text-black">Create your account</h1>
+                        <h1 className="text-3xl font-bold text-black dark:text-white">Create your account</h1>
 
                         {/* USERNAME */}
                         <div>
-                            <label className="block font-medium text-black mb-1">Username</label>
+                            <label className="block font-medium text-black dark:text-white mb-1">Username</label>
                             <input
                                 type="text"
                                 className={getInputClass("username")}
@@ -262,7 +262,7 @@ export default function RegisterMultiStepPage() {
 
                         {/* PHONE NUMBER */}
                         <div>
-                            <label className="block font-medium text-black mb-1">Phone number</label>
+                            <label className="block font-medium text-black dark:text-white mb-1">Phone number</label>
                             <input
                                 type="text"
                                 className={getInputClass("phoneNumber")}
@@ -277,7 +277,7 @@ export default function RegisterMultiStepPage() {
 
                         {/* DATE OF BIRTH */}
                         <div>
-                            <label className="block font-medium text-black mb-1">Date of birth</label>
+                            <label className="block font-medium text-black dark:text-white mb-1">Date of birth</label>
                             <p className="text-xs text-gray-500 mb-2">
                                 This will not be shown publicly. Confirm your own age.
                             </p>
@@ -353,7 +353,7 @@ export default function RegisterMultiStepPage() {
 
                 {step === 2 && (
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        <h1 className="text-3xl font-bold text-black">Additional Details</h1>
+                        <h1 className="text-3xl font-bold text-black dark:text-white">Additional Details</h1>
 
                         {/* LOGIN PASSWORD */}
                         <div>
@@ -374,7 +374,7 @@ export default function RegisterMultiStepPage() {
 
                         {/* GENDER */}
                         <div>
-                            <label className="block text-sm font-medium text-black mb-1">Хүйс</label>
+                            <label className="block text-sm font-medium text-black dark:text-white mb-1">Хүйс</label>
                             <select
                                 className={getInputClass("gender")}
                                 value={gender}
@@ -391,7 +391,7 @@ export default function RegisterMultiStepPage() {
 
                         {/* LOCATION */}
                         <div>
-                            <label className="block text-sm font-medium text-black mb-1">
+                            <label className="block text-sm font-medium text-black dark:text-white mb-1">
                                 Байршил
                             </label>
                             <input
@@ -408,7 +408,7 @@ export default function RegisterMultiStepPage() {
 
                         {/* PROFILE PICTURE + LOCAL SIZE CHECK */}
                         <div>
-                            <label className="block text-sm font-medium text-black mb-1">
+                            <label className="block text-sm font-medium text-black dark:text-white mb-1">
                                 Профайл зураг
                             </label>
                             <input
@@ -429,7 +429,7 @@ export default function RegisterMultiStepPage() {
                             <button
                                 type="button"
                                 onClick={() => setStep(1)}
-                                className="flex-1 bg-gray-200 text-black py-3 rounded-md font-semibold hover:bg-gray-300 transition"
+                                className="flex-1 bg-gray-200 dark:bg-gray-700 text-black dark:text-white py-3 rounded-md font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition"
                             >
                                 Буцах
                             </button>
