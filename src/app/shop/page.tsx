@@ -30,7 +30,7 @@ export default function ShopPage() {
 
   /* ── render ──────────────────────────────────────── */
   return (
-    <main className="min-h-screen bg-white dark:bg-dark text-black dark:text-white px-4 py-8">
+    <main className="min-h-screen bg-white dark:bg-black text-black dark:text-white px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-8 text-center tracking-wider uppercase">
           Дэлгүүр
@@ -46,13 +46,13 @@ export default function ShopPage() {
               <Link
                 key={p._id}
                 href={`/shop/${p._id}`}
-                className="group relative rounded-lg overflow-hidden border border-gray-200 bg-white dark:bg-gray-800
+                className="group relative rounded-lg overflow-hidden border border-gray-200 dark:border-black bg-white dark:bg-black
                            hover:shadow-lg hover:shadow-[#1D9BF0]/30 hover:-translate-y-1 hover:scale-[1.01]
                            transition-transform duration-300 flex flex-col"
               >
                 {/* thumbnail */}
                 {p.imageUrl ? (
-                  <div className="relative w-full aspect-[3/4] overflow-hidden bg-white dark:bg-gray-700">
+                  <div className="relative w-full aspect-[3/4] overflow-hidden bg-white dark:bg-black">
                     <img
                       src={`https://www.vone.mn/${p.imageUrl}`}
                       alt={p.name}
@@ -70,7 +70,7 @@ export default function ShopPage() {
                   <h2 className="text-lg font-semibold uppercase tracking-wide mb-1 line-clamp-1">
                     {p.name}
                   </h2>
-                  <p className="text-sm text-gray-300 mb-3 line-clamp-2">
+                  <p className="text-sm text-gray-300 dark:text-white mb-3 line-clamp-2">
                     {p.description}
                   </p>
 

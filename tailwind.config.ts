@@ -9,7 +9,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        dark: '#080808', // Custom dark color for the background
+        dark: '#000000', // Custom dark color for the background
         light: '#ffffff', // Light color for text
         brandPink: '#FF577F'
       },

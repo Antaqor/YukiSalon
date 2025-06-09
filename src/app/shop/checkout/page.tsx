@@ -19,14 +19,14 @@ export default function CheckoutPage() {
 
     if (items.length === 0) {
         return (
-            <main className="min-h-screen flex items-center justify-center bg-white dark:bg-dark text-black dark:text-white">
-                <p className="text-gray-600 dark:text-gray-300">Сагс хоосон байна.</p>
+            <main className="min-h-screen flex items-center justify-center bg-white dark:bg-black text-black dark:text-white">
+                <p className="text-gray-600 dark:text-white">Сагс хоосон байна.</p>
             </main>
         );
     }
 
     return (
-        <main className="min-h-screen px-4 py-8 bg-white dark:bg-dark text-black dark:text-white">
+        <main className="min-h-screen px-4 py-8 bg-white dark:bg-black text-black dark:text-white">
             <div className="max-w-xl mx-auto space-y-6">
                 <h1 className="text-3xl font-bold text-center mb-4">Төлбөр хийх</h1>
                 <ul className="space-y-2">
@@ -48,7 +48,7 @@ export default function CheckoutPage() {
                 <button onClick={handleCheckout} className="w-full bg-[#1D9BF0] text-white px-4 py-2 rounded">
                     Захиалах
                 </button>
-                <Link href="/shop/cart" className="block text-center text-sm text-gray-600 dark:text-gray-300 mt-2">
+                <Link href="/shop/cart" className="block text-center text-sm text-gray-600 dark:text-white mt-2">
                     Буцах
                 </Link>
             </div>

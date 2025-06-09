@@ -13,14 +13,14 @@ export default function CartPage() {
 
     if (items.length === 0) {
         return (
-            <main className="min-h-screen flex items-center justify-center bg-white dark:bg-dark text-black dark:text-white">
-                <p className="text-gray-600 dark:text-gray-300">Сагс хоосон байна.</p>
+            <main className="min-h-screen flex items-center justify-center bg-white dark:bg-black text-black dark:text-white">
+                <p className="text-gray-600 dark:text-white">Сагс хоосон байна.</p>
             </main>
         );
     }
 
     return (
-        <main className="min-h-screen px-4 py-8 bg-white dark:bg-dark text-black dark:text-white">
+        <main className="min-h-screen px-4 py-8 bg-white dark:bg-black text-black dark:text-white">
             <div className="max-w-2xl mx-auto space-y-6">
                 <h1 className="text-3xl font-bold text-center">Таны сагс</h1>
                 <ul className="space-y-4">
@@ -28,7 +28,7 @@ export default function CartPage() {
                         <li key={item.product._id} className="flex justify-between items-center border-b pb-2">
                             <div>
                                 <p className="font-semibold">{item.product.name}</p>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">Тоо: {item.quantity}</p>
+                                <p className="text-sm text-gray-500 dark:text-white">Тоо: {item.quantity}</p>
                             </div>
                             <div className="flex items-center gap-4">
                                 <p>
@@ -47,7 +47,7 @@ export default function CartPage() {
                 </ul>
                 <p className="text-right font-bold">Нийт: {total.toLocaleString("mn-MN")}₮</p>
                 <div className="flex justify-between">
-                    <button onClick={clearCart} className="text-sm text-gray-600 dark:text-gray-300">
+                    <button onClick={clearCart} className="text-sm text-gray-600 dark:text-white">
                         Сагсыг цэвэрлэх
                     </button>
                     <Link href="/shop/checkout" className="bg-[#1D9BF0] text-white px-4 py-2 rounded">
