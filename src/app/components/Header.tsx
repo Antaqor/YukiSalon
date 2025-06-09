@@ -40,7 +40,7 @@ export default function Header() {
                         {loggedIn ? (
                             <button
                                 onClick={logout}
-                                className="relative group text-gray-700 dark:text-gray-300 hover:text-[#1D9BF0]"
+                                className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0]"
                             >
                                 Гарах
                                 <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
@@ -49,14 +49,14 @@ export default function Header() {
                             <>
                                 <Link
                                     href="/login"
-                                    className="relative group text-gray-700 dark:text-gray-300 hover:text-[#1D9BF0]"
+                                    className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0]"
                                 >
                                     Нэвтрэх
                                     <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                                 </Link>
                                 <Link
                                     href="/register"
-                                    className="relative group text-gray-700 dark:text-gray-300 hover:text-[#1D9BF0]"
+                                    className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0]"
                                 >
                                     Бүртгүүлэх
                                     <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
@@ -71,9 +71,9 @@ export default function Header() {
                         onClick={() => setIsMenuOpen(true)}
                         aria-label="Toggle Menu"
                     >
-                        <span className="block w-6 h-0.5 bg-gray-800 dark:bg-gray-200 mb-1" />
-                        <span className="block w-6 h-0.5 bg-gray-800 dark:bg-gray-200 mb-1" />
-                        <span className="block w-6 h-0.5 bg-gray-800 dark:bg-gray-200" />
+                        <span className="block w-6 h-0.5 bg-gray-800 dark:bg-white mb-1" />
+                        <span className="block w-6 h-0.5 bg-gray-800 dark:bg-white mb-1" />
+                        <span className="block w-6 h-0.5 bg-gray-800 dark:bg-white" />
                     </button>
                 </nav>
 
@@ -104,7 +104,7 @@ export default function Header() {
                                 />
                             </Link>
                             <button
-                                className="text-gray-500 dark:text-gray-400 text-3xl focus:outline-none hover:text-gray-700 dark:hover:text-gray-200"
+                                className="text-gray-500 dark:text-white text-3xl focus:outline-none hover:text-gray-700 dark:hover:text-white"
                                 onClick={() => setIsMenuOpen(false)}
                                 aria-label="Close Menu"
                             >
@@ -125,7 +125,7 @@ export default function Header() {
                                                 logout();
                                                 setIsMenuOpen(false);
                                             }}
-                                            className="block text-left w-full text-xl font-medium text-gray-800 dark:text-gray-200 hover:text-[#1D9BF0]"
+                                            className="block text-left w-full text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0]"
                                         >
                                             Гарах
                                         </button>
@@ -136,7 +136,7 @@ export default function Header() {
                                             <Link
                                                 href="/login"
                                                 onClick={() => setIsMenuOpen(false)}
-                                                className="block text-xl font-medium text-gray-800 dark:text-gray-200 hover:text-[#1D9BF0]"
+                                                className="block text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0]"
                                             >
                                                 Нэвтрэх
                                             </Link>
@@ -145,7 +145,7 @@ export default function Header() {
                                             <Link
                                                 href="/register"
                                                 onClick={() => setIsMenuOpen(false)}
-                                                className="block text-xl font-medium text-gray-800 dark:text-gray-200 hover:text-[#1D9BF0]"
+                                                className="block text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0]"
                                             >
                                                 Бүртгүүлэх
                                             </Link>
@@ -156,7 +156,7 @@ export default function Header() {
 
                             {/* Additional Nav Items */}
                             <div className="mt-10 border-t pt-6">
-                                <ul className="space-y-4 text-lg font-semibold text-gray-700 dark:text-gray-300">
+                                <ul className="space-y-4 text-lg font-semibold text-gray-700 dark:text-white">
                                     <li>
                                         <Link
                                             href="/"

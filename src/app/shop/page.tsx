@@ -46,13 +46,13 @@ export default function ShopPage() {
               <Link
                 key={p._id}
                 href={`/shop/${p._id}`}
-                className="group relative rounded-lg overflow-hidden border border-gray-200 bg-white dark:bg-gray-800
+                className="group relative rounded-lg overflow-hidden border border-gray-200 bg-white dark:bg-black
                            hover:shadow-lg hover:shadow-[#1D9BF0]/30 hover:-translate-y-1 hover:scale-[1.01]
                            transition-transform duration-300 flex flex-col"
               >
                 {/* thumbnail */}
                 {p.imageUrl ? (
-                  <div className="relative w-full aspect-[3/4] overflow-hidden bg-white dark:bg-gray-700">
+                  <div className="relative w-full aspect-[3/4] overflow-hidden bg-white dark:bg-black">
                     <img
                       src={`https://www.vone.mn/${p.imageUrl}`}
                       alt={p.name}
