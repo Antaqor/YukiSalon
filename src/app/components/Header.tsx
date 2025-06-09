@@ -31,7 +31,6 @@ export default function Header() {
                             alt="Лого"
                             className="h-8 w-auto object-contain transition-transform hover:scale-105"
                         />
-                        <span className="text-black dark:text-white font-bold text-lg">Vone</span>
                     </Link>
 
                     {/* Desktop Links */}

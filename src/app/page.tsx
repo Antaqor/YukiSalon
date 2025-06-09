@@ -284,7 +284,7 @@ export default function HomePage() {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.02 }}
-                                    className="bg-white dark:bg-black p-6 grid gap-4 border-b border-gray-200 dark:border-black"
+                                    className="bg-white dark:bg-black p-6 grid gap-4 border-b border-gray-200 dark:border-[#2F3336]"
                                 >
                                     <div className="grid grid-cols-[auto,1fr] gap-5">
                                         {/* Profile Picture with Skeleton Fallback */}
@@ -293,13 +293,13 @@ export default function HomePage() {
                                                 <img
                                                     src={`${BASE_URL}${postUser.profilePicture}`}
                                                     alt="Avatar"
-                                                    className="w-12 h-12 object-cover rounded-full"
+                                                    className="w-12 h-12 object-cover rounded-md"
                                                     onError={(e) => {
                                                         e.currentTarget.style.display = "none";
                                                     }}
                                                 />
                                             ) : (
-                                                <div className="w-12 h-12 rounded-full bg-gray-300 animate-pulse" />
+                                                <div className="w-12 h-12 rounded-md bg-gray-300 animate-pulse" />
                                             )}
                                         </div>
 
