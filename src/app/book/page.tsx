@@ -35,7 +35,7 @@ export default function BooksListPage() {
     }, []);
 
     return (
-        <main className="min-h-screen bg-white text-black px-4 py-8">
+    <main className="min-h-screen bg-white dark:bg-black text-black dark:text-white px-4 py-8">
             <div className="max-w-4xl mx-auto">
                 <h1 className="text-3xl font-bold mb-8 text-center tracking-wider uppercase">
                     Бүх Ном
@@ -49,10 +49,10 @@ export default function BooksListPage() {
                             <Link
                                 key={book._id}
                                 href={`/book/${book._id}`}
-                                className="group relative rounded-lg overflow-hidden border border-gray-200 bg-white hover:shadow-lg hover:shadow-[#1D9BF0]/30 hover:-translate-y-1 hover:scale-[1.01] transition-transform duration-300 flex flex-col"
+                className="group relative rounded-lg overflow-hidden border border-gray-200 dark:border-black bg-white dark:bg-black hover:shadow-lg hover:shadow-[#1D9BF0]/30 hover:-translate-y-1 hover:scale-[1.01] transition-transform duration-300 flex flex-col"
                             >
                                 {book.coverImageUrl ? (
-                                    <div className="relative w-full aspect-[3/4] overflow-hidden bg-white">
+                                    <div className="relative w-full aspect-[3/4] overflow-hidden bg-white dark:bg-black">
                                         <img
                                             src={`https://www.vone.mn/api/${book.coverImageUrl}`}
                                             alt={book.title}
@@ -85,7 +85,7 @@ export default function BooksListPage() {
                                             </p>
                                         </div>
                                     ) : (
-                                        <p className="mt-auto text-lg font-bold text-black">
+                                        <p className="mt-auto text-lg font-bold text-black dark:text-white">
                                             {finalPrice.toLocaleString("mn-MN")}₮
                                         </p>
                                     )}

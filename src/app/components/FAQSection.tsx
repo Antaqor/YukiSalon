@@ -18,15 +18,15 @@ const SingleFAQItem: React.FC<FAQItemProps> = ({
     return (
         <div
             onClick={onClick}
-            className="border-b border-gray-200 cursor-pointer py-4 hover:bg-gray-50 transition"
+            className="border-b border-gray-200 dark:border-black cursor-pointer py-4 hover:bg-gray-50 dark:hover:bg-black transition"
         >
             <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-base md:text-lg text-gray-900">
+                <h3 className="font-semibold text-base md:text-lg text-gray-900 dark:text-white">
                     {question}
                 </h3>
                 <motion.span
                     animate={{ rotate: isActive ? 45 : 0 }}
-                    className="text-gray-500 text-xl"
+                    className="text-gray-500 dark:text-white text-xl"
                 >
                     +
                 </motion.span>
@@ -38,7 +38,7 @@ const SingleFAQItem: React.FC<FAQItemProps> = ({
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="pt-3 text-sm md:text-base text-gray-700"
+                        className="pt-3 text-sm md:text-base text-gray-700 dark:text-white"
                     >
                         {answer}
                     </motion.div>
@@ -89,7 +89,7 @@ const FAQSection = () => {
     };
 
     return (
-        <div className="w-full bg-white py-14 px-4">
+        <div className="w-full bg-white dark:bg-black py-14 px-4">
             {/* Title & Subtitle */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}

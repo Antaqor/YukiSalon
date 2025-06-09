@@ -40,7 +40,7 @@ export default function BookDetailPage() {
 
     if (!book) {
         return (
-            <div className="min-h-screen bg-black text-black p-8">
+            <div className="min-h-screen bg-black text-black dark:text-white p-8">
                 <p className="text-center text-red-500">{status || "Уншиж байна..."}</p>
             </div>
         );
@@ -49,7 +49,7 @@ export default function BookDetailPage() {
     const finalPrice = book.saleActive ? book.salePrice : book.price;
 
     return (
-        <main className="min-h-screen bg-white text-black py-8 px-4">
+        <main className="min-h-screen bg-white dark:bg-black text-black dark:text-white py-8 px-4">
             <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-10">
                 <div className="w-full md:w-1/2 bg-[#16181C] rounded flex items-center justify-center overflow-hidden">
                     {book.coverImageUrl ? (
@@ -67,13 +67,13 @@ export default function BookDetailPage() {
                         <h1 className="text-3xl font-bold uppercase tracking-wide">{book.title}</h1>
                         <p className="text-gray-400 text-sm">Зохиогч: {book.author}</p>
                     </div>
-                    <div className="text-sm text-black leading-relaxed">
+                    <div className="text-sm text-black dark:text-white leading-relaxed">
                         <h2 className="text-lg font-semibold mb-2 uppercase tracking-wider text-[#1D9BF0]">
                             Номын Танилцуулга
                         </h2>
                         <p>{book.description}</p>
                     </div>
-                    <div className="border-t border-gray-700 pt-4 space-y-2">
+                    <div className="border-t border-gray-700 dark:border-black pt-4 space-y-2">
                         {book.saleActive ? (
                             <div>
                                 <p className="text-md text-gray-500 line-through">
@@ -84,7 +84,7 @@ export default function BookDetailPage() {
                                 </p>
                             </div>
                         ) : (
-                            <p className="text-xl font-bold text-black">
+                            <p className="text-xl font-bold text-black dark:text-white">
                                 Үнэ: {finalPrice.toLocaleString("mn-MN")}₮
                             </p>
                         )}

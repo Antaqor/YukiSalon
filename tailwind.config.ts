@@ -1,6 +1,7 @@
 // tailwind.config.js
 
 module.exports = {
+  darkMode: 'class',
   content: [
     './src/**/*.{js,ts,jsx,tsx}', // Adjust based on your project structure
     './public/**/*.html',
@@ -8,7 +9,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        dark: '#080808', // Custom dark color for the background
+        dark: '#000000', // Custom dark color for the background
         light: '#ffffff', // Light color for text
         brandPink: '#FF577F'
       },
