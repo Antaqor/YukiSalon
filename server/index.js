@@ -13,6 +13,7 @@ const postRoutes       = require("./routes/post");
 const userRoutes       = require("./routes/user");
 const paymentRoutes    = require("./routes/payment");
 const bookRoutes       = require("./routes/bookRoutes");
+const productRoutes    = require("./routes/productRoutes");
 
 const app  = express();
 const PORT = process.env.PORT || 5001;
@@ -49,6 +50,7 @@ app.use("/api/posts",       postRoutes);
 app.use("/api/users",       userRoutes);
 app.use("/api/payments",    paymentRoutes);
 app.use("/api/books",       bookRoutes);
+app.use("/api/products",    productRoutes);
 
 app.get("/", (_, res) => res.send("Server is working!"));
 
