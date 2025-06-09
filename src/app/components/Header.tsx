@@ -3,10 +3,11 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/app/img/logo.svg";
+import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const isLoggedIn = false; // Or your real auth logic
+    const { loggedIn, logout } = useAuth();
 
     return (
         <>
@@ -34,14 +35,14 @@ export default function Header() {
 
                     {/* Desktop Links */}
                     <div className="hidden md:flex items-center space-x-8 font-medium">
-                        {isLoggedIn ? (
-                            <Link
-                                href="/logout"
+                        {loggedIn ? (
+                            <button
+                                onClick={logout}
                                 className="relative group text-gray-700 hover:text-[#1D9BF0]"
                             >
                                 Гарах
                                 <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
-                            </Link>
+                            </button>
                         ) : (
                             <>
                                 <Link
@@ -112,15 +113,17 @@ export default function Header() {
                         {/* Drawer Links */}
                         <nav className="mt-8 px-4">
                             <ul className="space-y-6">
-                                {isLoggedIn ? (
+                                {loggedIn ? (
                                     <li>
-                                        <Link
-                                            href="/logout"
-                                            onClick={() => setIsMenuOpen(false)}
-                                            className="block text-xl font-medium text-gray-800 hover:text-[#1D9BF0]"
+                                        <button
+                                            onClick={() => {
+                                                logout();
+                                                setIsMenuOpen(false);
+                                            }}
+                                            className="block text-left w-full text-xl font-medium text-gray-800 hover:text-[#1D9BF0]"
                                         >
                                             Гарах
-                                        </Link>
+                                        </button>
                                     </li>
                                 ) : (
                                     <>

@@ -41,7 +41,8 @@ export default function HomePage() {
     const [filterHashtag, setFilterHashtag] = useState("");
 
     const BASE_URL = "https://www.vone.mn";
-    const UPLOADS_URL = `https://www.vone.mn/uploads`;
+    // Uploaded files are served from the backend under /api/uploads
+    const UPLOADS_URL = `https://www.vone.mn/api/uploads`;
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Fetch posts on mount

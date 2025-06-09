@@ -54,7 +54,7 @@ export default function BooksListPage() {
                                 {book.coverImageUrl ? (
                                     <div className="relative w-full aspect-[3/4] overflow-hidden bg-white">
                                         <img
-                                            src={`https://www.vone.mn/${book.coverImageUrl}`}
+                                            src={`https://www.vone.mn/api/${book.coverImageUrl}`}
                                             alt={book.title}
                                             className="w-full h-full object-cover group-hover:opacity-90 group-hover:scale-105 transition duration-300"
                                         />

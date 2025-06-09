@@ -54,7 +54,7 @@ export default function BookDetailPage() {
                 <div className="w-full md:w-1/2 bg-[#16181C] rounded flex items-center justify-center overflow-hidden">
                     {book.coverImageUrl ? (
                         <img
-                            src={`https://www.vone.mn/${book.coverImageUrl}`}
+                            src={`https://www.vone.mn/api/${book.coverImageUrl}`}
                             alt={book.title}
                             className="object-cover w-full h-auto hover:scale-[1.01] transition duration-300"
                         />
