@@ -6,12 +6,8 @@ const path = require("path");
 const multer = require("multer");
 const Book = require("../models/Book");
 
-// Get the UPLOAD_DIR from .env (can be relative, e.g. "server/uploads")
-const envUploadDir = process.env.UPLOAD_DIR || "server/uploads";
-// Convert to absolute path if not already absolute.
-const uploadDir = path.isAbsolute(envUploadDir)
-    ? envUploadDir
-    : path.join(process.cwd(), envUploadDir);
+// Resolve uploads directory relative to this server regardless of CWD
+const uploadDir = path.join(__dirname, "../uploads");
 
 console.log("Book Routes Upload Directory:", uploadDir);
 
