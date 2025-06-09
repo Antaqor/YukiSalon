@@ -31,12 +31,12 @@ const Timeline: React.FC<TimelineProps> = ({ posts = [] }) => {
                     >
                         {/* Icon container */}
                         <div className="flex-shrink-0 relative z-10">
-                            <div className="w-12 h-12 flex items-center justify-center bg-[#0055FF] text-white rounded-full shadow-lg">
+                            <div className="w-12 h-12 flex items-center justify-center bg-[#0055FF] text-white rounded-md shadow-lg">
                                 {post.imageUrl ? (
                                     <img
                                         src={post.imageUrl}
                                         alt={post.title}
-                                        className="w-full h-full object-cover rounded-full"
+                                        className="w-full h-full object-cover rounded-md"
                                     />
                                 ) : (
                                     post.title.charAt(0)
