@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import logo from "@/app/img/logo.svg";
 import { useAuth } from "../context/AuthContext";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -35,6 +36,7 @@ export default function Header() {
 
                     {/* Desktop Links */}
                     <div className="hidden md:flex items-center space-x-8 font-medium">
+                        <ThemeToggle />
                         {loggedIn ? (
                             <button
                                 onClick={logout}
@@ -113,6 +115,9 @@ export default function Header() {
                         {/* Drawer Links */}
                         <nav className="mt-8 px-4">
                             <ul className="space-y-6">
+                                <li>
+                                    <ThemeToggle />
+                                </li>
                                 {loggedIn ? (
                                     <li>
                                         <button

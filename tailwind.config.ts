@@ -1,6 +1,7 @@
 // tailwind.config.js
 
 module.exports = {
+  darkMode: 'class',
   content: [
     './src/**/*.{js,ts,jsx,tsx}', // Adjust based on your project structure
     './public/**/*.html',
