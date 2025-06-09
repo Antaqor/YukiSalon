@@ -5,10 +5,8 @@ const path = require('path');
 const multer = require('multer');
 const Product = require('../models/Product');
 
-const envUploadDir = process.env.UPLOAD_DIR || 'server/uploads';
-const uploadDir = path.isAbsolute(envUploadDir)
-    ? envUploadDir
-    : path.join(process.cwd(), envUploadDir);
+// Resolve uploads directory relative to this server regardless of CWD
+const uploadDir = path.join(__dirname, '../uploads');
 
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
