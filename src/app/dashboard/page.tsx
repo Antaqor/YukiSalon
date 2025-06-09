@@ -252,7 +252,7 @@ function BookRow({
             <div className="w-24 h-24 bg-[#222] flex-shrink-0 overflow-hidden">
                 {book.coverImageUrl ? (
                     <img
-                        src={`https://www.vone.mn/${book.coverImageUrl}`}
+                        src={`https://www.vone.mn/api/${book.coverImageUrl}`}
                         alt={book.title}
                         className="w-full h-full object-cover"
                     />

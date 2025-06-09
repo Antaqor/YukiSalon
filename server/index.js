@@ -13,6 +13,8 @@ const postRoutes       = require("./routes/post");
 const userRoutes       = require("./routes/user");
 const paymentRoutes    = require("./routes/payment");
 const bookRoutes       = require("./routes/bookRoutes");
+const productRoutes    = require("./routes/productRoutes");
+const cartRoutes       = require("./routes/cartRoutes");
 
 const app  = express();
 const PORT = process.env.PORT || 5001;
@@ -35,7 +37,9 @@ if (!fs.existsSync(UPLOAD_DIR)) {
     fs.mkdirSync(UPLOAD_DIR, { recursive: true });
     console.log("Created uploads folder at:", UPLOAD_DIR);
 }
+// Serve uploads at /api/uploads as well as /uploads for flexibility
 app.use("/uploads", express.static(UPLOAD_DIR));
+app.use("/api/uploads", express.static(UPLOAD_DIR));
 
 // ---- MongoDB ----
 mongoose
@@ -49,6 +53,8 @@ app.use("/api/posts",       postRoutes);
 app.use("/api/users",       userRoutes);
 app.use("/api/payments",    paymentRoutes);
 app.use("/api/books",       bookRoutes);
+app.use("/api/products",    productRoutes);
+app.use("/api/cart",        cartRoutes);
 
 app.get("/", (_, res) => res.send("Server is working!"));
 

@@ -1,87 +1,71 @@
-// BooksListPage.tsx (e.g., in /src/pages/books-list.tsx)
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { Product } from "../context/CartContext";
 
-interface Book {
-    _id: string;
-    title: string;
-    author: string;
-    description: string;
-    price: number;
-    coverImageUrl: string;
-    saleActive: boolean;
-    salePrice: number;
-}
-
-export default function BooksListPage() {
-    const [books, setBooks] = useState<Book[]>([]);
+export default function ShopPage() {
+    const [products, setProducts] = useState<Product[]>([]);
     const [status, setStatus] = useState("");
     const BACKEND_URL = "https://www.vone.mn/api";
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchProducts = async () => {
             try {
-                const res = await fetch(`${BACKEND_URL}/books`);
+                const res = await fetch(`${BACKEND_URL}/products`);
                 if (!res.ok) throw new Error("Failed to fetch");
                 const data = await res.json();
-                setBooks(data);
+                setProducts(data);
             } catch (err) {
                 console.error(err);
-                setStatus("Ном татахад алдаа!");
+                setStatus("Бараа татаж чадсангүй!");
             }
         };
-        fetchData();
+        fetchProducts();
     }, []);
 
     return (
         <main className="min-h-screen bg-white text-black px-4 py-8">
             <div className="max-w-4xl mx-auto">
                 <h1 className="text-3xl font-bold mb-8 text-center tracking-wider uppercase">
-                    Бүх Ном
+                    Дэлгүүр
                 </h1>
                 {status && <p className="text-red-500 mb-4 text-center">{status}</p>}
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {books.map((book) => {
-                        const finalPrice = book.saleActive ? book.salePrice : book.price;
+                    {products.map((p) => {
+                        const finalPrice = p.saleActive ? p.salePrice : p.price;
                         return (
                             <Link
-                                key={book._id}
-                                href={`/book/${book._id}`}
+                                key={p._id}
+                                href={`/shop/${p._id}`}
                                 className="group relative rounded-lg overflow-hidden border border-gray-200 bg-white hover:shadow-lg hover:shadow-[#1D9BF0]/30 hover:-translate-y-1 hover:scale-[1.01] transition-transform duration-300 flex flex-col"
                             >
-                                {book.coverImageUrl ? (
+                                {p.imageUrl ? (
                                     <div className="relative w-full aspect-[3/4] overflow-hidden bg-white">
                                         <img
-                                            src={`https://www.vone.mn/api/${book.coverImageUrl}`}
-                                            alt={book.title}
+                                            src={`https://www.vone.mn/api/${p.imageUrl}`}
+                                            alt={p.name}
                                             className="w-full h-full object-cover group-hover:opacity-90 group-hover:scale-105 transition duration-300"
                                         />
                                     </div>
                                 ) : (
                                     <div className="w-full aspect-[3/4] bg-[#222] flex items-center justify-center text-gray-500">
-                                        No Cover
+                                        No Image
                                     </div>
                                 )}
-
                                 <div className="p-4 flex flex-col flex-1">
                                     <h2 className="text-lg font-semibold uppercase tracking-wide mb-1 line-clamp-1">
-                                        {book.title}
+                                        {p.name}
                                     </h2>
-                                    <p className="text-xs text-gray-400 mb-2 line-clamp-1">
-                                        Зохиогч: {book.author}
-                                    </p>
                                     <p className="text-sm text-gray-300 mb-3 line-clamp-2">
-                                        {book.description}
+                                        {p.description}
                                     </p>
-                                    {book.saleActive ? (
+                                    {p.saleActive ? (
                                         <div className="mt-auto space-y-1">
-                                            <p className="text-sm text-white line-through">
-                                                {book.price.toLocaleString("mn-MN")}₮
+                                            <p className="text-sm text-gray-500 line-through">
+                                                {p.price.toLocaleString("mn-MN")}₮
                                             </p>
                                             <p className="text-lg font-bold text-red-500">
-                                                {book.salePrice.toLocaleString("mn-MN")}₮
+                                                {p.salePrice.toLocaleString("mn-MN")}₮
                                             </p>
                                         </div>
                                     ) : (
