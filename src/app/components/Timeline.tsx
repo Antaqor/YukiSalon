@@ -45,9 +45,9 @@ const Timeline: React.FC<TimelineProps> = ({ posts = [] }) => {
                         </div>
 
                         {/* Content container */}
-                        <div className="ml-8 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md w-full">
+                        <div className="ml-8 p-4 bg-white dark:bg-black rounded-lg shadow-md w-full">
                             <h3 className="mt-1 text-xl font-bold text-[#04091F]">{post.title}</h3>
-                            <p className="mt-2 text-gray-700 dark:text-gray-300">{post.description}</p>
+                            <p className="mt-2 text-gray-700 dark:text-white">{post.description}</p>
                         </div>
                     </motion.li>
                 ))}

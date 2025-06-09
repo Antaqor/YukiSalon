@@ -228,10 +228,10 @@ export default function RegisterMultiStepPage() {
 
     // ---------- Utility: conditional className for inputs/selects ----------
     const getInputClass = (fieldName: string) => {
-        return `w-full rounded-md px-3 py-2 text-black dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${
+        return `w-full rounded-md px-3 py-2 text-black dark:text-white bg-white dark:bg-black focus:outline-none focus:ring-2 ${
             fieldErrors[fieldName]
                 ? "border border-red-500 focus:ring-red-500"
-                : "border border-gray-300 dark:border-gray-600 focus:ring-blue-500"
+                : "border border-gray-300 dark:border-black focus:ring-blue-500"
         }`;
     };
 
@@ -429,7 +429,7 @@ export default function RegisterMultiStepPage() {
                             <button
                                 type="button"
                                 onClick={() => setStep(1)}
-                                className="flex-1 bg-gray-200 dark:bg-gray-700 text-black dark:text-white py-3 rounded-md font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                                className="flex-1 bg-gray-200 dark:bg-black text-black dark:text-white py-3 rounded-md font-semibold hover:bg-gray-300 dark:hover:bg-black transition"
                             >
                                 Буцах
                             </button>

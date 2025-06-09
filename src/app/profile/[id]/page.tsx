@@ -89,7 +89,7 @@ export default function PublicProfilePage() {
     return (
         <div className="min-h-screen bg-white dark:bg-dark text-black dark:text-white px-4 py-6 flex flex-col items-center">
             {/* Profile Header */}
-            <div className="w-full max-w-xl bg-white dark:bg-gray-800 rounded-md shadow-sm p-6 flex flex-col items-center">
+            <div className="w-full max-w-xl bg-white dark:bg-black rounded-md shadow-sm p-6 flex flex-col items-center">
                 {/* Profile Picture */}
                 <div className="relative w-32 h-32 mb-4">
                     {userData.profilePicture ? (
@@ -99,7 +99,7 @@ export default function PublicProfilePage() {
                             className="w-32 h-32 rounded-full object-cover border border-gray-300"
                         />
                     ) : (
-                        <div className="w-32 h-32 rounded-full bg-gray-200 dark:bg-gray-700" />
+                        <div className="w-32 h-32 rounded-full bg-gray-200 dark:bg-black" />
                     )}
                 </div>
 
@@ -117,16 +117,16 @@ export default function PublicProfilePage() {
                 {/* Follower/Following Stats */}
                 <div className="flex items-center gap-6 mt-4">
                     <div className="text-center">
-                        <p className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                        <p className="text-lg font-semibold text-gray-800 dark:text-white">
                             {userData.followers ? userData.followers.length : 0}
                         </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Followers</p>
+                        <p className="text-sm text-gray-500 dark:text-white">Followers</p>
                     </div>
                     <div className="text-center">
-                        <p className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                        <p className="text-lg font-semibold text-gray-800 dark:text-white">
                             {userData.following ? userData.following.length : 0}
                         </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Following</p>
+                        <p className="text-sm text-gray-500 dark:text-white">Following</p>
                     </div>
                 </div>
             </div>
@@ -137,25 +137,25 @@ export default function PublicProfilePage() {
                     Нийтлэлүүд
                 </h2>
                 {postLoading && (
-                    <p className="text-gray-600 dark:text-gray-400 mb-2">Ачааллаж байна...</p>
+                    <p className="text-gray-600 dark:text-white mb-2">Ачааллаж байна...</p>
                 )}
                 {!postLoading && userPosts.length === 0 && (
-                    <p className="text-gray-600 dark:text-gray-400">Энэ хэрэглэгч нийтлэлгүй байна.</p>
+                    <p className="text-gray-600 dark:text-white">Энэ хэрэглэгч нийтлэлгүй байна.</p>
                 )}
                 <div className="space-y-4">
                     {userPosts.map((post) => (
                         <div
                             key={post._id}
-                            className="p-4 bg-white dark:bg-gray-800 rounded-md shadow-sm border border-gray-100 dark:border-gray-700"
+                            className="p-4 bg-white dark:bg-black rounded-md shadow-sm border border-gray-100 dark:border-black"
                         >
                             {/* Post Title */}
-                            <h3 className="text-md font-bold text-gray-800 dark:text-gray-200 mb-1">
+                            <h3 className="text-md font-bold text-gray-800 dark:text-white mb-1">
                                 {post.title}
                             </h3>
                             {/* Post Content */}
-                            <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">{post.content}</p>
+                            <p className="text-sm text-gray-700 dark:text-white mb-2">{post.content}</p>
                             {/* Post Date */}
-                            <p className="text-xs text-gray-400 dark:text-gray-500">
+                            <p className="text-xs text-gray-400 dark:text-white">
                                 {new Date(post.createdAt).toLocaleString()}
                             </p>
                         </div>

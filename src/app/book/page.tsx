@@ -49,10 +49,10 @@ export default function BooksListPage() {
                             <Link
                                 key={book._id}
                                 href={`/book/${book._id}`}
-                                className="group relative rounded-lg overflow-hidden border border-gray-200 bg-white dark:bg-gray-800 hover:shadow-lg hover:shadow-[#1D9BF0]/30 hover:-translate-y-1 hover:scale-[1.01] transition-transform duration-300 flex flex-col"
+                                className="group relative rounded-lg overflow-hidden border border-gray-200 bg-white dark:bg-black hover:shadow-lg hover:shadow-[#1D9BF0]/30 hover:-translate-y-1 hover:scale-[1.01] transition-transform duration-300 flex flex-col"
                             >
                                 {book.coverImageUrl ? (
-                                    <div className="relative w-full aspect-[3/4] overflow-hidden bg-white dark:bg-gray-700">
+                                    <div className="relative w-full aspect-[3/4] overflow-hidden bg-white dark:bg-black">
                                         <img
                                             src={`https://www.vone.mn/api/${book.coverImageUrl}`}
                                             alt={book.title}
