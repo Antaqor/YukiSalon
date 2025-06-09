@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { AuthProvider } from "./context/AuthContext";
+import { CartProvider } from "./context/CartContext";
 import Header from "./components/Header";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -69,6 +70,7 @@ export default function RootLayout({
         <body
             className={`${inter.className} flex flex-col min-h-screen bg-white text-gray-900`}
         >
+        <CartProvider>
         <AuthProvider>
             <div className="max-w-7xl w-full mx-auto md:px-6">
 
@@ -396,6 +398,7 @@ export default function RootLayout({
                 </p>
             </footer>
         </AuthProvider>
+        </CartProvider>
         </body>
         </html>
     );
