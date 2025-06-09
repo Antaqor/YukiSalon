@@ -35,7 +35,7 @@ export default function ProductDetailPage() {
   /* ── loading / error state ───────────────────────── */
   if (!product) {
     return (
-      <div className="min-h-screen bg-white text-black p-8">
+      <div className="min-h-screen bg-white dark:bg-dark text-black dark:text-white p-8">
         <p className="text-center text-red-500">
           {status || "Уншиж байна..."}
         </p>
@@ -47,7 +47,7 @@ export default function ProductDetailPage() {
 
   /* ── render ──────────────────────────────────────── */
   return (
-    <main className="min-h-screen bg-white text-black py-8 px-4">
+    <main className="min-h-screen bg-white dark:bg-dark text-black dark:text-white py-8 px-4">
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-10">
         {/* image */}
         <div className="w-full md:w-1/2 bg-[#16181C] rounded flex items-center justify-center overflow-hidden">

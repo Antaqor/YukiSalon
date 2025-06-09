@@ -191,7 +191,7 @@ export default function HomePage() {
     }, [fetchPosts]);
 
     return (
-        <div className="min-h-screen bg-gray-100 text-gray-900">
+        <div className="min-h-screen bg-gray-100 dark:bg-dark text-gray-900 dark:text-white">
             {/* Outer Grid Layout */}
             <div
                 className="mx-auto max-w-5xl w-full grid"
@@ -202,7 +202,7 @@ export default function HomePage() {
             >
                 {/* Sidebar: Trending Hashtags */}
                 <aside>
-                    <div className="bg-white p-4 grid gap-3">
+                    <div className="bg-white dark:bg-gray-800 p-4 grid gap-3">
                         <div className="grid grid-cols-[auto,1fr] items-center gap-2">
                             <FiCamera className="w-5 h-5 text-[#1D9BF0]" />
                             <h2 className="text-base font-semibold">Trending Hashtags</h2>
@@ -215,7 +215,7 @@ export default function HomePage() {
                             }}
                         >
                             <button
-                                className="px-3 py-1 text-xs bg-gray-200 rounded-full hover:bg-gray-300"
+                                className="px-3 py-1 text-xs bg-gray-200 dark:bg-gray-700 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600"
                                 onClick={() => filterPostsByHashtag("")}
                             >
                                 Бүх
@@ -223,7 +223,7 @@ export default function HomePage() {
                             {trendingHashtags.map((hashtag) => (
                                 <button
                                     key={hashtag.tag}
-                                    className="px-3 py-1 text-xs bg-gray-200 rounded-full hover:bg-gray-300"
+                                    className="px-3 py-1 text-xs bg-gray-200 dark:bg-gray-700 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600"
                                     onClick={() => filterPostsByHashtag(hashtag.tag)}
                                 >
                                     {hashtag.tag} ({hashtag.count})
@@ -236,7 +236,7 @@ export default function HomePage() {
                 {/* Main Content: Create Post & Posts List */}
                 <main>
                     {loggedIn && (
-                        <div className="bg-white grid gap-4 p-6">
+                        <div className="bg-white dark:bg-gray-800 grid gap-4 p-6">
                             <div className="grid grid-cols-[auto,1fr] items-center gap-2">
                                 <input
                                     type="file"
@@ -247,9 +247,9 @@ export default function HomePage() {
                                 />
                                 <button
                                     onClick={triggerFileInput}
-                                    className="p-2 border border-gray-200 rounded-full hover:bg-gray-100"
+                                    className="p-2 border border-gray-200 dark:border-gray-600 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
                                 >
-                                    <FiCamera className="w-5 h-5 text-gray-600" />
+                                    <FiCamera className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                                 </button>
                                 {imageFile && (
                                     <span className="text-xs text-gray-700 truncate">
@@ -259,7 +259,7 @@ export default function HomePage() {
                             </div>
                             <textarea
                                 placeholder="What's on your mind?"
-                                className="w-full text-sm text-gray-900 border border-gray-200 rounded p-2 focus:outline-none"
+                                className="w-full text-sm text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 rounded p-2 focus:outline-none"
                                 rows={3}
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
@@ -284,7 +284,7 @@ export default function HomePage() {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.02 }}
-                                    className="bg-white p-6 grid gap-4 border-b border-gray-200"
+                                    className="bg-white dark:bg-gray-800 p-6 grid gap-4 border-b border-gray-200 dark:border-gray-700"
                                 >
                                     <div className="grid grid-cols-[auto,1fr] gap-5">
                                         {/* Profile Picture with Skeleton Fallback */}
@@ -331,7 +331,7 @@ export default function HomePage() {
                                                     </div>
                                                 )}
                                             </div>
-                                            <span className="text-xs text-gray-500">
+                                            <span className="text-xs text-gray-500 dark:text-gray-400">
                                                 {new Date(post.createdAt).toLocaleString()}
                                             </span>
                                             {post.content && (
@@ -354,7 +354,7 @@ export default function HomePage() {
                                         </div>
                                     </div>
                                     {/* Stats Row */}
-                                    <div className="grid grid-cols-3 items-center text-xs text-gray-600 w-full mt-2">
+                                    <div className="grid grid-cols-3 items-center text-xs text-gray-600 dark:text-gray-400 w-full mt-2">
                                         {/* Like */}
                                         <button
                                             onClick={() => handleLike(post._id)}

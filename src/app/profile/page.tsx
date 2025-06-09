@@ -99,7 +99,7 @@ export default function MyOwnProfilePage() {
 
     // ---------------- UI ----------------
     return (
-        <div className="min-h-screen bg-white font-sans">
+        <div className="min-h-screen bg-white dark:bg-dark text-black dark:text-white font-sans">
             {/* My Profile Header */}
             <div className="text-center p-5 border-b border-gray-200">
                 {/* Profile Picture */}

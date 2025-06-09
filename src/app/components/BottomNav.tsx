@@ -16,13 +16,13 @@ const BottomNav: React.FC = () => {
 
     return (
         <nav
-            className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-50 shadow-sm"
+            className="fixed bottom-0 left-0 w-full bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-50 shadow-sm"
         >
             <div className="flex justify-around items-center py-3 sm:py-4">
                 {/* HOME */}
                 <button
                     onClick={() => router.push("/")}
-                    className="flex flex-col items-center text-black hover:text-gray-600 transition p-1"
+                    className="flex flex-col items-center text-black dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition p-1"
                 >
                     <HomeIcon className="h-6 w-6 sm:h-7 sm:w-7" />
                 </button>
@@ -30,20 +30,20 @@ const BottomNav: React.FC = () => {
                 {/* TIME */}
                 <button
                     onClick={() => router.push("/orders")}
-                    className="flex flex-col items-center text-black hover:text-gray-600 transition p-1"
+                    className="flex flex-col items-center text-black dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition p-1"
                 >
                     <ClockIcon className="h-6 w-6 sm:h-7 sm:w-7" />
                 </button>
                 <button
                     onClick={() => router.push("/orders")}
-                    className="flex flex-col items-center text-black hover:text-gray-600 transition p-1"
+                    className="flex flex-col items-center text-black dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition p-1"
                 >
                     <ShoppingBagIcon className="h-6 w-6 sm:h-7 sm:w-7" />
                 </button>
                 {/* PROFILE */}
                 <button
                     onClick={() => router.push("/profile")}
-                    className="flex flex-col items-center text-black hover:text-gray-600 transition p-1"
+                    className="flex flex-col items-center text-black dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition p-1"
                 >
                     <UserCircleIcon className="h-6 w-6 sm:h-7 sm:w-7" />
                 </button>
