@@ -20,6 +20,17 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Backend Setup
+
+1. Copy `server/.env.example` to `server/.env` and update `MONGODB_URI` with your database connection string.
+2. Start the API server with `npm run server` (or `npm run server-dev` for automatic reloads).
+
+Uploaded files are stored in the directory specified by `UPLOAD_DIR`.
+
+## Product Management
+
+Administrators can manage shop items at `/dashboard/products`. This page lets you upload images and edit pricing information.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
