@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
@@ -23,7 +24,7 @@ export default function Header() {
                 {/* NAV BAR */}
                 <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center">
                     <div className="ml-auto flex items-center space-x-4">
-                        {loggedIn && (
+                        {loggedIn ? (
                             <Link href="/profile" aria-label="Profile">
                                 {user?.profilePicture ? (
                                     <img
@@ -35,20 +36,33 @@ export default function Header() {
                                     <div className="w-8 h-8 rounded-full bg-gray-300" />
                                 )}
                             </Link>
+                        ) : (
+                            <Link href="/login" aria-label="Login">
+                                <UserCircleIcon className="w-8 h-8 text-yellow-400" />
+                            </Link>
                         )}
                         <div className="hidden md:flex items-center space-x-8 font-medium">
                             {loggedIn ? (
-                                <button
-                                    onClick={logout}
-                                    className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
-                                >
-                                Гарах
-                                <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
-                            </button>
-                        ) : (
-                            <>
-                                <Link
-                                    href="/login"
+                                <>
+                                    <Link
+                                        href="/subscription"
+                                        className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                    >
+                                        Subscription
+                                        <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                                    </Link>
+                                    <button
+                                        onClick={logout}
+                                        className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                    >
+                                        Гарах
+                                        <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <Link
+                                        href="/login"
                                     className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
                                 >
                                     Нэвтрэх
@@ -110,17 +124,28 @@ export default function Header() {
                         <nav className="mt-8 px-4">
                             <ul className="space-y-6">
                                 {loggedIn ? (
-                                    <li>
-                                        <button
-                                            onClick={() => {
-                                                logout();
-                                                setIsMenuOpen(false);
-                                            }}
-                                            className="block text-left w-full text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
-                                        >
-                                            Гарах
-                                        </button>
-                                    </li>
+                                    <>
+                                        <li>
+                                            <Link
+                                                href="/subscription"
+                                                onClick={() => setIsMenuOpen(false)}
+                                                className="block text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                            >
+                                                Subscription
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <button
+                                                onClick={() => {
+                                                    logout();
+                                                    setIsMenuOpen(false);
+                                                }}
+                                                className="block text-left w-full text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                            >
+                                                Гарах
+                                            </button>
+                                        </li>
+                                    </>
                                 ) : (
                                     <>
                                         <li>
@@ -240,6 +265,31 @@ export default function Header() {
                                             Дэлгүүр
                                         </Link>
                                     </li>
+                                    {loggedIn && (
+                                        <li>
+                                            <Link
+                                                href="/subscription"
+                                                onClick={() => setIsMenuOpen(false)}
+                                                className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="w-6 h-6"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth="2"
+                                                        d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                                                    />
+                                                </svg>
+                                                Subscription
+                                            </Link>
+                                        </li>
+                                    )}
                                     <li>
                                         <Link
                                             href="/users"

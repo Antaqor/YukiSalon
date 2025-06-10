@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
@@ -9,9 +9,23 @@ export default function LoginPage() {
     const { login } = useAuth();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [remember, setRemember] = useState(false);
     const [error, setError] = useState("");
 
     const BASE_URL = "https://www.vone.mn";
+
+    useEffect(() => {
+        const savedUser = localStorage.getItem("rememberUsername");
+        const savedPass = localStorage.getItem("rememberPassword");
+        if (savedUser) {
+            setUsername(savedUser);
+            setRemember(true);
+        }
+        if (savedPass) {
+            setPassword(savedPass);
+            setRemember(true);
+        }
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -25,6 +39,13 @@ export default function LoginPage() {
             if (res.status === 200 && res.data.token) {
                 const { user, token } = res.data;
                 login(user, token);
+                if (remember) {
+                    localStorage.setItem("rememberUsername", username);
+                    localStorage.setItem("rememberPassword", password);
+                } else {
+                    localStorage.removeItem("rememberUsername");
+                    localStorage.removeItem("rememberPassword");
+                }
                 router.push("/");
             }
         } catch (err: any) {
@@ -67,7 +88,12 @@ export default function LoginPage() {
                     </div>
                     <div className="flex items-center justify-between text-sm text-gray-700 dark:text-white">
                         <label className="flex items-center text-black dark:text-white">
-                            <input type="checkbox" className="h-4 w-4 mr-2" />
+                            <input
+                                type="checkbox"
+                                className="h-4 w-4 mr-2"
+                                checked={remember}
+                                onChange={(e) => setRemember(e.target.checked)}
+                            />
                             Сануулах
                         </label>
                         <button
