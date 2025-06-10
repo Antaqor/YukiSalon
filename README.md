@@ -1,47 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Энэ бол [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app) ашиглан эхлүүлсэн [Next.js](https://nextjs.org) төсөл юм.
 
-## Getting Started
+## Эхлэх заавар
 
-First, run the development server:
+Эхлээд хөгжүүлэлтийн серверийг ажиллуулна:
 
 ```bash
 npm run dev
-# or
+# эсвэл
 yarn dev
-# or
+# эсвэл
 pnpm dev
-# or
+# эсвэл
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[http://localhost:3000](http://localhost:3000) -р хандан үр дүнг үзээрэй.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`app/page.tsx` файлыг засварлах замаар хуудсыг өөрчлөх боломжтой. Файлыг хадгалахад хуудас автоматаар шинэчлэгдэнэ.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Энэхүү төсөл нь [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts)-ыг ашиглан [Geist](https://vercel.com/font) фонтыг автоматаар сайжруулж, ачаалдаг.
 
-## Backend Setup
+## Серверийн тохиргоо
 
-1. Copy `server/.env.example` to `server/.env` and update `MONGODB_URI` with your database connection string.
-2. Start the API server with `npm run server` (or `npm run server-dev` for automatic reloads).
+1. `server/.env.example` файлыг `server/.env` болгон хуулж, `MONGODB_URI`-д өгөгдлийн сангийн холбоосоо бичнэ.
+2. API серверийг `npm run server` (эсвэл `npm run server-dev` автоматаар дахин ачаалуулах) командаар эхлүүлнэ.
 
-Uploaded files are stored in the directory specified by `UPLOAD_DIR`.
+Хуулсан файлууд `UPLOAD_DIR`-ээр заасан санд хадгалагдана.
 
-## Product Management
+## Бүтээгдэхүүний удирдлага
 
-Administrators can manage shop items at `/dashboard/products`. This page lets you upload images and edit pricing information.
+Админууд `/dashboard/products` хуудсаар дамжуулан дэлгүүрийн барааг удирдах боломжтой. Энэ хуудсаар зураг оруулж, үнэ засварлах боломжтой.
 
-## Learn More
+## Дэлгэрэнгүй
 
-To learn more about Next.js, take a look at the following resources:
+Next.js-ийн талаар илүү ихийг дараах эх сурвалжаас уншаарай:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [Next.js-ийн баримт](https://nextjs.org/docs) – Next.js-ийн боломж, API-тай танилцаарай.
+- [Next.js суралцах](https://nextjs.org/learn) – интерактив Next.js хичээл.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+[Next.js-ийн GitHub репозитори](https://github.com/vercel/next.js)-г сонирхоорой – таны санал хүсэлт, хувь нэмрийг хүлээн авна!
 
-## Deploy on Vercel
+## Vercel дээр байрлуулах
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Next.js апп-аа байрлуулах хамгийн хялбар арга бол Next.js-ийн бүтээгчдийн санал болгодог [Vercel Платформ](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme)-ыг ашиглах юм.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Дэлгэрэнгүйг манай [Next.js байршуулалтын баримтаас](https://nextjs.org/docs/app/building-your-application/deploying) үзнэ үү.

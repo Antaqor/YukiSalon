@@ -60,9 +60,9 @@ export default function ShopPage() {
                     />
                   </div>
                 ) : (
-                  <div className="w-full aspect-square bg-[#222] flex items-center justify-center text-gray-500">
-                    No Image
-                  </div>
+                    <div className="w-full aspect-square bg-[#222] flex items-center justify-center text-gray-500">
+                      Зураг байхгүй
+                    </div>
                 )}
 
                 {/* details */}
