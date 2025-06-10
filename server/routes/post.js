@@ -45,6 +45,20 @@ router.get("/", async (req, res) => {
                 { $addFields: { likesCount: { $size: "$likes" } } },
                 { $sort: { likesCount: -1, createdAt: -1 } },
             ]);
+
+            await Post.populate(posts, {
+                path: "user",
+                select: "username profilePicture",
+            });
+            await Post.populate(posts, {
+                path: "comments.user",
+                select: "username profilePicture",
+            });
+            await Post.populate(posts, {
+                path: "comments.replies.user",
+                select: "username profilePicture",
+            });
+
             return res.json(posts);
         } else {
             // **IMPORTANT**: Populate both username and profilePicture.
