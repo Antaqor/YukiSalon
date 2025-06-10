@@ -51,6 +51,7 @@ router.get("/", async (req, res) => {
             const posts = await Post.find(filter)
                 .populate("user", "username profilePicture")
                 .populate("comments.user", "username profilePicture")
+                .populate("comments.replies.user", "username profilePicture")
                 .sort({ createdAt: -1 });
             return res.json(posts);
         }
@@ -159,6 +160,41 @@ router.post("/:id/comment", authenticateToken, async (req, res) => {
         return res.json({ comments: post.comments });
     } catch (err) {
         console.error("Comment error:", err);
+        return res.status(500).json({ error: "Server error" });
+    }
+});
+
+/**
+ * POST /api/posts/:postId/comment/:commentId/reply – Add a reply to a comment.
+ */
+router.post("/:postId/comment/:commentId/reply", authenticateToken, async (req, res) => {
+    try {
+        const { postId, commentId } = req.params;
+        const { content } = req.body;
+        if (!content) {
+            return res.status(400).json({ error: "Content required" });
+        }
+
+        const post = await Post.findById(postId).populate("comments.user", "username profilePicture");
+        if (!post) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+
+        const comment = post.comments.id(commentId);
+        if (!comment) {
+            return res.status(404).json({ error: "Comment not found" });
+        }
+
+        comment.replies.push({ user: req.user._id, content });
+        await post.save();
+        await post.populate("comments.replies.user", "username profilePicture");
+
+        // increment user rating
+        await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
+
+        return res.json({ comments: post.comments });
+    } catch (err) {
+        console.error("Reply error:", err);
         return res.status(500).json({ error: "Server error" });
     }
 });
