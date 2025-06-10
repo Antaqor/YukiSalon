@@ -22,6 +22,8 @@ interface Post {
     images?: string[];
     createdAt: string;
     likes: string[];
+    comments?: { user: UserData; content: string }[];
+    shares?: number;
     user?: UserData;
 }
 
@@ -148,6 +150,44 @@ export default function HomePage() {
             );
         } catch (err) {
             console.error("Like error:", err);
+        }
+    };
+
+    const handleComment = async (postId: string) => {
+        if (!user?.accessToken) return;
+        const content = prompt("Comment");
+        if (!content) return;
+        try {
+            const res = await axios.post(
+                `${BASE_URL}/api/posts/${postId}/comment`,
+                { content },
+                { headers: { Authorization: `Bearer ${user.accessToken}` } }
+            );
+            const comments = res.data.comments;
+            login({ ...user, rating: (user.rating || 0) + 1 }, user.accessToken);
+            setPosts((prev) =>
+                prev.map((p) => (p._id === postId ? { ...p, comments } : p))
+            );
+        } catch (err) {
+            console.error("Comment error:", err);
+        }
+    };
+
+    const handleShare = async (postId: string) => {
+        if (!user?.accessToken) return;
+        try {
+            const res = await axios.post(
+                `${BASE_URL}/api/posts/${postId}/share`,
+                {},
+                { headers: { Authorization: `Bearer ${user.accessToken}` } }
+            );
+            const shares = res.data.shares;
+            login({ ...user, rating: (user.rating || 0) + 1 }, user.accessToken);
+            setPosts((prev) =>
+                prev.map((p) => (p._id === postId ? { ...p, shares } : p))
+            );
+        } catch (err) {
+            console.error("Share error:", err);
         }
     };
 
@@ -370,20 +410,24 @@ export default function HomePage() {
 
                                         {/* Comment */}
                                         <button
+                                            onClick={() => handleComment(post._id)}
+                                            disabled={!loggedIn}
                                             className="flex items-center justify-center gap-1 hover:text-gray-800"
-                                            aria-label="Comment (0)"
+                                            aria-label={`Comment (${post.comments?.length || 0})`}
                                         >
                                             <FaComment className="w-4 h-4" />
-                                            <span>0</span>
+                                            <span>{post.comments?.length || 0}</span>
                                         </button>
 
                                         {/* Share */}
                                         <button
+                                            onClick={() => handleShare(post._id)}
+                                            disabled={!loggedIn}
                                             className="flex items-center justify-center gap-1 hover:text-gray-800"
-                                            aria-label="Share (0)"
+                                            aria-label={`Share (${post.shares || 0})`}
                                         >
                                             <FaShare className="w-4 h-4" />
-                                            <span>0</span>
+                                            <span>{post.shares || 0}</span>
                                         </button>
                                     </div>
 
