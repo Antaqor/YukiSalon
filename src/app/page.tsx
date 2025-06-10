@@ -28,6 +28,7 @@ interface UserData {
   subscriptionExpiresAt?: string;
   accessToken?: string;
   rating?: number;
+  vntBalance?: number; // wallet balance
 }
 
 interface Reply {
@@ -52,7 +53,7 @@ interface Post {
   likes: string[] | UserData[];
   comments?: Comment[];
   shares?: number;
-  price: number;
+  price?: number; // undefined or 0 → free
   unlockedBy?: (string | UserData)[];
   user?: UserData;
 }
@@ -75,12 +76,10 @@ export default function HomePage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [error, setError] = useState("");
   const [trendingHashtags, setTrendingHashtags] = useState<Hashtag[]>([]);
-  const [filterHashtag, setFilterHashtag] = useState("");
-  const [commentTexts, setCommentTexts] =
-    useState<Record<string, string>>({});
+  const [filterHashtag, setFilterHashtag] = useState<string>("");
+  const [commentTexts, setCommentTexts] = useState<Record<string, string>>({});
   const [replyTexts, setReplyTexts] = useState<Record<string, string>>({});
-  const [openComments, setOpenComments] =
-    useState<Record<string, boolean>>({});
+  const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
   const [likedPosts, setLikedPosts] = useState<string[]>([]);
   const [sharedPosts, setSharedPosts] = useState<string[]>([]);
 
@@ -93,43 +92,38 @@ export default function HomePage() {
   const UPLOADS_URL = `${BASE_URL}/api/uploads`;
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // redirect guest
   useEffect(() => {
-    if (!loading && !loggedIn) {
-      router.push("/login");
-    }
+    if (!loading && !loggedIn) router.push("/login");
   }, [loading, loggedIn, router]);
 
   // ────────────────────────────────────────────────────────────
-  // Fetch posts (location-aware “smart” sort)
+  // Fetch posts (location-aware smart sort)
   // ────────────────────────────────────────────────────────────
   const fetchPosts = useCallback(async () => {
     try {
-      const params: any = { sort: "smart" };
+      const params: Record<string, string> = { sort: "smart" };
       if (viewerCoords) {
         params.currentLocation = `${viewerCoords.latitude},${viewerCoords.longitude}`;
       } else if (user?.location) {
         params.currentLocation = user.location;
       }
 
-      const res = await axios.get(`${BASE_URL}/api/posts`, { params });
-
-      const postsData: Post[] = res.data;
-      setPosts(postsData);
-      setAllPosts(postsData);
-      computeTrendingHashtags(postsData);
+      const { data } = await axios.get<Post[]>(`${BASE_URL}/api/posts`, { params });
+      setPosts(data);
+      setAllPosts(data);
+      computeTrendingHashtags(data);
 
       if (user) {
-        const liked = res.data
-          .filter((p: Post) =>
-            p.likes.some((l: any) => (l._id || l) === user._id)
-          )
-          .map((p: Post) => p._id);
+        const liked = data
+          .filter((p) => p.likes.some((l: any) => (l._id || l) === user._id))
+          .map((p) => p._id);
         setLikedPosts(liked);
       }
     } catch (err) {
       console.error("Post fetch error:", err);
     }
-  }, [BASE_URL, user, viewerCoords]);
+  }, [user, viewerCoords]);
 
   useEffect(() => {
     fetchPosts();
@@ -147,18 +141,18 @@ export default function HomePage() {
           hashtagCount[tag] = (hashtagCount[tag] || 0) + 1;
         });
     });
-    const trending: Hashtag[] = Object.entries(hashtagCount).map(
-      ([tag, count]) => ({ tag, count })
-    );
-    trending.sort((a, b) => b.count - a.count);
-    setTrendingHashtags(trending.slice(0, 5));
+
+    const trending = Object.entries(hashtagCount)
+      .map(([tag, count]) => ({ tag, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+    setTrendingHashtags(trending);
   };
 
   const filterPostsByHashtag = (hashtag: string) => {
     setFilterHashtag(hashtag);
     if (!hashtag) return setPosts(allPosts);
-    const filtered = allPosts.filter((p) => p.content.includes(hashtag));
-    setPosts(filtered);
+    setPosts(allPosts.filter((p) => p.content.includes(hashtag)));
   };
 
   const triggerFileInput = () => fileInputRef.current?.click();
@@ -167,7 +161,7 @@ export default function HomePage() {
   };
 
   // ────────────────────────────────────────────────────────────
-  // CRUD actions (create, like, comment, reply, share, follow)
+  // CRUD (create, like, comment, reply, share, unlock, follow)
   // ────────────────────────────────────────────────────────────
   const createPost = async () => {
     setError("");
@@ -179,16 +173,16 @@ export default function HomePage() {
       formData.append("content", content);
       if (imageFile) formData.append("image", imageFile);
 
-      const res = await axios.post(`${BASE_URL}/api/posts`, formData, {
+      const { data } = await axios.post(`${BASE_URL}/api/posts`, formData, {
         headers: {
           Authorization: `Bearer ${user.accessToken}`,
           "Content-Type": "multipart/form-data",
         },
       });
 
-      setPosts((prev) => [res.data.post, ...prev]);
-      setAllPosts((prev) => [res.data.post, ...prev]);
-      computeTrendingHashtags([res.data.post, ...allPosts]);
+      setPosts((prev) => [data.post, ...prev]);
+      setAllPosts((prev) => [data.post, ...prev]);
+      computeTrendingHashtags([data.post, ...allPosts]);
       setContent("");
       setImageFile(null);
     } catch (err) {
@@ -200,15 +194,13 @@ export default function HomePage() {
   const handleLike = async (postId: string) => {
     if (!user?.accessToken) return;
     try {
-      const res = await axios.post(
+      const { data } = await axios.post(
         `${BASE_URL}/api/posts/${postId}/like`,
         {},
         { headers: { Authorization: `Bearer ${user.accessToken}` } }
       );
       setPosts((prev) =>
-        prev.map((p) =>
-          p._id === postId ? { ...p, likes: res.data.likes } : p
-        )
+        prev.map((p) => (p._id === postId ? { ...p, likes: data.likes } : p))
       );
       setLikedPosts((prev) => [...prev, postId]);
       login({ ...user, rating: (user.rating || 0) + 1 }, user.accessToken);
@@ -219,18 +211,18 @@ export default function HomePage() {
 
   const handleComment = async (postId: string) => {
     if (!user?.accessToken) return;
-    const content = commentTexts[postId];
-    if (!content) return;
+    const text = commentTexts[postId];
+    if (!text) return;
 
     try {
-      const res = await axios.post(
+      const { data } = await axios.post(
         `${BASE_URL}/api/posts/${postId}/comment`,
-        { content },
+        { content: text },
         { headers: { Authorization: `Bearer ${user.accessToken}` } }
       );
       login({ ...user, rating: (user.rating || 0) + 1 }, user.accessToken);
       setPosts((prev) =>
-        prev.map((p) => (p._id === postId ? { ...p, comments: res.data.comments } : p))
+        prev.map((p) => (p._id === postId ? { ...p, comments: data.comments } : p))
       );
       setCommentTexts((prev) => ({ ...prev, [postId]: "" }));
     } catch (err) {
@@ -240,18 +232,18 @@ export default function HomePage() {
 
   const handleReply = async (postId: string, commentId: string) => {
     if (!user?.accessToken) return;
-    const content = replyTexts[commentId];
-    if (!content) return;
+    const text = replyTexts[commentId];
+    if (!text) return;
 
     try {
-      const res = await axios.post(
+      const { data } = await axios.post(
         `${BASE_URL}/api/posts/${postId}/comment/${commentId}/reply`,
-        { content },
+        { content: text },
         { headers: { Authorization: `Bearer ${user.accessToken}` } }
       );
       login({ ...user, rating: (user.rating || 0) + 1 }, user.accessToken);
       setPosts((prev) =>
-        prev.map((p) => (p._id === postId ? { ...p, comments: res.data.comments } : p))
+        prev.map((p) => (p._id === postId ? { ...p, comments: data.comments } : p))
       );
       setReplyTexts((prev) => ({ ...prev, [commentId]: "" }));
     } catch (err) {
@@ -262,14 +254,14 @@ export default function HomePage() {
   const handleShare = async (postId: string) => {
     if (!user?.accessToken) return;
     try {
-      const res = await axios.post(
+      const { data } = await axios.post(
         `${BASE_URL}/api/posts/${postId}/share`,
         {},
         { headers: { Authorization: `Bearer ${user.accessToken}` } }
       );
       login({ ...user, rating: (user.rating || 0) + 1 }, user.accessToken);
       setPosts((prev) =>
-        prev.map((p) => (p._id === postId ? { ...p, shares: res.data.shares } : p))
+        prev.map((p) => (p._id === postId ? { ...p, shares: data.shares } : p))
       );
       setSharedPosts((prev) => [...prev, postId]);
     } catch (err) {
@@ -280,12 +272,13 @@ export default function HomePage() {
   const handleUnlock = async (postId: string) => {
     if (!user?.accessToken) return;
     try {
-      const res = await axios.post(
+      const { data } = await axios.post(
         `${BASE_URL}/api/posts/${postId}/unlock`,
         {},
         { headers: { Authorization: `Bearer ${user.accessToken}` } }
       );
-      const userId = user._id!;
+
+      const userId = user._id;
       setPosts((prev) =>
         prev.map((p) =>
           p._id === postId
@@ -293,8 +286,9 @@ export default function HomePage() {
             : p
         )
       );
-      if (typeof res.data.vntBalance === 'number') {
-        login({ ...user, vntBalance: res.data.vntBalance }, user.accessToken);
+
+      if (typeof data.vntBalance === "number") {
+        login({ ...user, vntBalance: data.vntBalance }, user.accessToken);
       }
     } catch (err) {
       console.error("Unlock error:", err);
@@ -346,7 +340,7 @@ export default function HomePage() {
   // ────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-black text-gray-900 dark:text-white">
-
+      {/* Membership banner */}
       {loggedIn && !isPro && (
         <div className="bg-yellow-500 text-white text-center py-2 px-4">
           <Link href="/subscription" className="font-semibold underline">
@@ -355,7 +349,7 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Outer Grid */}
+      {/* Outer grid */}
       <div
         className="mx-auto max-w-5xl w-full grid"
         style={{
@@ -363,7 +357,7 @@ export default function HomePage() {
             "var(--barcelona-threadline-column-width) minmax(0, 1fr)",
         }}
       >
-        {/* Sidebar – trending hashtags */}
+        {/* Sidebar: trending hashtags */}
         <aside>
           <div className="bg-white dark:bg-black p-4 grid gap-3">
             <div className="grid grid-cols-[auto,1fr] items-center gap-2">
@@ -396,7 +390,7 @@ export default function HomePage() {
           </div>
         </aside>
 
-        {/* Main – create + feed */}
+        {/* Main content */}
         <main>
           {/* Prompt login */}
           {!loggedIn && (
@@ -417,6 +411,7 @@ export default function HomePage() {
           {/* Create post */}
           {loggedIn && (
             <div className="bg-white dark:bg-black grid gap-4 p-6">
+              {/* Upload */}
               <div className="grid grid-cols-[auto,1fr] items-center gap-2">
                 <input
                   type="file"
@@ -460,238 +455,240 @@ export default function HomePage() {
           {/* Posts list */}
           <div className="m-0 p-0">
             {posts.map((post, idx) => {
-                const postUser = post.user;
-                const isLocked =
-                  post.price > 0 &&
-                  (!user ||
-                    (postUser?._id !== user._id &&
-                      !post.unlockedBy?.some((u) => (u as any) === user._id)));
-                return (
-                  <motion.div
-                    key={post._id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.02 }}
-                    className="bg-white dark:bg-black p-6 grid gap-4 border-b border-gray-200 dark:border-[#2F3336]"
-                  >
-                    {/* Header row */}
-                    <div className="grid grid-cols-[auto,1fr] gap-5">
-                      {/* Avatar */}
-                      <div className="self-start">
-                        {postUser?.profilePicture ? (
-                          <img
-                            src={`${BASE_URL}${postUser.profilePicture}`}
-                            alt="Avatar"
-                            className="w-12 h-12 object-cover rounded-md"
-                            onError={(e) => (e.currentTarget.style.display = "none")}
-                          />
-                        ) : (
-                          <div className="w-12 h-12 rounded-md bg-gray-300 animate-pulse" />
-                        )}
-                      </div>
+              const postUser = post.user;
+              const isLocked =
+                !!post.price && post.price > 0 &&
+                (!user ||
+                  (postUser?._id !== user._id &&
+                    !post.unlockedBy?.some((u) => (u as any) === user._id)));
 
-                      {/* Post content */}
-                      <div className="grid gap-2">
-                        <div className="grid grid-cols-[1fr,auto] items-center">
-                          <Link href={`/profile/${postUser?._id || ""}`}>
-                            <span className="text-sm font-semibold hover:underline">
-                              {postUser?.username || "Unknown User"}
-                            </span>
-                          </Link>
+              return (
+                <motion.div
+                  key={post._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.02 }}
+                  className="bg-white dark:bg-black p-6 grid gap-4 border-b border-gray-200 dark:border-[#2F3336]"
+                >
+                  {/* Header */}
+                  <div className="grid grid-cols-[auto,1fr] gap-5">
+                    {/* Avatar */}
+                    <div className="self-start">
+                      {postUser?.profilePicture ? (
+                        <img
+                          src={`${BASE_URL}${postUser.profilePicture}`}
+                          alt="Avatar"
+                          className="w-12 h-12 object-cover rounded-md"
+                          onError={(e) => (e.currentTarget.style.display = "none")}
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-md bg-gray-300 animate-pulse" />
+                      )}
+                    </div>
 
-                          {postUser && user && user._id !== postUser._id && (
-                            <div>
-                              {user.following?.includes(postUser._id) ? (
-                                <button
-                                  onClick={() => handleUnfollow(postUser._id)}
-                                  className="text-green-600 text-xs"
-                                >
-                                  Unfollow
-                                </button>
-                              ) : (
-                                <button
-                                  onClick={() => handleFollow(postUser._id)}
-                                  className="text-[#1D9BF0] text-xs"
-                                >
-                                  Follow
-                                </button>
-                              )}
-                            </div>
-                          )}
-                        </div>
+                    {/* Body */}
+                    <div className="grid gap-2">
+                      <div className="grid grid-cols-[1fr,auto] items-center">
+                        <Link href={`/profile/${postUser?._id || ""}`}>
+                          <span className="text-sm font-semibold hover:underline">
+                            {postUser?.username || "Unknown User"}
+                          </span>
+                        </Link>
 
-                        <span className="text-xs text-gray-500 dark:text-white">
-                          {formatPostDate(post.createdAt)}
-                        </span>
-
-                        <div className={isLocked ? "blur-sm select-none" : ""}>
-                          {post.content && (
-                            <p className="text-base whitespace-pre-wrap">
-                              {post.content}
-                            </p>
-                          )}
-
-                          {post.image && (
-                            <div className="relative w-full overflow-hidden rounded-lg">
-                              <img
-                                src={`${UPLOADS_URL}/${post.image}`}
-                                alt="Post"
-                                className="w-full h-auto object-cover rounded-lg"
-                                onError={(e) => (e.currentTarget.style.display = "none")}
-                              />
-                            </div>
-                          )}
-                        </div>
-                        {isLocked && (
-                          <div className="mt-2">
-                            <button
-                              onClick={() => handleUnlock(post._id)}
-                              className="px-3 py-1 text-xs bg-blue-600 text-white rounded"
-                            >
-                              Unlock for {post.price} VNT
-                            </button>
+                        {postUser && user && user._id !== postUser._id && (
+                          <div>
+                            {user.following?.includes(postUser._id) ? (
+                              <button
+                                onClick={() => handleUnfollow(postUser._id)}
+                                className="text-green-600 text-xs"
+                              >
+                                Unfollow
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handleFollow(postUser._id)}
+                                className="text-[#1D9BF0] text-xs"
+                              >
+                                Follow
+                              </button>
+                            )}
                           </div>
                         )}
                       </div>
-                    </div>
 
-                    {/* Stats row */}
-                    <div className="grid grid-cols-3 items-center text-xs text-gray-600 dark:text-white w-full mt-2">
-                      {/* Like */}
-                      <button
-                        onClick={() => handleLike(post._id)}
-                        disabled={!loggedIn}
-                        className="flex items-center justify-center gap-1 hover:text-gray-800"
-                        aria-label={`Like (${post.likes.length})`}
-                      >
-                        {likedPosts.includes(post._id) ? (
-                          <FaHeart className="w-4 h-4 text-red-500" />
-                        ) : (
-                          <FaRegHeart className="w-4 h-4" />
+                      <span className="text-xs text-gray-500 dark:text-white">
+                        {formatPostDate(post.createdAt)}
+                      </span>
+
+                      {/* Content */}
+                      <div className={isLocked ? "blur-sm select-none" : ""}>
+                        {post.content && (
+                          <p className="text-base whitespace-pre-wrap">
+                            {post.content}
+                          </p>
                         )}
-                        <span>{post.likes.length}</span>
-                      </button>
+                        {post.image && (
+                          <div className="relative w-full overflow-hidden rounded-lg mt-2">
+                            <img
+                              src={`${UPLOADS_URL}/${post.image}`}
+                              alt="Post"
+                              className="w-full h-auto object-cover rounded-lg"
+                              onError={(e) => (e.currentTarget.style.display = "none")}
+                            />
+                          </div>
+                        )}
+                      </div>
 
-                      {/* Comment */}
-                      <button
-                        onClick={() => toggleComments(post._id)}
-                        disabled={!loggedIn}
-                        className="flex items-center justify-center gap-1 hover:text-gray-800"
-                        aria-label={`Comment (${post.comments?.length || 0})`}
-                      >
-                        <FaComment className="w-4 h-4" />
-                        <span>{post.comments?.length || 0}</span>
-                      </button>
-
-                      {/* Share */}
-                      <button
-                        onClick={() => handleShare(post._id)}
-                        disabled={!loggedIn}
-                        className="flex items-center justify-center gap-1 hover:text-gray-800"
-                        aria-label={`Share (${post.shares || 0})`}
-                      >
-                        <FaShare
-                          className={`w-4 h-4 ${
-                            sharedPosts.includes(post._id) ? "text-green-500" : ""
-                          }`}
-                        />
-                        <span>{post.shares || 0}</span>
-                      </button>
+                      {isLocked && (
+                        <div className="mt-2">
+                          <button
+                            onClick={() => handleUnlock(post._id)}
+                            className="px-3 py-1 text-xs bg-blue-600 text-white rounded"
+                          >
+                            Unlock for {post.price} VNT
+                          </button>
+                        </div>
+                      )}
                     </div>
+                  </div>
 
-                    {/* Comment section */}
-                    {openComments[post._id] && (
-                      <div className="mt-4 space-y-3">
-                        {post.comments?.map((comment) => (
-                          <div key={comment._id} className="ml-4">
-                            <div className="flex items-start gap-2">
-                              {comment.user?.profilePicture && (
-                                <img
-                                  src={`${BASE_URL}${comment.user.profilePicture}`}
-                                  alt="avatar"
-                                  className="w-6 h-6 rounded-full object-cover"
-                                />
-                              )}
-                              <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded p-2">
-                                <p className="text-sm font-semibold">
-                                  {comment.user?.username}
-                                </p>
-                                <p className="text-sm">{comment.content}</p>
+                  {/* Actions */}
+                  <div className="grid grid-cols-3 items-center text-xs text-gray-600 dark:text-white w-full mt-2">
+                    {/* Like */}
+                    <button
+                      onClick={() => handleLike(post._id)}
+                      disabled={!loggedIn}
+                      className="flex items-center justify-center gap-1 hover:text-gray-800"
+                      aria-label={`Like (${post.likes.length})`}
+                    >
+                      {likedPosts.includes(post._id) ? (
+                        <FaHeart className="w-4 h-4 text-red-500" />
+                      ) : (
+                        <FaRegHeart className="w-4 h-4" />
+                      )}
+                      <span>{post.likes.length}</span>
+                    </button>
 
-                                {/* Replies */}
-                                {comment.replies?.map((reply) => (
-                                  <div
-                                    key={reply._id}
-                                    className="ml-4 mt-2 flex gap-2 items-start"
-                                  >
-                                    {reply.user?.profilePicture && (
-                                      <img
-                                        src={`${BASE_URL}${reply.user.profilePicture}`}
-                                        alt="avatar"
-                                        className="w-5 h-5 rounded-full object-cover"
-                                      />
-                                    )}
-                                    <div className="flex-1 bg-gray-50 dark:bg-gray-900 rounded p-2">
-                                      <p className="text-xs font-semibold">
-                                        {reply.user?.username}
-                                      </p>
-                                      <p className="text-xs">{reply.content}</p>
-                                    </div>
+                    {/* Comment */}
+                    <button
+                      onClick={() => toggleComments(post._id)}
+                      disabled={!loggedIn}
+                      className="flex items-center justify-center gap-1 hover:text-gray-800"
+                      aria-label={`Comment (${post.comments?.length || 0})`}
+                    >
+                      <FaComment className="w-4 h-4" />
+                      <span>{post.comments?.length || 0}</span>
+                    </button>
+
+                    {/* Share */}
+                    <button
+                      onClick={() => handleShare(post._id)}
+                      disabled={!loggedIn}
+                      className="flex items-center justify-center gap-1 hover:text-gray-800"
+                      aria-label={`Share (${post.shares || 0})`}
+                    >
+                      <FaShare
+                        className={`w-4 h-4 ${
+                          sharedPosts.includes(post._id) ? "text-green-500" : ""
+                        }`}
+                      />
+                      <span>{post.shares || 0}</span>
+                    </button>
+                  </div>
+
+                  {/* Comment section */}
+                  {openComments[post._id] && (
+                    <div className="mt-4 space-y-3">
+                      {post.comments?.map((comment) => (
+                        <div key={comment._id} className="ml-4">
+                          <div className="flex items-start gap-2">
+                            {comment.user?.profilePicture && (
+                              <img
+                                src={`${BASE_URL}${comment.user.profilePicture}`}
+                                alt="avatar"
+                                className="w-6 h-6 rounded-full object-cover"
+                              />
+                            )}
+                            <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded p-2">
+                              <p className="text-sm font-semibold">
+                                {comment.user?.username}
+                              </p>
+                              <p className="text-sm">{comment.content}</p>
+
+                              {/* Replies */}
+                              {comment.replies?.map((reply) => (
+                                <div
+                                  key={reply._id}
+                                  className="ml-4 mt-2 flex gap-2 items-start"
+                                >
+                                  {reply.user?.profilePicture && (
+                                    <img
+                                      src={`${BASE_URL}${reply.user.profilePicture}`}
+                                      alt="avatar"
+                                      className="w-5 h-5 rounded-full object-cover"
+                                    />
+                                  )}
+                                  <div className="flex-1 bg-gray-50 dark:bg-gray-900 rounded p-2">
+                                    <p className="text-xs font-semibold">
+                                      {reply.user?.username}
+                                    </p>
+                                    <p className="text-xs">{reply.content}</p>
                                   </div>
-                                ))}
-
-                                {/* Reply box */}
-                                <div className="flex items-center mt-2">
-                                  <input
-                                    type="text"
-                                    placeholder="Reply..."
-                                    className="flex-1 text-xs border border-gray-300 dark:border-gray-700 rounded p-1"
-                                    value={replyTexts[comment._id] || ""}
-                                    onChange={(e) =>
-                                      setReplyTexts((prev) => ({
-                                        ...prev,
-                                        [comment._id]: e.target.value,
-                                      }))
-                                    }
-                                  />
-                                  <button
-                                    onClick={() => handleReply(post._id, comment._id)}
-                                    className="ml-2 text-xs text-blue-500"
-                                  >
-                                    Reply
-                                  </button>
                                 </div>
+                              ))}
+
+                              {/* Reply box */}
+                              <div className="flex items-center mt-2">
+                                <input
+                                  type="text"
+                                  placeholder="Reply..."
+                                  className="flex-1 text-xs border border-gray-300 dark:border-gray-700 rounded p-1"
+                                  value={replyTexts[comment._id] || ""}
+                                  onChange={(e) =>
+                                    setReplyTexts((prev) => ({
+                                      ...prev,
+                                      [comment._id]: e.target.value,
+                                    }))
+                                  }
+                                />
+                                <button
+                                  onClick={() => handleReply(post._id, comment._id)}
+                                  className="ml-2 text-xs text-blue-500"
+                                >
+                                  Reply
+                                </button>
                               </div>
                             </div>
                           </div>
-                        ))}
-
-                        {/* New comment box */}
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="text"
-                            placeholder="Add a comment..."
-                            className="flex-1 text-sm border border-gray-300 dark:border-gray-700 rounded p-2"
-                            value={commentTexts[post._id] || ""}
-                            onChange={(e) =>
-                              setCommentTexts((prev) => ({
-                                ...prev,
-                                [post._id]: e.target.value,
-                              }))
-                            }
-                          />
-                          <button
-                            onClick={() => handleComment(post._id)}
-                            className="text-sm text-blue-500"
-                          >
-                            Post
-                          </button>
                         </div>
+                      ))}
+
+                      {/* New comment box */}
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          placeholder="Add a comment..."
+                          className="flex-1 text-sm border border-gray-300 dark:border-gray-700 rounded p-2"
+                          value={commentTexts[post._id] || ""}
+                          onChange={(e) =>
+                            setCommentTexts((prev) => ({
+                              ...prev,
+                              [post._id]: e.target.value,
+                            }))
+                          }
+                        />
+                        <button
+                          onClick={() => handleComment(post._id)}
+                          className="text-sm text-blue-500"
+                        >
+                          Post
+                        </button>
                       </div>
-                    )}
-                  </motion.div>
-                );
-              })}
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })}
           </div>
         </main>
       </div>
