@@ -1,3 +1,4 @@
+// routes/posts.js
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
@@ -7,297 +8,270 @@ const Post = require("../models/Post");
 const authenticateToken = require("../middleware/authMiddleware");
 const User = require("../models/User");
 
-// Ensure the "uploads" directory exists (if not already done in server/index.js)
+// ---------------------------------------------------------------------------
+//  Upload setup
+// ---------------------------------------------------------------------------
 const uploadDir = path.join(__dirname, "../uploads");
 if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-    console.log("Created uploads folder at:", uploadDir);
+  fs.mkdirSync(uploadDir, { recursive: true });
+  console.log("Created uploads folder at:", uploadDir);
 }
 
-// Configure multer with disk storage (up to 5MB)
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        console.log("Saving file to:", uploadDir);
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-        const finalName = uniqueSuffix + "-" + file.originalname;
-        console.log("Generated filename:", finalName);
-        cb(null, finalName);
-    },
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, `${uniqueSuffix}-${file.originalname}`);
+  },
 });
+
 const upload = multer({
-    storage,
-    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
 });
 
-// GET /api/posts – fetch posts
+// ---------------------------------------------------------------------------
+//  Helpers for “smart” ranking
+// ---------------------------------------------------------------------------
+const logistic = (x) => 1 / (1 + Math.exp(-x));
+
+const parseCoords = (str) => {
+  if (!str) return null;
+  const [lat, lon] = str.split(",").map((n) => parseFloat(n));
+  return Number.isFinite(lat) && Number.isFinite(lon) ? { lat, lon } : null;
+};
+
+const haversine = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; // km
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
+
+// ---------------------------------------------------------------------------
+//  GET /api/posts – fetch posts
+// ---------------------------------------------------------------------------
 router.get("/", async (req, res) => {
-    try {
-        const { user, sort, currentLocation } = req.query;
-        const filter = {};
-        if (user) filter.user = user;
+  try {
+    const { user, sort, currentLocation } = req.query;
+    const filter = {};
+    if (user) filter.user = user;
 
-        if (sort === "recommendation") {
-            const posts = await Post.aggregate([
-                { $match: filter },
-                { $addFields: { likesCount: { $size: "$likes" } } },
-                { $sort: { likesCount: -1, createdAt: -1 } },
-            ]);
+    // ---------- 1. Recommendation sort ----------
+    if (sort === "recommendation") {
+      const posts = await Post.aggregate([
+        { $match: filter },
+        { $addFields: { likesCount: { $size: "$likes" } } },
+        { $sort: { likesCount: -1, createdAt: -1 } },
+      ]);
 
-            await Post.populate(posts, {
-                path: "user",
-                select: "username profilePicture location rating",
-            });
-            await Post.populate(posts, {
-                path: "comments.user",
-                select: "username profilePicture",
-            });
-            await Post.populate(posts, {
-                path: "comments.replies.user",
-                select: "username profilePicture",
-            });
+      await Post.populate(posts, {
+        path: "user",
+        select: "username profilePicture location rating",
+      });
+      await Post.populate(posts, {
+        path: "comments.user",
+        select: "username profilePicture",
+      });
+      await Post.populate(posts, {
+        path: "comments.replies.user",
+        select: "username profilePicture",
+      });
 
-            return res.json(posts);
-        } else if (sort === "smart") {
-            const posts = await Post.find(filter)
-                .populate("user", "username profilePicture location rating")
-                .populate("comments.user", "username profilePicture")
-                .populate("comments.replies.user", "username profilePicture")
-                .sort({ createdAt: -1 });
-
-            const logistic = (x) => 1 / (1 + Math.exp(-x));
-
-            const parseCoords = (str) => {
-                if (!str) return null;
-                const [lat, lon] = str.split(',').map((n) => parseFloat(n));
-                if (isNaN(lat) || isNaN(lon)) return null;
-                return { lat, lon };
-            };
-
-            const haversine = (lat1, lon1, lat2, lon2) => {
-                const R = 6371; // km
-                const dLat = ((lat2 - lat1) * Math.PI) / 180;
-                const dLon = ((lon2 - lon1) * Math.PI) / 180;
-                const a =
-                    Math.sin(dLat / 2) ** 2 +
-                    Math.cos((lat1 * Math.PI) / 180) *
-                        Math.cos((lat2 * Math.PI) / 180) *
-                        Math.sin(dLon / 2) ** 2;
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                return R * c;
-            };
-
-            const viewerCoords = parseCoords(currentLocation);
-
-            const scored = posts.map((p) => {
-                const likes = p.likes.length;
-                const comments = p.comments.length;
-                const shares = p.shares || 0;
-                const rating = p.user?.rating || 0;
-                const engagement = logistic(
-                    0.3 * likes + 0.4 * comments + 0.2 * shares + 0.1 * rating
-                );
-
-                let locationScore = 0;
-                if (viewerCoords) {
-                    const postCoords = parseCoords(p.user?.location);
-                    if (postCoords) {
-                        const dist = haversine(
-                            viewerCoords.lat,
-                            viewerCoords.lon,
-                            postCoords.lat,
-                            postCoords.lon
-                        );
-                        if (dist < 50) locationScore = 1;
-                    } else if (p.user?.location === currentLocation) {
-                        locationScore = 1;
-                    }
-                } else if (currentLocation && p.user?.location === currentLocation) {
-                    locationScore = 1;
-                }
-
-                return { post: p, score: engagement + locationScore * 2 };
-            });
-
-            scored.sort((a, b) => b.score - a.score);
-
-            return res.json(scored.map((s) => s.post));
-        } else {
-            // **IMPORTANT**: Populate both username and profilePicture.
-            const posts = await Post.find(filter)
-                .populate("user", "username profilePicture")
-                .populate("comments.user", "username profilePicture")
-                .populate("comments.replies.user", "username profilePicture")
-                .sort({ createdAt: -1 });
-            return res.json(posts);
-        }
-    } catch (err) {
-        console.error("Error fetching posts:", err);
-        return res.status(500).json({ error: "Server error" });
+      return res.json(posts);
     }
+
+    // ---------- 2. Smart sort (engagement + location) ----------
+    if (sort === "smart") {
+      const posts = await Post.find(filter)
+        .populate("user", "username profilePicture location rating")
+        .populate("comments.user", "username profilePicture")
+        .populate("comments.replies.user", "username profilePicture")
+        .sort({ createdAt: -1 });
+
+      const viewerCoords = parseCoords(currentLocation);
+
+      const scored = posts.map((p) => {
+        const likes = p.likes.length;
+        const comments = p.comments.length;
+        const shares = p.shares || 0;
+        const rating = p.user?.rating || 0;
+
+        const engagement = logistic(
+          0.3 * likes + 0.4 * comments + 0.2 * shares + 0.1 * rating
+        );
+
+        // Calculate location score (1 if within 50 km or exact match, else 0)
+        let locationScore = 0;
+        if (viewerCoords) {
+          const postCoords = parseCoords(p.user?.location);
+          if (postCoords) {
+            const dist = haversine(
+              viewerCoords.lat,
+              viewerCoords.lon,
+              postCoords.lat,
+              postCoords.lon
+            );
+            if (dist < 50) locationScore = 1;
+          } else if (p.user?.location === currentLocation) {
+            locationScore = 1;
+          }
+        } else if (currentLocation && p.user?.location === currentLocation) {
+          locationScore = 1;
+        }
+
+        return { post: p, score: engagement + locationScore * 2 };
+      });
+
+      scored.sort((a, b) => b.score - a.score);
+      return res.json(scored.map((s) => s.post));
+    }
+
+    // ---------- 3. Default (chronological) ----------
+    const posts = await Post.find(filter)
+      .populate("user", "username profilePicture")
+      .populate("comments.user", "username profilePicture")
+      .populate("comments.replies.user", "username profilePicture")
+      .sort({ createdAt: -1 });
+
+    return res.json(posts);
+  } catch (err) {
+    console.error("Error fetching posts:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
-/**
- * POST /api/posts – Create new post.
- * Stores the image filename in the database.
- */
+// ---------------------------------------------------------------------------
+//  POST /api/posts – create a new post
+// ---------------------------------------------------------------------------
 router.post("/", authenticateToken, upload.single("image"), async (req, res) => {
-    try {
-        const { content } = req.body;
-        if (!content) {
-            return res.status(400).json({ error: "Content required" });
-        }
+  try {
+    const { content } = req.body;
+    if (!content) return res.status(400).json({ error: "Content required" });
 
-        // If a file was uploaded, store only the filename.
-        let imageFilename = null;
-        if (req.file) {
-            imageFilename = req.file.filename;
-            console.log("Storing image filename in DB:", imageFilename);
-        }
+    const imageFilename = req.file ? req.file.filename : null;
 
-        const newPost = await Post.create({
-            content,
-            image: imageFilename, // Just the filename
-            user: req.user._id,
-        });
+    const newPost = await Post.create({
+      content,
+      image: imageFilename,
+      user: req.user._id,
+    });
 
-        await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
+    await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
+    await newPost.populate("user", "username profilePicture");
 
-        // Populate username and profilePicture
-        await newPost.populate("user", "username profilePicture");
-        console.log("Created post:", newPost);
-
-        return res.status(201).json({ message: "Post created", post: newPost });
-    } catch (err) {
-        console.error("Create post error:", err);
-        return res.status(500).json({ error: "Server error" });
-    }
+    res.status(201).json({ message: "Post created", post: newPost });
+  } catch (err) {
+    console.error("Create post error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
-/**
- * POST /api/posts/:id/like – Like a post.
- */
+// ---------------------------------------------------------------------------
+//  POST /api/posts/:id/like – like a post
+// ---------------------------------------------------------------------------
 router.post("/:id/like", authenticateToken, async (req, res) => {
-    try {
-        const postId = req.params.id;
-        const userId = req.user._id;
+  try {
+    const post = await Post.findById(req.params.id).populate("likes", "username");
+    if (!post) return res.status(404).json({ error: "Post not found" });
 
-        const post = await Post.findById(postId).populate("likes", "username");
-        if (!post) {
-            return res.status(404).json({ error: "Post not found" });
-        }
-        if (post.likes.some((like) => like._id.toString() === userId.toString())) {
-            return res.status(400).json({ error: "You already liked this post" });
-        }
+    const alreadyLiked = post.likes.some(
+      (like) => like._id.toString() === req.user._id.toString()
+    );
+    if (alreadyLiked) return res.status(400).json({ error: "Already liked" });
 
-        post.likes.push(userId);
-        await post.save();
-        await post.populate("likes", "username");
+    post.likes.push(req.user._id);
+    await post.save();
+    await post.populate("likes", "username");
 
-        return res.json({
-            message: "Post liked",
-            likesCount: post.likes.length,
-            likes: post.likes,
-        });
-    } catch (err) {
-        console.error("Like error:", err);
-        return res.status(500).json({ error: "Server error" });
-    }
+    res.json({ message: "Post liked", likesCount: post.likes.length, likes: post.likes });
+  } catch (err) {
+    console.error("Like error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
-/**
- * POST /api/posts/:id/comment – Add a comment to a post.
- */
+// ---------------------------------------------------------------------------
+//  POST /api/posts/:id/comment – add a comment
+// ---------------------------------------------------------------------------
 router.post("/:id/comment", authenticateToken, async (req, res) => {
-    try {
-        const postId = req.params.id;
-        const { content } = req.body;
-        if (!content) {
-            return res.status(400).json({ error: "Content required" });
-        }
+  try {
+    const { content } = req.body;
+    if (!content) return res.status(400).json({ error: "Content required" });
 
-        const post = await Post.findById(postId).populate("user", "username");
-        if (!post) {
-            return res.status(404).json({ error: "Post not found" });
-        }
+    const post = await Post.findById(req.params.id).populate("user", "username");
+    if (!post) return res.status(404).json({ error: "Post not found" });
 
-        const comment = {
-            user: req.user._id,
-            content,
-        };
+    post.comments.push({ user: req.user._id, content });
+    await post.save();
+    await post.populate("comments.user", "username profilePicture");
 
-        post.comments.push(comment);
-        await post.save();
-        await post.populate("comments.user", "username profilePicture");
+    await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
 
-        // increment user rating
-        await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
-
-        return res.json({ comments: post.comments });
-    } catch (err) {
-        console.error("Comment error:", err);
-        return res.status(500).json({ error: "Server error" });
-    }
+    res.json({ comments: post.comments });
+  } catch (err) {
+    console.error("Comment error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
-/**
- * POST /api/posts/:postId/comment/:commentId/reply – Add a reply to a comment.
- */
-router.post("/:postId/comment/:commentId/reply", authenticateToken, async (req, res) => {
+// ---------------------------------------------------------------------------
+//  POST /api/posts/:postId/comment/:commentId/reply – add a reply
+// ---------------------------------------------------------------------------
+router.post(
+  "/:postId/comment/:commentId/reply",
+  authenticateToken,
+  async (req, res) => {
     try {
-        const { postId, commentId } = req.params;
-        const { content } = req.body;
-        if (!content) {
-            return res.status(400).json({ error: "Content required" });
-        }
+      const { content } = req.body;
+      if (!content) return res.status(400).json({ error: "Content required" });
 
-        const post = await Post.findById(postId).populate("comments.user", "username profilePicture");
-        if (!post) {
-            return res.status(404).json({ error: "Post not found" });
-        }
+      const post = await Post.findById(req.params.postId).populate(
+        "comments.user",
+        "username profilePicture"
+      );
+      if (!post) return res.status(404).json({ error: "Post not found" });
 
-        const comment = post.comments.id(commentId);
-        if (!comment) {
-            return res.status(404).json({ error: "Comment not found" });
-        }
+      const comment = post.comments.id(req.params.commentId);
+      if (!comment) return res.status(404).json({ error: "Comment not found" });
 
-        comment.replies.push({ user: req.user._id, content });
-        await post.save();
-        await post.populate("comments.replies.user", "username profilePicture");
+      comment.replies.push({ user: req.user._id, content });
+      await post.save();
+      await post.populate("comments.replies.user", "username profilePicture");
 
-        // increment user rating
-        await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
+      await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
 
-        return res.json({ comments: post.comments });
+      res.json({ comments: post.comments });
     } catch (err) {
-        console.error("Reply error:", err);
-        return res.status(500).json({ error: "Server error" });
+      console.error("Reply error:", err);
+      res.status(500).json({ error: "Server error" });
     }
-});
+  }
+);
 
-/**
- * POST /api/posts/:id/share – Increment share count.
- */
+// ---------------------------------------------------------------------------
+//  POST /api/posts/:id/share – increment share count
+// ---------------------------------------------------------------------------
 router.post("/:id/share", authenticateToken, async (req, res) => {
-    try {
-        const postId = req.params.id;
-        const post = await Post.findById(postId);
-        if (!post) {
-            return res.status(404).json({ error: "Post not found" });
-        }
-        post.shares += 1;
-        await post.save();
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ error: "Post not found" });
 
-        // increment user rating
-        await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
+    post.shares = (post.shares || 0) + 1;
+    await post.save();
 
-        return res.json({ shares: post.shares });
-    } catch (err) {
-        console.error("Share error:", err);
-        return res.status(500).json({ error: "Server error" });
-    }
+    await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
+
+    res.json({ shares: post.shares });
+  } catch (err) {
+    console.error("Share error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 module.exports = router;
