@@ -187,6 +187,7 @@ router.post("/:id/like", authenticateToken, async (req, res) => {
 
     post.likes.push(req.user._id);
     await post.save();
+    await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
     await post.populate("likes", "username");
 
     res.json({ message: "Post liked", likesCount: post.likes.length, likes: post.likes });

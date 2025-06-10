@@ -70,7 +70,7 @@ export default function Header() {
                                 </Link>
                                 <Link
                                     href="/register"
-                                    className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                    className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] bg-yellow-300 text-black px-2 rounded"
                                 >
                                     Бүртгүүлэх
                                     <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
@@ -161,7 +161,7 @@ export default function Header() {
                                             <Link
                                                 href="/register"
                                                 onClick={() => setIsMenuOpen(false)}
-                                                className="block text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                                className="block text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] bg-yellow-300 text-black px-2 rounded"
                                             >
                                                 Бүртгүүлэх
                                             </Link>
