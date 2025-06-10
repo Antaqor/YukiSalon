@@ -103,4 +103,26 @@ router.post("/:id/unfollow", authenticateToken, async (req, res) => {
     }
 });
 
+// Update user's subscription expiration
+router.put("/:id/subscription", authenticateToken, async (req, res) => {
+    try {
+        const { expiresAt } = req.body;
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        user.subscriptionExpiresAt = expiresAt
+            ? new Date(expiresAt)
+            : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+        await user.save();
+        res.json({
+            message: "Subscription updated",
+            subscriptionExpiresAt: user.subscriptionExpiresAt,
+        });
+    } catch (err) {
+        console.error("Update subscription error:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
 module.exports = router;
