@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import TrendingHashtags from "./components/TrendingHashtags";
 import BottomNav from "./components/BottomNav";
 import SidebarControl from "./components/SidebarControl";
+import WalletBalance from "./components/WalletBalance";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -90,7 +91,7 @@ export default function RootLayout({
                 <main className="flex-grow flex flex-col md:flex-row gap-0 pt-16">
                     {/* Зүүн талын Sidebar */}
                     <aside id="left-sidebar" className="hidden md:block w-full md:w-1/4 border-r border-gray-200 dark:border-gray-700 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto fade-in-up">
-                        <div className="p-4 font-semibold">Wallet: 0 VNT</div>
+                        <WalletBalance />
                         <nav>
                             <ul className="space-y-1">
                                 <li>
