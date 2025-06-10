@@ -8,6 +8,7 @@ import { FiCamera } from "react-icons/fi";
 import { motion } from "framer-motion";
 import HeaderSlider from "./components/HeaderSlider";
 import { formatPostDate } from "./lib/formatDate";
+import useCurrentLocation from "./hooks/useCurrentLocation";
 
 interface UserData {
     _id: string;
@@ -61,6 +62,7 @@ export default function HomePage() {
     const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
     const [likedPosts, setLikedPosts] = useState<string[]>([]);
     const [sharedPosts, setSharedPosts] = useState<string[]>([]);
+    const viewerCoords = useCurrentLocation();
 
     const isPro = user?.subscriptionExpiresAt
         ? new Date(user.subscriptionExpiresAt) > new Date()
@@ -74,9 +76,13 @@ export default function HomePage() {
     // Fetch posts on mount
     const fetchPosts = useCallback(async () => {
         try {
-            const res = await axios.get(`${BASE_URL}/api/posts`, {
-                params: { sort: "recommendation" },
-            });
+            const params: any = { sort: "smart" };
+            if (viewerCoords) {
+                params.currentLocation = `${viewerCoords.latitude},${viewerCoords.longitude}`;
+            } else if (user?.location) {
+                params.currentLocation = user.location;
+            }
+            const res = await axios.get(`${BASE_URL}/api/posts`, { params });
             setPosts(res.data);
             setAllPosts(res.data);
             computeTrendingHashtags(res.data);
@@ -91,7 +97,7 @@ export default function HomePage() {
         } catch (err) {
             console.error("Post fetch error:", err);
         }
-    }, [BASE_URL, user]);
+    }, [BASE_URL, user, viewerCoords]);
 
     // Compute trending hashtags
     const computeTrendingHashtags = (postsData: Post[]) => {
