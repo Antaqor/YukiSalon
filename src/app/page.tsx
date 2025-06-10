@@ -75,7 +75,7 @@ export default function HomePage() {
     const fetchPosts = useCallback(async () => {
         try {
             const res = await axios.get(`${BASE_URL}/api/posts`, {
-                params: { sort: "recommendation" },
+                params: { sort: "smart", currentLocation: user?.location },
             });
             setPosts(res.data);
             setAllPosts(res.data);
