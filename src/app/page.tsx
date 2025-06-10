@@ -103,9 +103,17 @@ export default function HomePage() {
 
       const res = await axios.get(`${BASE_URL}/api/posts`, { params });
 
-      setPosts(res.data);
-      setAllPosts(res.data);
-      computeTrendingHashtags(res.data);
+      let postsData: Post[] = res.data;
+      if (loggedIn && !isPro) {
+        postsData = postsData.filter(
+          (p) =>
+            !/#[Aa][Ii]\b/.test(p.content) && (p.likes?.length || 0) < 5
+        );
+      }
+
+      setPosts(postsData);
+      setAllPosts(postsData);
+      computeTrendingHashtags(postsData);
 
       if (user) {
         const liked = res.data
@@ -200,6 +208,7 @@ export default function HomePage() {
         )
       );
       setLikedPosts((prev) => [...prev, postId]);
+      login({ ...user, rating: (user.rating || 0) + 1 }, user.accessToken);
     } catch (err) {
       console.error("Like error:", err);
     }
@@ -311,7 +320,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-black text-gray-900 dark:text-white">
 
-      {!isPro && (
+      {loggedIn && !isPro && (
         <div className="bg-yellow-500 text-white text-center py-2 px-4">
           <Link href="/subscription" className="font-semibold underline">
             Гишүүн болох – Онцгой боломжуудыг нээх
@@ -362,6 +371,22 @@ export default function HomePage() {
 
         {/* Main – create + feed */}
         <main>
+          {/* Prompt login */}
+          {!loggedIn && (
+            <div className="bg-white dark:bg-black p-6 text-center space-y-3">
+              <p>Feed үзэхийн тулд нэвтрэх эсвэл бүртгүүлэх шаардлагатай.</p>
+              <Link href="/login" className="text-blue-600 underline">
+                Нэвтрэх
+              </Link>
+              <Link
+                href="/register"
+                className="block bg-yellow-300 text-black px-3 py-1 rounded w-fit mx-auto"
+              >
+                Бүртгүүлэх
+              </Link>
+            </div>
+          )}
+
           {/* Create post */}
           {loggedIn && (
             <div className="bg-white dark:bg-black grid gap-4 p-6">

@@ -62,6 +62,11 @@ export default function SubscriptionPage() {
       <h1 className="text-2xl font-bold mb-4 text-center">Premium Membership</h1>
 
       <p className="mb-2 text-center text-gray-600">
+        Гишүүн болсон хэрэглэгчид #AI зэрэг үнэ цэнтэй нийтлэлүүдийг бүрэн
+        үзэх боломжтой.
+      </p>
+
+      <p className="mb-2 text-center text-gray-600">
         Нэгдүгээр 10 гишүүнд 10,000₮, дараагийнх нь 20,000₮ – амжилтыг өнөөдөр эхлүүлье!
       </p>
       <p className="mb-4 text-center text-gray-600">
