@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState, useRef, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../../context/AuthContext";
 
 /* ── types ─────────────────────────────────────────── */
 interface Product {
@@ -19,6 +21,16 @@ const BACKEND_URL =
 
 /* ── main page component ───────────────────────────── */
 export default function ProductDashboardPage() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+    } else if (user.username !== "Antaqor") {
+      router.push("/");
+    }
+  }, [user, router]);
   const [products, setProducts] = useState<Product[]>([]);
   const [status, setStatus] = useState("");
 

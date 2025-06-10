@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { FaCheckCircle } from "react-icons/fa";
 
 /** Match your user schema. No "name" field. */
 interface UserData {
@@ -102,6 +103,10 @@ export default function MyOwnProfilePage() {
         return <div className="p-4">Өөрийн профайл олдсонгүй.</div>;
     }
 
+    const isPro = userData.subscriptionExpiresAt
+        ? new Date(userData.subscriptionExpiresAt) > new Date()
+        : false;
+
     // ---------------- UI ----------------
     return (
         <div className="min-h-screen bg-white dark:bg-dark text-black dark:text-white font-sans">
@@ -119,9 +124,12 @@ export default function MyOwnProfilePage() {
                 )}
 
                 {/* Username + rating */}
-                <h2 className="text-xl font-bold text-gray-800">
-                    {userData.username}
-                </h2>
+                <div className="flex items-center justify-center gap-1">
+                    <h2 className="text-xl font-bold text-gray-800">
+                        {userData.username}
+                    </h2>
+                    {isPro && <FaCheckCircle className="text-yellow-400" />}
+                </div>
                 {userData.rating && (
                     <p className="text-sm text-gray-600">★ {userData.rating} үнэлгээ</p>
                 )}
