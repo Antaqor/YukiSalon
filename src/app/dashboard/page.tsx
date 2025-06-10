@@ -1,6 +1,8 @@
 // BookDashboardPage.tsx (e.g., in /src/pages/book-dashboard.tsx)
 "use client";
 import React, { useEffect, useState, useRef, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
 
 interface Book {
     _id: string;
@@ -18,6 +20,16 @@ interface Book {
 const BACKEND_URL = "https://www.vone.mn/api";
 
 export default function BookDashboardPage() {
+    const { user } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!user) {
+            router.push("/login");
+        } else if (user.username !== "Antaqor") {
+            router.push("/");
+        }
+    }, [user, router]);
     const [books, setBooks] = useState<Book[]>([]);
     const [status, setStatus] = useState("");
 
