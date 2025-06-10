@@ -4,9 +4,10 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import {
     HomeIcon,
-    ClockIcon,
-    ShoppingBagIcon,
-    UserCircleIcon,
+    MagnifyingGlassIcon,
+    PlusCircleIcon,
+    BellIcon,
+    EnvelopeIcon,
 } from "@heroicons/react/24/outline";
 
 const BottomNav: React.FC = () => {
@@ -16,36 +17,54 @@ const BottomNav: React.FC = () => {
 
     return (
         <nav
-            className="fixed bottom-0 left-0 w-full bg-white dark:bg-black border-t border-gray-200 dark:border-[#2F3336] z-50 shadow-sm"
+            className="fixed bottom-0 left-0 w-full bg-white dark:bg-black md:hidden"
         >
-            <div className="flex justify-around items-center py-3 sm:py-4">
+            <div
+                className="flex justify-around items-center py-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]"
+            >
                 {/* HOME */}
                 <button
                     onClick={() => router.push("/")}
-                    className="flex flex-col items-center text-black dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] transition p-1"
+                    aria-label="Home"
+                    className="p-1 text-black dark:text-white"
                 >
-                    <HomeIcon className="h-6 w-6 sm:h-7 sm:w-7 dark:text-white group-hover:text-[#1D9BF0] dark:group-hover:text-[#1D9BF0]" />
+                    <HomeIcon className="h-7 w-7" />
                 </button>
 
-                {/* TIME */}
+                {/* SHOP / SEARCH */}
                 <button
-                    onClick={() => router.push("/orders")}
-                    className="flex flex-col items-center text-black dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] transition p-1"
+                    onClick={() => router.push("/shop")}
+                    aria-label="Shop"
+                    className="p-1 text-black dark:text-white"
                 >
-                    <ClockIcon className="h-6 w-6 sm:h-7 sm:w-7 dark:text-white group-hover:text-[#1D9BF0] dark:group-hover:text-[#1D9BF0]" />
+                    <MagnifyingGlassIcon className="h-7 w-7" />
                 </button>
-                <button
-                    onClick={() => router.push("/orders")}
-                    className="flex flex-col items-center text-black dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] transition p-1"
-                >
-                    <ShoppingBagIcon className="h-6 w-6 sm:h-7 sm:w-7 dark:text-white group-hover:text-[#1D9BF0] dark:group-hover:text-[#1D9BF0]" />
-                </button>
-                {/* PROFILE */}
+
+                {/* COMPOSE / PROFILE */}
                 <button
                     onClick={() => router.push("/profile")}
-                    className="flex flex-col items-center text-black dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] transition p-1"
+                    aria-label="Profile"
+                    className="p-1 text-black dark:text-white"
                 >
-                    <UserCircleIcon className="h-6 w-6 sm:h-7 sm:w-7 dark:text-white group-hover:text-[#1D9BF0] dark:group-hover:text-[#1D9BF0]" />
+                    <PlusCircleIcon className="h-8 w-8" />
+                </button>
+
+                {/* NOTIFICATIONS */}
+                <button
+                    onClick={() => router.push("/notifications")}
+                    aria-label="Notifications"
+                    className="p-1 text-black dark:text-white"
+                >
+                    <BellIcon className="h-7 w-7" />
+                </button>
+
+                {/* MESSAGES */}
+                <button
+                    onClick={() => router.push("/messages")}
+                    aria-label="Messages"
+                    className="p-1 text-black dark:text-white"
+                >
+                    <EnvelopeIcon className="h-7 w-7" />
                 </button>
             </div>
         </nav>
