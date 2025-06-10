@@ -47,7 +47,7 @@ export default function UsersPage() {
                     <Link
                         key={user._id}
                         href={`/profile/${user._id}`}
-                        className="bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg p-4 flex flex-col items-center shadow-sm hover:shadow-md transition-shadow"
+                        className="bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg p-4 flex flex-col items-center shadow-sm hover:shadow-md hover:-translate-y-1 hover:scale-105 transition-transform"
                     >
                         {user.profilePicture ? (
                             <img

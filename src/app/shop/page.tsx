@@ -52,7 +52,7 @@ export default function ShopPage() {
               >
                 {/* thumbnail */}
                 {p.imageUrl ? (
-                  <div className="relative w-full aspect-[3/4] overflow-hidden bg-white dark:bg-black">
+                  <div className="relative w-full aspect-square overflow-hidden bg-white dark:bg-black">
                     <img
                       src={`https://www.vone.mn/${p.imageUrl}`}
                       alt={p.name}
@@ -60,7 +60,7 @@ export default function ShopPage() {
                     />
                   </div>
                 ) : (
-                  <div className="w-full aspect-[3/4] bg-[#222] flex items-center justify-center text-gray-500">
+                  <div className="w-full aspect-square bg-[#222] flex items-center justify-center text-gray-500">
                     No Image
                   </div>
                 )}
