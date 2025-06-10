@@ -110,8 +110,13 @@ export default function SubscriptionPage() {
                 Сарын Гишүүнчлэл
             </h1>
             <p className="mb-4 text-center text-gray-600">
-                Төлбөр: 1,000₮ / сар
+                Сарын төлбөр: эхний 10 гишүүнд 10,000₮, дараагийн 20 гишүүнд
+                20,000₮
             </p>
+            <div className="mb-6 text-center space-y-1 text-sm text-gray-700">
+                <p>Golomt Bank: <strong>3005127815</strong></p>
+                <p>Khan Bank: <strong>5926153085</strong></p>
+            </div>
 
             {message && (
                 <div className="mb-3 p-2 bg-blue-100 text-blue-800 rounded text-center">

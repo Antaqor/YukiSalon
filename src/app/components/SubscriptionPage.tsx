@@ -98,7 +98,14 @@ export default function SubscriptionPage() {
             <h1 className="text-2xl font-bold mb-4 text-center">
                 Сарын Гишүүнчлэл
             </h1>
-            <p className="mb-4 text-center text-gray-400">Төлбөр: 1,000₮ / сард</p>
+            <p className="mb-4 text-center text-gray-400">
+                Сарын төлбөр: эхний 10 гишүүнд 10,000₮, дараагийн 20 гишүүнд
+                20,000₮
+            </p>
+            <div className="mb-6 text-center space-y-1 text-sm text-gray-300">
+                <p>Golomt Bank: <strong>3005127815</strong></p>
+                <p>Khan Bank: <strong>5926153085</strong></p>
+            </div>
             {message && (
                 <div className="mb-3 p-2 bg-blue-900 text-blue-300 rounded text-center">
                     {message}
