@@ -29,7 +29,7 @@ router.get("/active-subscribers", async (req, res) => {
 router.get("/", async (req, res) => {
     try {
         const users = await User.find().select(
-            "username profilePicture rating location subscriptionExpiresAt"
+            "username profilePicture rating location subscriptionExpiresAt phoneNumber birthday hasTransferred vntBalance"
         );
         res.json(users);
     } catch (err) {
@@ -130,6 +130,68 @@ router.put("/:id/subscription", authenticateToken, async (req, res) => {
         });
     } catch (err) {
         console.error("Update subscription error:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+// Mark that user clicked "transferred" on subscription page
+router.post("/:id/transferred", authenticateToken, async (req, res) => {
+    try {
+        if (req.user.username !== "Antaqor" && req.user._id.toString() !== req.params.id) {
+            return res.status(403).json({ error: "Forbidden" });
+        }
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        user.hasTransferred = true;
+        await user.save();
+        res.json({ message: "Marked transferred" });
+    } catch (err) {
+        console.error("Mark transferred error:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+// Update VNT balance
+router.put("/:id/vnt", authenticateToken, async (req, res) => {
+    try {
+        if (req.user.username !== "Antaqor") {
+            return res.status(403).json({ error: "Forbidden" });
+        }
+        const { amount } = req.body;
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        user.vntBalance = Number(amount) || 0;
+        await user.save();
+        res.json({ message: "VNT updated", vntBalance: user.vntBalance });
+    } catch (err) {
+        console.error("Update VNT error:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+// Analytics summary (phone numbers and age distribution)
+router.get("/analytics/summary", authenticateToken, async (req, res) => {
+    try {
+        if (req.user.username !== "Antaqor") {
+            return res.status(403).json({ error: "Forbidden" });
+        }
+        const users = await User.find();
+        const phoneNumbers = users.map((u) => u.phoneNumber);
+        const nowYear = new Date().getFullYear();
+        const ageDistribution = {};
+        users.forEach((u) => {
+            if (u.birthday && u.birthday.year) {
+                const age = nowYear - u.birthday.year;
+                ageDistribution[age] = (ageDistribution[age] || 0) + 1;
+            }
+        });
+        res.json({ phoneNumbers, ageDistribution });
+    } catch (err) {
+        console.error("Analytics error:", err);
         res.status(500).json({ error: "Server error" });
     }
 });
