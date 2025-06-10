@@ -285,10 +285,11 @@ export default function HomePage() {
         {},
         { headers: { Authorization: `Bearer ${user.accessToken}` } }
       );
+      const userId = user._id!;
       setPosts((prev) =>
         prev.map((p) =>
           p._id === postId
-            ? { ...p, unlockedBy: [...(p.unlockedBy || []), user._id] }
+            ? { ...p, unlockedBy: [...(p.unlockedBy || []), userId] }
             : p
         )
       );
