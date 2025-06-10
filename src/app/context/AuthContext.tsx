@@ -22,7 +22,6 @@ export interface AuthUser {
     vntBalance?: number;
     following?: string[];
     followers?: string[];
-    vntBalance?: number;
     accessToken?: string;
 }
 
