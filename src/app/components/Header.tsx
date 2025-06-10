@@ -5,7 +5,8 @@ import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const { loggedIn, logout } = useAuth();
+    const { loggedIn, logout, user } = useAuth();
+    const BASE_URL = "https://www.vone.mn";
 
     return (
         <>
@@ -21,12 +22,26 @@ export default function Header() {
             <div className="fixed top-0 left-0 w-full z-[999] bg-white dark:bg-dark md:bg-white/80 dark:md:bg-dark/80 backdrop-blur-md">
                 {/* NAV BAR */}
                 <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center">
-                    <div className="ml-auto hidden md:flex items-center space-x-8 font-medium">
-                        {loggedIn ? (
-                            <button
-                                onClick={logout}
-                                className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
-                            >
+                    <div className="ml-auto flex items-center space-x-4">
+                        {loggedIn && (
+                            <Link href="/profile" aria-label="Profile">
+                                {user?.profilePicture ? (
+                                    <img
+                                        src={`${BASE_URL}${user.profilePicture}`}
+                                        alt="Profile"
+                                        className="w-8 h-8 rounded-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-8 h-8 rounded-full bg-gray-300" />
+                                )}
+                            </Link>
+                        )}
+                        <div className="hidden md:flex items-center space-x-8 font-medium">
+                            {loggedIn ? (
+                                <button
+                                    onClick={logout}
+                                    className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                >
                                 Гарах
                                 <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                             </button>
@@ -48,18 +63,19 @@ export default function Header() {
                                 </Link>
                             </>
                         )}
-                    </div>
+                        </div>
 
-                    {/* Hamburger (Mobile Only) */}
-                    <button
-                        className="md:hidden focus:outline-none"
-                        onClick={() => setIsMenuOpen(true)}
-                        aria-label="Toggle Menu"
-                    >
-                        <span className="block w-6 h-0.5 bg-gray-800 dark:bg-white mb-1" />
-                        <span className="block w-6 h-0.5 bg-gray-800 dark:bg-white mb-1" />
-                        <span className="block w-6 h-0.5 bg-gray-800 dark:bg-white" />
-                    </button>
+                        {/* Hamburger (Mobile Only) */}
+                        <button
+                            className="md:hidden focus:outline-none"
+                            onClick={() => setIsMenuOpen(true)}
+                            aria-label="Toggle Menu"
+                        >
+                            <span className="block w-6 h-0.5 bg-gray-800 dark:bg-white mb-1" />
+                            <span className="block w-6 h-0.5 bg-gray-800 dark:bg-white mb-1" />
+                            <span className="block w-6 h-0.5 bg-gray-800 dark:bg-white" />
+                        </button>
+                    </div>
                 </nav>
 
                 {/* FULL-SCREEN MOBILE DRAWER */}
