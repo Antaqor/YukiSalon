@@ -35,7 +35,7 @@ const upload = multer({
 // GET /api/posts – fetch posts
 router.get("/", async (req, res) => {
     try {
-        const { user, sort } = req.query;
+        const { user, sort, currentLocation } = req.query;
         const filter = {};
         if (user) filter.user = user;
 
@@ -48,7 +48,7 @@ router.get("/", async (req, res) => {
 
             await Post.populate(posts, {
                 path: "user",
-                select: "username profilePicture",
+                select: "username profilePicture location rating",
             });
             await Post.populate(posts, {
                 path: "comments.user",
@@ -60,6 +60,33 @@ router.get("/", async (req, res) => {
             });
 
             return res.json(posts);
+        } else if (sort === "smart") {
+            const posts = await Post.find(filter)
+                .populate("user", "username profilePicture location rating")
+                .populate("comments.user", "username profilePicture")
+                .populate("comments.replies.user", "username profilePicture")
+                .sort({ createdAt: -1 });
+
+            const logistic = (x) => 1 / (1 + Math.exp(-x));
+
+            const scored = posts.map((p) => {
+                const likes = p.likes.length;
+                const comments = p.comments.length;
+                const shares = p.shares || 0;
+                const rating = p.user?.rating || 0;
+                const engagement = logistic(
+                    0.3 * likes + 0.4 * comments + 0.2 * shares + 0.1 * rating
+                );
+                const locationScore =
+                    currentLocation && p.user?.location === currentLocation
+                        ? 1
+                        : 0;
+                return { post: p, score: engagement + locationScore * 2 };
+            });
+
+            scored.sort((a, b) => b.score - a.score);
+
+            return res.json(scored.map((s) => s.post));
         } else {
             // **IMPORTANT**: Populate both username and profilePicture.
             const posts = await Post.find(filter)
