@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { useRouter } from "next/navigation";
 
 interface Member {
     _id: string;
@@ -12,6 +13,7 @@ const BACKEND_URL = "https://www.vone.mn/api";
 
 export default function MembersDashboard() {
     const { user } = useAuth();
+    const router = useRouter();
     const [members, setMembers] = useState<Member[]>([]);
     const [status, setStatus] = useState("");
 
@@ -46,7 +48,8 @@ export default function MembersDashboard() {
                         m._id === memberId ? { ...m, subscriptionExpiresAt: data.subscriptionExpiresAt } : m
                     )
                 );
-                setStatus("Шинэчлэгдлээ!");
+                setStatus("Шинэчлэгдлээ! Удахгүй newsfeed рүү шилжинэ...");
+                setTimeout(() => router.push("/"), 1500);
             } else {
                 setStatus(data.error || "Алдаа!");
             }
