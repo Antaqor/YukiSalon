@@ -270,7 +270,7 @@ export default function HomePage() {
   };
 
   const handleUnlock = async (postId: string) => {
-    if (!user?.accessToken) return;
+    if (!user || !user._id || !user.accessToken) return;
     try {
       const { data } = await axios.post(
         `${BASE_URL}/api/posts/${postId}/unlock`,
@@ -282,7 +282,7 @@ export default function HomePage() {
       setPosts((prev) =>
         prev.map((p) =>
           p._id === postId
-            ? { ...p, unlockedBy: [...(p.unlockedBy || []), userId] }
+            ? { ...p, unlockedBy: [...(p.unlockedBy ?? []), userId] }
             : p
         )
       );
