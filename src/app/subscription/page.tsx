@@ -50,8 +50,21 @@ export default function SubscriptionPage() {
   };
 
   const markTransferred = () => {
-    setPaid(true);
-    setMessage("Таны хүсэлт хүлээн авлаа. Удахгүй баталгаажна.");
+    if (!user?.accessToken || !user._id) {
+      setMessage("Нэвтэрч ороогүй байна.");
+      return;
+    }
+    fetch(`${BASE_URL}/api/users/${user._id}/transferred`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${user.accessToken}` },
+    })
+      .then(() => {
+        setPaid(true);
+        setMessage("Таны хүсэлт хүлээн авлаа. Удахгүй баталгаажна.");
+      })
+      .catch(() => {
+        setMessage("Алдаа гарлаа!");
+      });
   };
 
   // Payment confirmation is manual; no invoice checking.

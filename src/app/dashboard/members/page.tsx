@@ -6,6 +6,10 @@ import { useRouter } from "next/navigation";
 interface Member {
   _id: string;
   username: string;
+  phoneNumber: string;
+  birthday?: { year: number };
+  hasTransferred?: boolean;
+  vntBalance?: number;
   subscriptionExpiresAt?: string;
 }
 
@@ -97,32 +101,82 @@ export default function MembersDashboard() {
           <thead>
             <tr>
               <th className="p-2">User</th>
+              <th className="p-2">Phone</th>
+              <th className="p-2">Age</th>
               <th className="p-2">Expires</th>
+              <th className="p-2">VNT</th>
+              <th className="p-2">Transferred</th>
               <th className="p-2"></th>
             </tr>
           </thead>
           <tbody>
             {members.map(m => (
-              <tr key={m._id} className="border-t border-gray-700">
-                <td className="p-2">{m.username}</td>
-                <td className="p-2">
-                  {m.subscriptionExpiresAt
-                    ? new Date(m.subscriptionExpiresAt).toLocaleDateString()
-                    : "None"}
-                </td>
-                <td className="p-2">
-                  <button
-                    onClick={() => extendMembership(m._id)}
-                    className="px-2 py-1 bg-blue-600 rounded text-white"
-                  >
-                    Extend 30d
-                  </button>
-                </td>
-              </tr>
+              <MemberRow key={m._id} member={m} onExtend={extendMembership} />
             ))}
           </tbody>
         </table>
       </div>
     </main>
+  );
+}
+
+function MemberRow({
+  member,
+  onExtend,
+}: {
+  member: Member;
+  onExtend: (id: string) => void;
+}) {
+  const { user } = useAuth();
+  const [vnt, setVnt] = useState(member.vntBalance ?? 0);
+
+  const saveVnt = async () => {
+    if (!user?.accessToken) return;
+    await fetch(`${BACKEND_URL}/users/${member._id}/vnt`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.accessToken}`,
+      },
+      body: JSON.stringify({ amount: vnt }),
+    });
+  };
+
+  return (
+    <tr className="border-t border-gray-700">
+      <td className="p-2">{member.username}</td>
+      <td className="p-2">{member.phoneNumber}</td>
+      <td className="p-2">
+        {member.birthday?.year ? new Date().getFullYear() - member.birthday.year : "-"}
+      </td>
+      <td className="p-2">
+        {member.subscriptionExpiresAt
+          ? new Date(member.subscriptionExpiresAt).toLocaleDateString()
+          : "None"}
+      </td>
+      <td className="p-2">
+        <input
+          type="number"
+          value={vnt}
+          onChange={(e) => setVnt(Number(e.target.value))}
+          className="w-20 bg-gray-800 p-1 rounded"
+        />
+        <button
+          onClick={saveVnt}
+          className="ml-1 px-2 py-1 bg-green-600 rounded"
+        >
+          Save
+        </button>
+      </td>
+      <td className="p-2">{member.hasTransferred ? "✅" : ""}</td>
+      <td className="p-2">
+        <button
+          onClick={() => onExtend(member._id)}
+          className="px-2 py-1 bg-blue-600 rounded text-white"
+        >
+          Extend 30d
+        </button>
+      </td>
+    </tr>
   );
 }
