@@ -19,6 +19,7 @@ export interface AuthUser {
     coverImage?: string;
     rating?: number;
     subscriptionExpiresAt?: string;
+    vntBalance?: number;
     following?: string[];
     followers?: string[];
     vntBalance?: number;
