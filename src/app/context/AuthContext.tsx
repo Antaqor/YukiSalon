@@ -16,6 +16,7 @@ export interface AuthUser {
     gender?: string;
     birthday?: Birthday;
     profilePicture?: string;
+    coverImage?: string;
     rating?: number;
     subscriptionExpiresAt?: string;
     following?: string[];
@@ -26,6 +27,7 @@ export interface AuthUser {
 interface AuthState {
     user: AuthUser | null;
     loggedIn: boolean;
+    loading: boolean;
     login: (u: AuthUser, t: string) => void;
     logout: () => void;
     updateSubscriptionExpiresAt: (expires: string) => void;
@@ -34,6 +36,7 @@ interface AuthState {
 const AuthContext = createContext<AuthState>({
     user: null,
     loggedIn: false,
+    loading: true,
     login: () => {},
     logout: () => {},
     updateSubscriptionExpiresAt: () => {},
@@ -42,6 +45,7 @@ const AuthContext = createContext<AuthState>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<AuthUser | null>(null);
     const [loggedIn, setLoggedIn] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const storedUserStr = localStorage.getItem("user");
@@ -56,6 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 // ignore parsing error
             }
         }
+        setLoading(false);
     }, []);
 
     const login = (newUser: AuthUser, token: string) => {
@@ -90,6 +95,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             value={{
                 user,
                 loggedIn,
+                loading,
                 login,
                 logout,
                 updateSubscriptionExpiresAt,

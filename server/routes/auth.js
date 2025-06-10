@@ -35,8 +35,11 @@ function removeUploadedFile(file) {
 
 // ---------------------- REGISTER ----------------------
 router.post("/register", (req, res) => {
-    // Wrap single-file upload so we can catch Multer errors
-    upload.single("profilePicture")(req, res, async (err) => {
+    // Wrap upload so we can catch Multer errors
+    upload.fields([
+        { name: "profilePicture", maxCount: 1 },
+        { name: "coverImage", maxCount: 1 },
+    ])(req, res, async (err) => {
         // If Multer threw an error (e.g., file > 5MB, not an image, etc.)
         if (err) {
             if (err.code === "LIMIT_FILE_SIZE") {
@@ -49,19 +52,19 @@ router.post("/register", (req, res) => {
 
         try {
             // If user uploaded a file, do the min-size check (10KB)
-            if (req.file) {
-                if (req.file.size < MIN_FILE_SIZE) {
-                    removeUploadedFile(req.file);
-                    return res.status(400).json({
-                        error: "Image must be at least 10KB.",
-                    });
-                }
+            const uploadedProfile = req.files?.profilePicture?.[0];
+            const uploadedCover = req.files?.coverImage?.[0];
+            if (uploadedProfile && uploadedProfile.size < MIN_FILE_SIZE) {
+                removeUploadedFile(uploadedProfile);
+                return res.status(400).json({
+                    error: "Image must be at least 10KB.",
+                });
             }
 
             console.log("------ REGISTER BODY ------");
             console.log(req.body);
-            console.log("------ REGISTER FILE ------");
-            console.log(req.file);
+            console.log("------ REGISTER FILES ------");
+            console.log(req.files);
 
             // Destructure fields
             const { username, password, phoneNumber, location, gender } = req.body;
@@ -71,14 +74,19 @@ router.post("/register", (req, res) => {
             try {
                 birthday = JSON.parse(req.body.birthday);
             } catch (parseErr) {
-                removeUploadedFile(req.file);
+                if (uploadedProfile) removeUploadedFile(uploadedProfile);
+                if (uploadedCover) removeUploadedFile(uploadedCover);
                 return res.status(400).json({ error: "Invalid birthday format" });
             }
 
             // If a file was uploaded, build a path to it
             let profilePicturePath = "";
-            if (req.file) {
-                profilePicturePath = "/uploads/" + req.file.filename;
+            if (req.files && req.files.profilePicture && req.files.profilePicture[0]) {
+                profilePicturePath = "/uploads/" + req.files.profilePicture[0].filename;
+            }
+            let coverImagePath = "";
+            if (req.files && req.files.coverImage && req.files.coverImage[0]) {
+                coverImagePath = "/uploads/" + req.files.coverImage[0].filename;
             }
 
             // Check required fields
@@ -92,7 +100,8 @@ router.post("/register", (req, res) => {
                 !birthday.month ||
                 !birthday.day
             ) {
-                removeUploadedFile(req.file);
+                if (uploadedProfile) removeUploadedFile(uploadedProfile);
+                if (uploadedCover) removeUploadedFile(uploadedCover);
                 return res.status(400).json({
                     error:
                         "Missing required fields (username, password, phoneNumber, location, gender, birthday)",
@@ -102,7 +111,8 @@ router.post("/register", (req, res) => {
             // Check if username is taken
             const existing = await User.findOne({ username });
             if (existing) {
-                removeUploadedFile(req.file);
+                if (uploadedProfile) removeUploadedFile(uploadedProfile);
+                if (uploadedCover) removeUploadedFile(uploadedCover);
                 return res.status(400).json({ error: "Username already in use" });
             }
 
@@ -118,6 +128,7 @@ router.post("/register", (req, res) => {
                 gender,
                 birthday,
                 profilePicture: profilePicturePath,
+                coverImage: coverImagePath,
             });
 
             // Success!
@@ -131,12 +142,14 @@ router.post("/register", (req, res) => {
                     gender: newUser.gender,
                     birthday: newUser.birthday,
                     profilePicture: newUser.profilePicture,
+                    coverImage: newUser.coverImage,
                     subscriptionExpiresAt: newUser.subscriptionExpiresAt,
                 },
             });
         } catch (error) {
             console.error("Register error:", error);
-            removeUploadedFile(req.file);
+            if (uploadedProfile) removeUploadedFile(uploadedProfile);
+            if (uploadedCover) removeUploadedFile(uploadedCover);
             return res.status(500).json({ error: "Server error" });
         }
     });
@@ -176,6 +189,7 @@ router.post("/login", async (req, res) => {
                 gender: user.gender,
                 birthday: user.birthday,
                 profilePicture: user.profilePicture,
+                coverImage: user.coverImage,
                 rating: user.rating,
                 subscriptionExpiresAt: user.subscriptionExpiresAt,
                 following: user.following,
@@ -193,7 +207,7 @@ router.post("/login", async (req, res) => {
 router.get("/user/:id", async (req, res) => {
     try {
         const user = await User.findById(req.params.id).select(
-            "username phoneNumber location gender birthday profilePicture rating subscriptionExpiresAt following followers"
+            "username phoneNumber location gender birthday profilePicture coverImage rating subscriptionExpiresAt following followers"
         );
         if (!user) {
             return res.status(404).json({ error: "User not found" });
@@ -210,7 +224,7 @@ router.get("/profile", authenticateToken, async (req, res) => {
     try {
         const userId = req.user._id || req.user.id;
         const user = await User.findById(userId).select(
-            "username phoneNumber location gender birthday profilePicture rating subscriptionExpiresAt following followers"
+            "username phoneNumber location gender birthday profilePicture coverImage rating subscriptionExpiresAt following followers"
         );
         if (!user) {
             return res.status(404).json({ error: "User not found" });

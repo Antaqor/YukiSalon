@@ -2,6 +2,15 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const authenticateToken = require("../middleware/authMiddleware");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+
+const uploadDir = path.join(__dirname, "../uploads");
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+const upload = multer({ dest: uploadDir });
 
 // Active subscribers count
 router.get("/active-subscribers", async (req, res) => {
@@ -124,5 +133,32 @@ router.put("/:id/subscription", authenticateToken, async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 });
+
+// Update profile picture and cover image
+router.put(
+    "/me",
+    authenticateToken,
+    upload.fields([
+        { name: "profilePicture", maxCount: 1 },
+        { name: "coverImage", maxCount: 1 },
+    ]),
+    async (req, res) => {
+        try {
+            const userId = req.user._id;
+            const updates = {};
+            if (req.files?.profilePicture?.[0]) {
+                updates.profilePicture = "/uploads/" + req.files.profilePicture[0].filename;
+            }
+            if (req.files?.coverImage?.[0]) {
+                updates.coverImage = "/uploads/" + req.files.coverImage[0].filename;
+            }
+            await User.findByIdAndUpdate(userId, updates, { new: true });
+            res.json({ message: "Profile updated", ...updates });
+        } catch (err) {
+            console.error("Update profile error:", err);
+            res.status(500).json({ error: "Server error" });
+        }
+    }
+);
 
 module.exports = router;
