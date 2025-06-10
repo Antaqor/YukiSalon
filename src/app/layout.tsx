@@ -6,6 +6,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import Header from "./components/Header";
 import TrendingHashtags from "./components/TrendingHashtags";
 import BottomNav from "./components/BottomNav";
+import SidebarControl from "./components/SidebarControl";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -82,12 +83,13 @@ export default function RootLayout({
         <AuthProvider>
             <div className="max-w-7xl w-full mx-auto md:px-6">
 
+            <SidebarControl />
             <Header />
 
                 {/* Үндсэн Layout */}
                 <main className="flex-grow flex flex-col md:flex-row gap-0 pt-16">
                     {/* Зүүн талын Sidebar */}
-                    <aside className="hidden md:block w-full md:w-1/4 border-r border-gray-200 dark:border-gray-700 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto fade-in-up">
+                    <aside id="left-sidebar" className="hidden md:block w-full md:w-1/4 border-r border-gray-200 dark:border-gray-700 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto fade-in-up">
                         <div className="p-4 font-semibold">Wallet: 0 VNT</div>
                         <nav>
                             <ul className="space-y-1">
@@ -325,7 +327,7 @@ export default function RootLayout({
                     </div>
 
                     {/* Баруун талын Sidebar */}
-                    <aside className="hidden md:block w-full md:w-1/4 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto p-2 fade-in-up">
+                    <aside id="right-sidebar" className="hidden md:block w-full md:w-1/4 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto p-2 fade-in-up">
                         <div className="space-y-6">
                             {/* Идэвхтэй сэдвүүд */}
                             <div className="p-4 transition-shadow duration-200 hover:shadow-md">

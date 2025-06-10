@@ -111,14 +111,7 @@ export default function HomePage() {
 
       const res = await axios.get(`${BASE_URL}/api/posts`, { params });
 
-      let postsData: Post[] = res.data;
-      if (loggedIn && !isPro) {
-        postsData = postsData.filter(
-          (p) =>
-            !/#[Aa][Ii]\b/.test(p.content) && (p.likes?.length || 0) < 5
-        );
-      }
-
+      const postsData: Post[] = res.data;
       setPosts(postsData);
       setAllPosts(postsData);
       computeTrendingHashtags(postsData);
@@ -440,8 +433,7 @@ export default function HomePage() {
 
           {/* Posts list */}
           <div className="m-0 p-0">
-            {isPro ? (
-              posts.map((post, idx) => {
+            {posts.map((post, idx) => {
                 const postUser = post.user;
                 return (
                   <motion.div
@@ -656,12 +648,7 @@ export default function HomePage() {
                     )}
                   </motion.div>
                 );
-              })
-            ) : (
-              <div className="p-4 text-center text-gray-600">
-                Feed нь зөвхөн гишүүдэд харагдана.
-              </div>
-            )}
+              })}
           </div>
         </main>
       </div>

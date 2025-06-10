@@ -89,6 +89,10 @@ export default function MembersDashboard() {
     }
   };
 
+  const updateVnt = (id: string, amount: number) => {
+    setMembers(prev => prev.map(m => (m._id === id ? { ...m, vntBalance: amount } : m)));
+  };
+
   return (
     <main className="min-h-screen bg-black text-gray-100 p-4">
       <div className="max-w-xl mx-auto space-y-6">
@@ -111,7 +115,7 @@ export default function MembersDashboard() {
           </thead>
           <tbody>
             {members.map(m => (
-              <MemberRow key={m._id} member={m} onExtend={extendMembership} />
+              <MemberRow key={m._id} member={m} onExtend={extendMembership} onVntChange={updateVnt} />
             ))}
           </tbody>
         </table>
@@ -123,9 +127,11 @@ export default function MembersDashboard() {
 function MemberRow({
   member,
   onExtend,
+  onVntChange,
 }: {
   member: Member;
   onExtend: (id: string) => void;
+  onVntChange: (id: string, amount: number) => void;
 }) {
   const { user } = useAuth();
   const [vnt, setVnt] = useState(member.vntBalance ?? 0);
@@ -140,6 +146,7 @@ function MemberRow({
       },
       body: JSON.stringify({ amount: vnt }),
     });
+    onVntChange(member._id, vnt);
   };
 
   return (
