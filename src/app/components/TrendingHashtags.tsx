@@ -42,7 +42,7 @@ const TrendingHashtags: React.FC = () => {
     <div className="p-4 transition-shadow duration-200 hover:shadow-md">
       <h2 className="flex items-center font-semibold mb-3">
         <FiCamera className="w-5 h-5 mr-2 text-[#1D9BF0]" />
-        Trending Hashtags
+        Тренд хэштегүүд
       </h2>
       <div className="flex flex-wrap gap-2">
         {tags.map((t) => (

@@ -22,7 +22,7 @@ export default function WebhookUploadPage() {
             return;
         }
 
-        setStatus('Uploading...');
+        setStatus('Байршуулж байна...');
         const formData = new FormData();
         formData.append('image', file);
 
@@ -117,12 +117,12 @@ export default function WebhookUploadPage() {
                             e.currentTarget.style.transform = 'scale(1)';
                         }}
                     >
-                        Upload
+                        Байршуулах
                     </button>
                 </form>
                 {file && (
                     <p style={{ marginTop: '1rem', color: '#555' }}>
-                        Selected file: {file.name}
+                        Сонгосон файл: {file.name}
                     </p>
                 )}
                 {status && (

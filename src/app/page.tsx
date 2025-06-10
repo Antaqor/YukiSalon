@@ -298,7 +298,7 @@ export default function HomePage() {
             {!isPro && (
                 <div className="bg-yellow-500 text-white text-center py-2 px-4">
                     <Link href="/subscription" className="font-semibold underline">
-                        Become a Member – Unlock Exclusive Features
+                        Гишүүн болох – Онцгой боломжуудыг нээх
                     </Link>
                 </div>
             )}
@@ -310,12 +310,12 @@ export default function HomePage() {
                         "var(--barcelona-threadline-column-width) minmax(0, 1fr)",
                 }}
             >
-                {/* Sidebar: Trending Hashtags */}
+                {/* Sidebar: Тренд хэштегүүд */}
                 <aside>
                     <div className="bg-white dark:bg-black p-4 grid gap-3">
                         <div className="grid grid-cols-[auto,1fr] items-center gap-2">
                             <FiCamera className="w-5 h-5 text-[#1D9BF0]" />
-                            <h2 className="text-base font-semibold">Trending Hashtags</h2>
+                            <h2 className="text-base font-semibold">Тренд хэштегүүд</h2>
                         </div>
                         <div
                             className="gap-2"
