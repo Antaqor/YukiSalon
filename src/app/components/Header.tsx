@@ -243,11 +243,11 @@ export default function Header() {
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link
-                                            href="/shop"
-                                            onClick={() => setIsMenuOpen(false)}
-                                            className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
-                                        >
+                                    <Link
+                                        href="/shop"
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                    >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 className="w-6 h-6"
@@ -262,14 +262,37 @@ export default function Header() {
                                                     d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
                                                 />
                                             </svg>
-                                            Дэлгүүр
-                                        </Link>
-                                    </li>
-                                    {loggedIn && (
-                                        <li>
-                                            <Link
-                                                href="/subscription"
-                                                onClick={() => setIsMenuOpen(false)}
+                                        Дэлгүүр
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        href="/wallet"
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="w-6 h-6"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2"
+                                                d="M2.25 6.75h19.5v10.5H2.25zM2.25 9h19.5"
+                                            />
+                                        </svg>
+                                        Wallet
+                                    </Link>
+                                </li>
+                                {loggedIn && (
+                                    <li>
+                                        <Link
+                                            href="/subscription"
+                                            onClick={() => setIsMenuOpen(false)}
                                                 className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
                                             >
                                                 <svg

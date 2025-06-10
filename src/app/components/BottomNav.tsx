@@ -7,7 +7,7 @@ import {
     MagnifyingGlassIcon,
     PlusCircleIcon,
     BellIcon,
-    EnvelopeIcon,
+    WalletIcon,
 } from "@heroicons/react/24/outline";
 
 const BottomNav: React.FC = () => {
@@ -77,13 +77,13 @@ const BottomNav: React.FC = () => {
                     <BellIcon className="h-7 w-7" />
                 </button>
 
-                {/* MESSAGES */}
+                {/* WALLET */}
                 <button
-                    onClick={() => router.push("/messages")}
-                    aria-label="Messages"
+                    onClick={() => router.push("/wallet")}
+                    aria-label="Wallet"
                     className="p-1 text-black dark:text-white"
                 >
-                    <EnvelopeIcon className="h-7 w-7" />
+                    <WalletIcon className="h-7 w-7" />
                 </button>
             </div>
         </nav>
