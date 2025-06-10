@@ -13,6 +13,7 @@ interface UserData {
     username: string;
     profilePicture?: string;
     rating?: number;
+    subscriptionExpiresAt?: string;
     followers?: string[];
     following?: string[];
     location?: string;
