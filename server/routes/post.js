@@ -151,7 +151,7 @@ router.get("/", async (req, res) => {
 // ---------------------------------------------------------------------------
 router.post("/", authenticateToken, upload.single("image"), async (req, res) => {
   try {
-    const { content } = req.body;
+    const { content, price } = req.body;
     if (!content) return res.status(400).json({ error: "Content required" });
 
     const imageFilename = req.file ? req.file.filename : null;
@@ -159,7 +159,9 @@ router.post("/", authenticateToken, upload.single("image"), async (req, res) => 
     const newPost = await Post.create({
       content,
       image: imageFilename,
+      price: Number(price) || 0,
       user: req.user._id,
+      unlockedBy: [req.user._id],
     });
 
     await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
@@ -271,6 +273,44 @@ router.post("/:id/share", authenticateToken, async (req, res) => {
     res.json({ shares: post.shares });
   } catch (err) {
     console.error("Share error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ---------------------------------------------------------------------------
+//  POST /api/posts/:id/unlock – purchase a paid post
+// ---------------------------------------------------------------------------
+router.post("/:id/unlock", authenticateToken, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id).populate("user");
+    if (!post) return res.status(404).json({ error: "Post not found" });
+
+    if (post.price <= 0)
+      return res.status(400).json({ error: "Post is free" });
+
+    if (post.unlockedBy.some((u) => u.toString() === req.user._id.toString())) {
+      return res.json({ message: "Already unlocked" });
+    }
+
+    const viewer = await User.findById(req.user._id);
+    if (!viewer || viewer.vntBalance < post.price)
+      return res.status(400).json({ error: "Insufficient balance" });
+
+    viewer.vntBalance -= post.price;
+    await viewer.save();
+
+    const creator = await User.findById(post.user._id);
+    if (creator) {
+      creator.vntBalance += post.price;
+      await creator.save();
+    }
+
+    post.unlockedBy.push(req.user._id);
+    await post.save();
+
+    res.json({ message: "Unlocked", vntBalance: viewer.vntBalance });
+  } catch (err) {
+    console.error("Unlock error:", err);
     res.status(500).json({ error: "Server error" });
   }
 });

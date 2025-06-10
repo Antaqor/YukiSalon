@@ -52,6 +52,8 @@ interface Post {
   likes: string[] | UserData[];
   comments?: Comment[];
   shares?: number;
+  price: number;
+  unlockedBy?: (string | UserData)[];
   user?: UserData;
 }
 
@@ -275,6 +277,26 @@ export default function HomePage() {
     }
   };
 
+  const handleUnlock = async (postId: string) => {
+    if (!user?.accessToken) return;
+    try {
+      const res = await axios.post(
+        `${BASE_URL}/api/posts/${postId}/unlock`,
+        {},
+        { headers: { Authorization: `Bearer ${user.accessToken}` } }
+      );
+      setPosts((prev) =>
+        prev.map((p) =>
+          p._id === postId
+            ? { ...p, unlockedBy: [...(p.unlockedBy || []), user._id] }
+            : p
+        )
+      );
+    } catch (err) {
+      console.error("Unlock error:", err);
+    }
+  };
+
   const handleFollow = async (targetId: string) => {
     if (!user?.accessToken) return;
     try {
@@ -435,6 +457,11 @@ export default function HomePage() {
           <div className="m-0 p-0">
             {posts.map((post, idx) => {
                 const postUser = post.user;
+                const isLocked =
+                  post.price > 0 &&
+                  (!user ||
+                    (postUser?._id !== user._id &&
+                      !post.unlockedBy?.some((u) => (u as any) === user._id)));
                 return (
                   <motion.div
                     key={post._id}
@@ -493,20 +520,32 @@ export default function HomePage() {
                           {formatPostDate(post.createdAt)}
                         </span>
 
-                        {post.content && (
-                          <p className="text-base whitespace-pre-wrap">
-                            {post.content}
-                          </p>
-                        )}
+                        <div className={isLocked ? "blur-sm select-none" : ""}>
+                          {post.content && (
+                            <p className="text-base whitespace-pre-wrap">
+                              {post.content}
+                            </p>
+                          )}
 
-                        {post.image && (
-                          <div className="relative w-full overflow-hidden rounded-lg">
-                            <img
-                              src={`${UPLOADS_URL}/${post.image}`}
-                              alt="Post"
-                              className="w-full h-auto object-cover rounded-lg"
-                              onError={(e) => (e.currentTarget.style.display = "none")}
-                            />
+                          {post.image && (
+                            <div className="relative w-full overflow-hidden rounded-lg">
+                              <img
+                                src={`${UPLOADS_URL}/${post.image}`}
+                                alt="Post"
+                                className="w-full h-auto object-cover rounded-lg"
+                                onError={(e) => (e.currentTarget.style.display = "none")}
+                              />
+                            </div>
+                          )}
+                        </div>
+                        {isLocked && (
+                          <div className="mt-2">
+                            <button
+                              onClick={() => handleUnlock(post._id)}
+                              className="px-3 py-1 text-xs bg-blue-600 text-white rounded"
+                            >
+                              Unlock for {post.price} VNT
+                            </button>
                           </div>
                         )}
                       </div>

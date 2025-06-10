@@ -12,7 +12,7 @@ const authenticateToken = async (req, res, next) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET || "change-me");
         const user = await User.findById(decoded.id).select(
-            "username phoneNumber location gender birthday profilePicture subscriptionExpiresAt following followers"
+            "username phoneNumber location gender birthday profilePicture subscriptionExpiresAt following followers vntBalance"
         );
         if (!user) {
             return res.status(401).json({ error: "User not found" });
