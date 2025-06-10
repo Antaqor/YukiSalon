@@ -20,6 +20,10 @@ interface PostData {
     title: string;
     content: string;
     createdAt: string;
+    image?: string;
+    likes?: string[];
+    comments?: any[];
+    shares?: number;
 }
 
 export default function MyOwnProfilePage() {
@@ -31,6 +35,7 @@ export default function MyOwnProfilePage() {
     const [error, setError] = useState("");
 
     const BASE_URL = "https://www.vone.mn";
+    const UPLOADS_URL = `${BASE_URL}/api/uploads`;
 
     // Grab token from localStorage or redirect if missing
     function getToken() {
@@ -165,11 +170,21 @@ export default function MyOwnProfilePage() {
                         {userPosts.map((post) => (
                             <div
                                 key={post._id}
-                                className="border border-gray-100 p-4 rounded-md shadow-sm"
+                                className="border border-gray-100 p-4 rounded-md shadow-sm space-y-2"
                             >
                                 <h4 className="font-semibold text-gray-800">{post.title}</h4>
-                                <p className="text-gray-600 text-sm mt-1">{post.content}</p>
-                                <p className="text-xs text-gray-400 mt-2">
+                                <p className="text-gray-600 text-sm">{post.content}</p>
+                                {post.image && (
+                                    <img
+                                        src={`${UPLOADS_URL}/${post.image}`}
+                                        alt="Post"
+                                        className="w-full rounded-md"
+                                    />
+                                )}
+                                <div className="text-xs text-gray-500">
+                                    {post.likes?.length || 0} Likes • {post.comments?.length || 0} Comments • {post.shares || 0} Shares
+                                </div>
+                                <p className="text-xs text-gray-400">
                                     {new Date(post.createdAt).toLocaleString()}
                                 </p>
                             </div>
