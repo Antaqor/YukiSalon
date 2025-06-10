@@ -115,11 +115,6 @@ export default function SubscriptionPage() {
         </div>
       )}
 
-      {paid && (
-        <div className="text-green-600 font-semibold text-center mt-6">
-          Таны эрх идэвхжлээ! Одоо та пост оруулах боломжтой.
-        </div>
-      )}
     </div>
   );
 }
