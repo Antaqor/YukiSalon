@@ -21,6 +21,7 @@ export interface AuthUser {
     subscriptionExpiresAt?: string;
     following?: string[];
     followers?: string[];
+    vntBalance?: number;
     accessToken?: string;
 }
 

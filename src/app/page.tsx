@@ -285,6 +285,9 @@ export default function HomePage() {
         {},
         { headers: { Authorization: `Bearer ${user.accessToken}` } }
       );
+      if (res.data.vntBalance !== undefined) {
+        login({ ...user, vntBalance: res.data.vntBalance }, user.accessToken);
+      }
       setPosts((prev) =>
         prev.map((p) =>
           p._id === postId
