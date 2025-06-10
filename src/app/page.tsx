@@ -292,6 +292,9 @@ export default function HomePage() {
             : p
         )
       );
+      if (typeof res.data.vntBalance === 'number') {
+        login({ ...user, vntBalance: res.data.vntBalance }, user.accessToken);
+      }
     } catch (err) {
       console.error("Unlock error:", err);
     }
