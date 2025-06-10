@@ -19,8 +19,12 @@ export default function SubscriptionPage() {
     const [message, setMessage] = useState("");
     const [paid, setPaid] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const [memberCount, setMemberCount] = useState(0);
+    const [showPaymentInfo, setShowPaymentInfo] = useState(false);
+    const [countdown, setCountdown] = useState(0);
 
     const BASE_URL =  "https://www.vone.mn";
+    const price = memberCount < 10 ? 10000 : memberCount < 30 ? 20000 : 20000;
 
     useEffect(() => {
         const checkMobile = () => {
@@ -28,7 +32,18 @@ export default function SubscriptionPage() {
             setIsMobile(/android|iphone|ipad|ipod/i.test(userAgent.toLowerCase()));
         };
         checkMobile();
+        // Fetch active subscriber count
+        axios
+            .get(`${BASE_URL}/api/users/active-subscribers`)
+            .then((res) => setMemberCount(res.data.count))
+            .catch(() => {});
     }, []);
+
+    useEffect(() => {
+        if (!showPaymentInfo || countdown <= 0) return;
+        const timer = setInterval(() => setCountdown((c) => c - 1), 1000);
+        return () => clearInterval(timer);
+    }, [showPaymentInfo, countdown]);
 
     // Төлбөрийн бичиг (Invoice) үүсгэх
     const createInvoice = async () => {
@@ -63,6 +78,8 @@ export default function SubscriptionPage() {
                 );
                 setPaymentUrls(filteredUrls);
                 setMessage("Төлбөрийн бичиг үүслээ! QR кодыг уншуулах эсвэл төлбөрийн холбоосыг ашиглана уу.");
+                setShowPaymentInfo(true);
+                setCountdown(15 * 60);
             } else {
                 setMessage("Төлбөрийн бичиг үүсгэхэд алдаа гарлаа.");
             }
@@ -110,13 +127,10 @@ export default function SubscriptionPage() {
                 Сарын Гишүүнчлэл
             </h1>
             <p className="mb-4 text-center text-gray-600">
-                Сарын төлбөр: эхний 10 гишүүнд 10,000₮, дараагийн 20 гишүүнд
-                20,000₮
+                Одоогийн идэвхтэй гишүүд: {memberCount}. Энэ сарын төлбөр:
+                {" "}
+                {price.toLocaleString()}₮
             </p>
-            <div className="mb-6 text-center space-y-1 text-sm text-gray-700">
-                <p>Golomt Bank: <strong>3005127815</strong></p>
-                <p>Khan Bank: <strong>5926153085</strong></p>
-            </div>
 
             {message && (
                 <div className="mb-3 p-2 bg-blue-100 text-blue-800 rounded text-center">
@@ -130,8 +144,23 @@ export default function SubscriptionPage() {
                         onClick={createInvoice}
                         className="block w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
                     >
-                        Төлбөр үүсгэх (1,000₮)
+                        Төлбөр үүсгэх ({price.toLocaleString()}₮)
                     </button>
+
+                    {showPaymentInfo && countdown > 0 && (
+                        <div className="space-y-1 text-center text-sm text-gray-700">
+                            <p>Golomt Bank: <strong>3005127815</strong></p>
+                            <p>Khan Bank: <strong>5926153085</strong></p>
+                            <p>
+                                Гүйлгээний утга дээр <strong>{user?.username}</strong>
+                                {" "}оруулна уу.
+                            </p>
+                            <p>
+                                Үлдсэн хугацаа: {Math.floor(countdown / 60)}:
+                                {(countdown % 60).toString().padStart(2, "0")}
+                            </p>
+                        </div>
+                    )}
 
                     {qrUrl && (
                         <div className="text-center">

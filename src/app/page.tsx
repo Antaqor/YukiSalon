@@ -375,8 +375,9 @@ export default function HomePage() {
 
                     {/* Posts List */}
                     <div className="m-0 p-0">
-                        {posts.map((post, idx) => {
-                            const postUser = post.user;
+                        {isPro ? (
+                            posts.map((post, idx) => {
+                                const postUser = post.user;
                             return (
                                 <motion.div
                                     key={post._id}
@@ -558,8 +559,13 @@ export default function HomePage() {
                                     )}
 
                                 </motion.div>
-                            );
-                        })}
+                                );
+                            })
+                        ) : (
+                            <div className="p-4 text-center text-gray-600">
+                                Feed нь зөвхөн гишүүдэд харагдана.
+                            </div>
+                        )}
                     </div>
                 </main>
             </div>

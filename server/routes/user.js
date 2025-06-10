@@ -3,6 +3,19 @@ const router = express.Router();
 const User = require("../models/User");
 const authenticateToken = require("../middleware/authMiddleware");
 
+// Active subscribers count
+router.get("/active-subscribers", async (req, res) => {
+    try {
+        const count = await User.countDocuments({
+            subscriptionExpiresAt: { $gt: new Date() },
+        });
+        res.json({ count });
+    } catch (err) {
+        console.error("Active subscribers error:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
 // Get all users (public)
 router.get("/", async (req, res) => {
     try {
