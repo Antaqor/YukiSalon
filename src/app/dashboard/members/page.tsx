@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { useRouter } from "next/navigation";
 
 interface Member {
     _id: string;
@@ -11,7 +12,8 @@ interface Member {
 const BACKEND_URL = "https://www.vone.mn/api";
 
 export default function MembersDashboard() {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
+    const router = useRouter();
     const [members, setMembers] = useState<Member[]>([]);
     const [status, setStatus] = useState("");
 
@@ -30,23 +32,35 @@ export default function MembersDashboard() {
 
     const extendMembership = async (memberId: string) => {
         try {
+            if (!user?.accessToken) {
+                setStatus("Нэвтрэх шаардлагатай.");
+                router.push("/login");
+                return;
+            }
+
             setStatus("Updating...");
             const res = await fetch(`${BACKEND_URL}/users/${memberId}/subscription`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: user?.accessToken ? `Bearer ${user.accessToken}` : "",
+                    Authorization: `Bearer ${user.accessToken}`,
                 },
                 body: JSON.stringify({}),
             });
             const data = await res.json();
+
             if (res.ok) {
                 setMembers((prev) =>
                     prev.map((m) =>
                         m._id === memberId ? { ...m, subscriptionExpiresAt: data.subscriptionExpiresAt } : m
                     )
                 );
-                setStatus("Шинэчлэгдлээ!");
+                setStatus("Шинэчлэгдлээ! Удахгүй newsfeed рүү шилжинэ...");
+                setTimeout(() => router.push("/"), 1500);
+            } else if (res.status === 401 || res.status === 403) {
+                logout();
+                setStatus("Нэвтрэх хугацаа дууссан. Дахин нэвтэрнэ үү.");
+                router.push("/login");
             } else {
                 setStatus(data.error || "Алдаа!");
             }

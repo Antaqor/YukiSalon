@@ -42,10 +42,10 @@ export default function SubscriptionPage() {
     setCountdown(15 * 60); // 15-minute window
 
     setMessage(
-      `Доорх данс руу ${price.toLocaleString()}₮ шилжүүлнэ үү.\n` +
+      `Манай Premium клубт нэгдэхийн тулд ${price.toLocaleString()}₮-г дараах дансуудын аль нэг рүү шилжүүлнэ үү.\n` +
         `Golomt Bank: 3005127815\n` +
         `Khan Bank: 5926153085\n` +
-        `Гүйлгээний утга дээр ${user.username} гэж бичнэ.`,
+        `Гүйлгээний утга дээр ${user.username} гэж бичээрэй.`,
     );
   };
 
@@ -59,14 +59,13 @@ export default function SubscriptionPage() {
   // ── UI ────────────────────────────────────────────────
   return (
     <div className="max-w-xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4 text-center">Сарын Гишүүнчлэл</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center">Premium Membership</h1>
 
       <p className="mb-2 text-center text-gray-600">
-        Сарын төлбөр: эхний 10 гишүүнд 10,000₮, дараагийн 20 гишүүнд
-        20,000₮
+        Нэгдүгээр 10 гишүүнд 10,000₮, дараагийнх нь 20,000₮ – амжилтыг өнөөдөр эхлүүлье!
       </p>
       <p className="mb-4 text-center text-gray-600">
-        Одоогийн идэвхтэй гишүүд: {memberCount}. Энэ сарын төлбөр: {price.toLocaleString()}₮
+        Одоогийн идэвхтэй гишүүд: {memberCount}. Таны төлбөр: {price.toLocaleString()}₮
       </p>
 
       {message && (
@@ -87,7 +86,7 @@ export default function SubscriptionPage() {
 
           {/* 2️⃣ Bank info + countdown */}
           {showPaymentInfo && countdown > 0 && (
-            <div className="space-y-1 text-center text-sm text-gray-700">
+            <div className="space-y-1 text-center text-sm text-white">
               <p>
                 Golomt Bank: <strong>3005127815</strong>
               </p>
@@ -97,7 +96,7 @@ export default function SubscriptionPage() {
               <p>
                 Гүйлгээний утга: <strong>{user?.username}</strong>
               </p>
-              <p>
+              <p className="text-[#CD4178]">
                 Үлдсэн хугацаа: {Math.floor(countdown / 60)}:
                 {(countdown % 60).toString().padStart(2, "0")}
               </p>
@@ -116,11 +115,6 @@ export default function SubscriptionPage() {
         </div>
       )}
 
-      {paid && (
-        <div className="text-green-600 font-semibold text-center mt-6">
-          Таны эрх идэвхжлээ! Одоо та пост оруулах боломжтой.
-        </div>
-      )}
     </div>
   );
 }

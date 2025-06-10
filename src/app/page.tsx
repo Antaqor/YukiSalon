@@ -7,7 +7,6 @@ import { FaHeart, FaComment, FaShare } from "react-icons/fa";
 import { FiCamera } from "react-icons/fi";
 import { motion } from "framer-motion";
 import HeaderSlider from "./components/HeaderSlider";
-import TrendingTopics from "./components/TrendingTopics";
 
 interface UserData {
     _id: string;
@@ -286,7 +285,7 @@ export default function HomePage() {
             {!isPro && (
                 <div className="bg-yellow-500 text-white text-center py-2 px-4">
                     <Link href="/subscription" className="font-semibold underline">
-                        Subscribe Membership
+                        Become a Member – Unlock Exclusive Features
                     </Link>
                 </div>
             )}
@@ -329,7 +328,6 @@ export default function HomePage() {
                             ))}
                         </div>
                     </div>
-                    <TrendingTopics />
                 </aside>
 
                 {/* Main Content: Create Post & Posts List */}
