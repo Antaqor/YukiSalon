@@ -12,7 +12,6 @@ import { useAuth } from "./context/AuthContext";
 import { FaHeart, FaRegHeart, FaComment, FaShare } from "react-icons/fa";
 import { FiCamera } from "react-icons/fi";
 import { motion } from "framer-motion";
-import HeaderSlider from "./components/HeaderSlider";
 import { formatPostDate } from "./lib/formatDate";
 import useCurrentLocation from "./hooks/useCurrentLocation";
 
@@ -311,7 +310,6 @@ export default function HomePage() {
   // ────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-black text-gray-900 dark:text-white">
-      <HeaderSlider />
 
       {!isPro && (
         <div className="bg-yellow-500 text-white text-center py-2 px-4">

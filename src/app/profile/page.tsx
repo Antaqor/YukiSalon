@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { FaCheckCircle } from "react-icons/fa";
-import { formatPostDate } from "../lib/formatDate";
+import PostCard from "../components/PostCard";
 
 /** Match your user schema. No "name" field. */
 interface UserData {
@@ -111,64 +111,39 @@ export default function MyOwnProfilePage() {
 
     // ---------------- UI ----------------
     return (
-        <div className="min-h-screen bg-white dark:bg-dark text-black dark:text-white font-sans">
-            {/* My Profile Header */}
-            <div className="text-center p-5 border-b border-gray-200">
-                {userData.coverImage && (
-                    <img
-                        src={`${BASE_URL}${userData.coverImage}`}
-                        alt="Cover"
-                        className="w-full h-40 object-cover rounded-md mb-4"
-                    />
-                )}
-                {/* Profile Picture */}
-                {userData.profilePicture ? (
-                    <img
-                        src={`${BASE_URL}${userData.profilePicture}`}
-                        alt="Profile"
-                        className="..."
-                    />
-                ) : (
-                    <div className="w-24 h-24 mx-auto rounded-full bg-gray-200 mb-2" />
-                )}
+        <div className="min-h-screen bg-black text-white font-sans">
+            {/* Top Navigation */}
+            <div className="fixed top-0 left-0 w-full h-12 flex items-center px-4 backdrop-blur-md z-10 bg-black/60">
+                <button onClick={() => router.back()} aria-label="Back" className="mr-2 text-white">
+                    &#8592;
+                </button>
+                <h1 className="font-bold flex-1 text-center">{userData.username}</h1>
+                <a href="/profile/edit" className="text-sm text-blue-400">Edit</a>
+            </div>
 
-                {/* Username + rating */}
-                <div className="flex items-center justify-center gap-1">
-                    <h2 className="text-xl font-bold text-gray-800">
-                        {userData.username}
-                    </h2>
+            {/* Banner */}
+            <div className="h-40 bg-[#0d0d0d] relative mt-12">
+                {userData.coverImage && (
+                    <img src={`${BASE_URL}${userData.coverImage}`} alt="Cover" className="absolute inset-0 w-full h-full object-cover" />
+                )}
+                <div className="absolute -bottom-16 left-4 w-32 h-32 rounded-full border-4 border-[#0d0d0d] overflow-hidden bg-gray-800">
+                    {userData.profilePicture ? (
+                        <img src={`${BASE_URL}${userData.profilePicture}`} alt="avatar" className="w-full h-full object-cover" />
+                    ) : null}
+                </div>
+            </div>
+
+            {/* Meta */}
+            <div className="pt-20 px-4">
+                <div className="flex items-center gap-2">
+                    <h2 className="text-2xl font-bold">{userData.username}</h2>
                     {isPro && <FaCheckCircle className="text-yellow-400" />}
                 </div>
-                {userData.rating && (
-                    <p className="text-sm text-gray-600">★ {userData.rating} үнэлгээ</p>
-                )}
-
-                {/* Follower/Following */}
-                <div className="flex justify-center gap-6 mt-3">
-                    <div>
-            <span className="font-bold">
-              {userData.followers ? userData.followers.length : 0}
-            </span>{" "}
-                        Followers
-                    </div>
-                    <div>
-            <span className="font-bold">
-              {userData.following ? userData.following.length : 0}
-            </span>{" "}
-                        Following
-                    </div>
-                </div>
-
-                {/* Optional: location */}
-                {userData.location && (
-                    <div className="mt-2 text-sm text-gray-500">
-                        Байршил: {userData.location}
-                    </div>
-                )}
-                <div className="mt-3">
-                    <a href="/profile/edit" className="text-sm text-blue-500 underline">
-                        Edit Profile
-                    </a>
+                {userData.rating && <p className="text-sm text-gray-400">★ {userData.rating} үнэлгээ</p>}
+                {userData.location && <p className="text-sm text-gray-400">Байршил: {userData.location}</p>}
+                <div className="flex gap-6 mt-2 text-sm">
+                    <span>{userData.followers ? userData.followers.length : 0} Followers</span>
+                    <span>{userData.following ? userData.following.length : 0} Following</span>
                 </div>
             </div>
 
@@ -182,40 +157,19 @@ export default function MyOwnProfilePage() {
 
             {/* My posts */}
             <div className="max-w-xl mx-auto px-4 mt-4">
-                <h3 className="text-xl font-bold mb-3 text-gray-800">
+                <h3 className="text-xl font-bold mb-3">
                     Миний нийтлэлүүд
                 </h3>
                 {loadingPosts ? (
-                    <div className="text-gray-600">Нийтлэлүүд ачааллаж байна...</div>
+                    <div className="text-gray-400">Нийтлэлүүд ачааллаж байна...</div>
                 ) : userPosts.length > 0 ? (
                     <div className="space-y-4">
                         {userPosts.map((post) => (
-                            <div
-                                key={post._id}
-                                className="border border-gray-100 p-4 rounded-md shadow-sm space-y-2"
-                            >
-                                <h4 className="font-semibold text-gray-800">{post.title}</h4>
-                                <p className="text-gray-600 text-sm">{post.content}</p>
-                                {post.image && (
-                                    <img
-                                        src={`${UPLOADS_URL}/${post.image}`}
-                                        alt="Post"
-                                        className="w-full rounded-md"
-                                    />
-                                )}
-                                <div className="text-xs text-gray-500">
-                                    {post.likes?.length || 0} Likes • {post.comments?.length || 0} Comments • {post.shares || 0} Shares
-                                </div>
-                                <p className="text-xs text-gray-400">
-                                    {formatPostDate(post.createdAt)}
-                                </p>
-                            </div>
+                            <PostCard key={post._id} post={post} user={userData} />
                         ))}
                     </div>
                 ) : (
-                    <p className="text-gray-600">
-                        Таны нийтэлсэн пост одоогоор алга.
-                    </p>
+                    <p className="text-gray-400">Таны нийтэлсэн пост одоогоор алга.</p>
                 )}
             </div>
         </div>

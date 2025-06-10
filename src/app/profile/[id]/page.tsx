@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { FaCheckCircle } from "react-icons/fa";
-import { formatPostDate } from "../../lib/formatDate";
+import PostCard from "../../components/PostCard";
 import axios from "axios";
 
 /**
@@ -100,98 +100,51 @@ export default function PublicProfilePage() {
 
     // ---------------- UI ----------------
     return (
-        <div className="min-h-screen bg-white dark:bg-dark text-black dark:text-white px-4 py-6 flex flex-col items-center">
-            {/* Profile Header */}
-            <div className="w-full max-w-xl bg-white dark:bg-black rounded-md shadow-sm p-6 flex flex-col items-center">
+        <div className="min-h-screen bg-black text-white font-sans">
+            {/* Top Navigation */}
+            <div className="fixed top-0 left-0 w-full h-12 flex items-center px-4 backdrop-blur-md z-10 bg-black/60">
+                <button onClick={() => router.back()} aria-label="Back" className="mr-2 text-white">&#8592;</button>
+                <h1 className="font-bold flex-1 text-center">{userData.username}</h1>
+            </div>
+
+            {/* Banner */}
+            <div className="h-40 bg-[#0d0d0d] relative mt-12">
                 {userData.coverImage && (
-                    <img
-                        src={userData.coverImage}
-                        alt="Cover"
-                        className="w-full h-40 object-cover rounded-md mb-4"
-                    />
+                    <img src={userData.coverImage} alt="Cover" className="absolute inset-0 w-full h-full object-cover" />
                 )}
-                {/* Profile Picture */}
-                <div className="relative w-32 h-32 mb-4">
-                    {userData.profilePicture ? (
-                        <img
-                            src={userData.profilePicture}
-                            alt="Profile"
-                            className="w-32 h-32 rounded-full object-cover border border-gray-300"
-                        />
-                    ) : (
-                        <div className="w-32 h-32 rounded-full bg-gray-200 dark:bg-black" />
+                <div className="absolute -bottom-16 left-4 w-32 h-32 rounded-full border-4 border-[#0d0d0d] overflow-hidden bg-gray-800">
+                    {userData.profilePicture && (
+                        <img src={userData.profilePicture} alt="Profile" className="w-full h-full object-cover" />
                     )}
                 </div>
+            </div>
 
-                {/* Username + Rating */}
-                <div className="flex items-center gap-1">
-                    <h1 className="text-2xl font-bold text-gray-800">{userData.username}</h1>
+            {/* Meta */}
+            <div className="pt-20 px-4">
+                <div className="flex items-center gap-2">
+                    <h1 className="text-2xl font-bold">{userData.username}</h1>
                     {isPro && <FaCheckCircle className="text-yellow-400" />}
                 </div>
-                {userData.rating && (
-                    <p className="text-sm text-gray-600 mt-1">★ {userData.rating} үнэлгээ</p>
-                )}
-
-                {/* Optionally show user location if you want */}
-                {userData.location && (
-                    <p className="text-sm text-gray-500 mt-1">Байршил: {userData.location}</p>
-                )}
-
-                {/* Follower/Following Stats */}
-                <div className="flex items-center gap-6 mt-4">
-                    <div className="text-center">
-                        <p className="text-lg font-semibold text-gray-800 dark:text-white">
-                            {userData.followers ? userData.followers.length : 0}
-                        </p>
-                        <p className="text-sm text-gray-500 dark:text-white">Followers</p>
-                    </div>
-                    <div className="text-center">
-                        <p className="text-lg font-semibold text-gray-800 dark:text-white">
-                            {userData.following ? userData.following.length : 0}
-                        </p>
-                        <p className="text-sm text-gray-500 dark:text-white">Following</p>
-                    </div>
+                {userData.rating && <p className="text-sm text-gray-400">★ {userData.rating} үнэлгээ</p>}
+                {userData.location && <p className="text-sm text-gray-400">Байршил: {userData.location}</p>}
+                <div className="flex gap-6 mt-2 text-sm">
+                    <span>{userData.followers ? userData.followers.length : 0} Followers</span>
+                    <span>{userData.following ? userData.following.length : 0} Following</span>
                 </div>
             </div>
 
             {/* Posts Section */}
-            <div className="w-full max-w-xl mt-8">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                    Нийтлэлүүд
-                </h2>
+            <div className="w-full max-w-xl mt-8 px-4">
+                <h2 className="text-xl font-semibold mb-4">Нийтлэлүүд</h2>
                 {postLoading && (
-                    <p className="text-gray-600 dark:text-white mb-2">Ачааллаж байна...</p>
+                    <p className="text-gray-400 mb-2">Ачааллаж байна...</p>
                 )}
                 {!postLoading && userPosts.length === 0 && (
-                    <p className="text-gray-600 dark:text-white">Энэ хэрэглэгч нийтлэлгүй байна.</p>
+                    <p className="text-gray-400">Энэ хэрэглэгч нийтлэлгүй байна.</p>
                 )}
                 <div className="space-y-4">
                     {userPosts.map((post) => (
-                        <div
-                            key={post._id}
-                            className="p-4 bg-white dark:bg-black rounded-md shadow-sm border border-gray-100 dark:border-black space-y-2"
-                        >
-                            {/* Post Title */}
-                            <h3 className="text-md font-bold text-gray-800 dark:text-white mb-1">
-                                {post.title}
-                            </h3>
-                            {/* Post Content */}
-                            <p className="text-sm text-gray-700 dark:text-white">{post.content}</p>
-                            {post.image && (
-                                <img
-                                    src={`${UPLOADS_URL}/${post.image}`}
-                                    alt="Post"
-                                    className="w-full rounded-md"
-                                />
-                            )}
-                            <div className="text-xs text-gray-500 dark:text-gray-400">
-                                {post.likes?.length || 0} Likes • {post.comments?.length || 0} Comments • {post.shares || 0} Shares
-                            </div>
-                            {/* Post Date */}
-                            <p className="text-xs text-gray-400 dark:text-white">
-                                {formatPostDate(post.createdAt)}
-                            </p>
-                        </div>
+                        <PostCard key={post._id} post={post} user={userData} />
                     ))}
                 </div>
             </div>
