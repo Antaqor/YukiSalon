@@ -5,6 +5,7 @@ const fs = require("fs");
 const path = require("path");
 const Post = require("../models/Post");
 const authenticateToken = require("../middleware/authMiddleware");
+const User = require("../models/User");
 
 // Ensure the "uploads" directory exists (if not already done in server/index.js)
 const uploadDir = path.join(__dirname, "../uploads");
@@ -49,6 +50,7 @@ router.get("/", async (req, res) => {
             // **IMPORTANT**: Populate both username and profilePicture.
             const posts = await Post.find(filter)
                 .populate("user", "username profilePicture")
+                .populate("comments.user", "username profilePicture")
                 .sort({ createdAt: -1 });
             return res.json(posts);
         }
@@ -81,6 +83,8 @@ router.post("/", authenticateToken, upload.single("image"), async (req, res) => 
             image: imageFilename, // Just the filename
             user: req.user._id,
         });
+
+        await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
 
         // Populate username and profilePicture
         await newPost.populate("user", "username profilePicture");
@@ -120,6 +124,64 @@ router.post("/:id/like", authenticateToken, async (req, res) => {
         });
     } catch (err) {
         console.error("Like error:", err);
+        return res.status(500).json({ error: "Server error" });
+    }
+});
+
+/**
+ * POST /api/posts/:id/comment – Add a comment to a post.
+ */
+router.post("/:id/comment", authenticateToken, async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const { content } = req.body;
+        if (!content) {
+            return res.status(400).json({ error: "Content required" });
+        }
+
+        const post = await Post.findById(postId).populate("user", "username");
+        if (!post) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+
+        const comment = {
+            user: req.user._id,
+            content,
+        };
+
+        post.comments.push(comment);
+        await post.save();
+        await post.populate("comments.user", "username profilePicture");
+
+        // increment user rating
+        await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
+
+        return res.json({ comments: post.comments });
+    } catch (err) {
+        console.error("Comment error:", err);
+        return res.status(500).json({ error: "Server error" });
+    }
+});
+
+/**
+ * POST /api/posts/:id/share – Increment share count.
+ */
+router.post("/:id/share", authenticateToken, async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+        post.shares += 1;
+        await post.save();
+
+        // increment user rating
+        await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
+
+        return res.json({ shares: post.shares });
+    } catch (err) {
+        console.error("Share error:", err);
         return res.status(500).json({ error: "Server error" });
     }
 });

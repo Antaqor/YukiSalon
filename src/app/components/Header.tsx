@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
-import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -22,7 +21,6 @@ export default function Header() {
             <div className="fixed top-0 left-0 w-full z-[999] bg-white dark:bg-dark md:bg-white/80 dark:md:bg-dark/80 backdrop-blur-md">
                 {/* NAV BAR */}
                 <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center">
-                    <ThemeToggle />
                     <div className="ml-auto hidden md:flex items-center space-x-8 font-medium">
                         {loggedIn ? (
                             <button
@@ -95,9 +93,6 @@ export default function Header() {
                         {/* Drawer Links */}
                         <nav className="mt-8 px-4">
                             <ul className="space-y-6">
-                                <li>
-                                    <ThemeToggle />
-                                </li>
                                 {loggedIn ? (
                                     <li>
                                         <button
