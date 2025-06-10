@@ -183,6 +183,8 @@ export default function RegisterMultiStepPage() {
                 setGender("");
                 setLocation("");
                 setProfilePicture(null);
+                // Redirect new users to login page
+                router.push("/login");
             }
         } catch (err: any) {
             console.error("Register error:", err);
