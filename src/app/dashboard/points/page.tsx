@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 
 interface User {
@@ -10,6 +11,15 @@ interface User {
 
 export default function PointsDashboard() {
     const { user } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!user) {
+            router.push("/login");
+        } else if (user.username !== "Antaqor") {
+            router.push("/");
+        }
+    }, [user, router]);
     const [users, setUsers] = useState<User[]>([]);
 
     useEffect(() => {

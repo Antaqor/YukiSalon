@@ -20,7 +20,7 @@ router.get("/active-subscribers", async (req, res) => {
 router.get("/", async (req, res) => {
     try {
         const users = await User.find().select(
-            "username profilePicture rating location"
+            "username profilePicture rating location subscriptionExpiresAt"
         );
         res.json(users);
     } catch (err) {

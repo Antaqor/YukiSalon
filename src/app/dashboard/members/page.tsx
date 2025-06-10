@@ -19,6 +19,14 @@ export default function MembersDashboard() {
   const [status, setStatus] = useState("");
 
   useEffect(() => {
+    if (!user) {
+      router.push("/login");
+    } else if (user.username !== "Antaqor") {
+      router.push("/");
+    }
+  }, [user, router]);
+
+  useEffect(() => {
     const fetchMembers = async () => {
       try {
         const res = await fetch(`${BACKEND_URL}/users`);

@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { FaCheckCircle } from "react-icons/fa";
 import axios from "axios";
 
 /**
@@ -90,6 +91,10 @@ export default function PublicProfilePage() {
         return <div className="p-4 text-center">Профайл олдсонгүй</div>;
     }
 
+    const isPro = userData.subscriptionExpiresAt
+        ? new Date(userData.subscriptionExpiresAt) > new Date()
+        : false;
+
     // ---------------- UI ----------------
     return (
         <div className="min-h-screen bg-white dark:bg-dark text-black dark:text-white px-4 py-6 flex flex-col items-center">
@@ -109,7 +114,10 @@ export default function PublicProfilePage() {
                 </div>
 
                 {/* Username + Rating */}
-                <h1 className="text-2xl font-bold text-gray-800">{userData.username}</h1>
+                <div className="flex items-center gap-1">
+                    <h1 className="text-2xl font-bold text-gray-800">{userData.username}</h1>
+                    {isPro && <FaCheckCircle className="text-yellow-400" />}
+                </div>
                 {userData.rating && (
                     <p className="text-sm text-gray-600 mt-1">★ {userData.rating} үнэлгээ</p>
                 )}
