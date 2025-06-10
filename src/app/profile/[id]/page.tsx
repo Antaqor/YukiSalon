@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { FaCheckCircle } from "react-icons/fa";
+import { formatPostDate } from "../../lib/formatDate";
 import axios from "axios";
 
 /**
@@ -101,6 +102,13 @@ export default function PublicProfilePage() {
         <div className="min-h-screen bg-white dark:bg-dark text-black dark:text-white px-4 py-6 flex flex-col items-center">
             {/* Profile Header */}
             <div className="w-full max-w-xl bg-white dark:bg-black rounded-md shadow-sm p-6 flex flex-col items-center">
+                {userData.coverImage && (
+                    <img
+                        src={userData.coverImage}
+                        alt="Cover"
+                        className="w-full h-40 object-cover rounded-md mb-4"
+                    />
+                )}
                 {/* Profile Picture */}
                 <div className="relative w-32 h-32 mb-4">
                     {userData.profilePicture ? (
@@ -180,7 +188,7 @@ export default function PublicProfilePage() {
                             </div>
                             {/* Post Date */}
                             <p className="text-xs text-gray-400 dark:text-white">
-                                {new Date(post.createdAt).toLocaleString()}
+                                {formatPostDate(post.createdAt)}
                             </p>
                         </div>
                     ))}
