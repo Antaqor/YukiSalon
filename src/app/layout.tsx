@@ -5,6 +5,7 @@ import { CartProvider } from "./context/CartContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import Header from "./components/Header";
 import TrendingHashtags from "./components/TrendingHashtags";
+import BottomNav from "./components/BottomNav";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -364,6 +365,7 @@ export default function RootLayout({
                     © 2025 THE VONE CLAN. Бүх эрх хуулиар хамгаалагдсан.
                 </p>
             </footer>
+            <BottomNav />
         </AuthProvider>
         </CartProvider>
         </ThemeProvider>
