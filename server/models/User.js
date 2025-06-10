@@ -12,6 +12,7 @@ const UserSchema = new mongoose.Schema({
         day: Number,
     },
     profilePicture: { type: String, default: "" },
+    coverImage: { type: String, default: "" },
     subscriptionExpiresAt: { type: Date },
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],

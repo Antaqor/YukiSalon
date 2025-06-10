@@ -13,18 +13,19 @@ const BACKEND_URL = "https://www.vone.mn/api";
 
 export default function MembersDashboard() {
   // keep logout around so we can boot expired sessions
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
   const router = useRouter();
   const [members, setMembers] = useState<Member[]>([]);
   const [status, setStatus] = useState("");
 
   useEffect(() => {
+    if (loading) return;
     if (!user) {
       router.push("/login");
     } else if (user.username !== "Antaqor") {
       router.push("/");
     }
-  }, [user, router]);
+  }, [user, router, loading]);
 
   useEffect(() => {
     const fetchMembers = async () => {

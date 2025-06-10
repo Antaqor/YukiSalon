@@ -156,6 +156,11 @@ export default function MyOwnProfilePage() {
                         Байршил: {userData.location}
                     </div>
                 )}
+                <div className="mt-3">
+                    <a href="/profile/edit" className="text-sm text-blue-500 underline">
+                        Edit Profile
+                    </a>
+                </div>
             </div>
 
             {/* Subscription expiration */}
