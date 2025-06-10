@@ -7,6 +7,7 @@ import { FaHeart, FaComment, FaShare } from "react-icons/fa";
 import { FiCamera } from "react-icons/fi";
 import { motion } from "framer-motion";
 import HeaderSlider from "./components/HeaderSlider";
+import TrendingTopics from "./components/TrendingTopics";
 
 interface UserData {
     _id: string;
@@ -59,6 +60,10 @@ export default function HomePage() {
     const [replyTexts, setReplyTexts] = useState<Record<string, string>>({});
     const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
 
+    const isPro = user?.subscriptionExpiresAt
+        ? new Date(user.subscriptionExpiresAt) > new Date()
+        : false;
+
     const BASE_URL = "https://www.vone.mn";
     // Uploaded files are served from the backend under /api/uploads
     const UPLOADS_URL = `https://www.vone.mn/api/uploads`;
@@ -67,7 +72,9 @@ export default function HomePage() {
     // Fetch posts on mount
     const fetchPosts = useCallback(async () => {
         try {
-            const res = await axios.get(`${BASE_URL}/api/posts`);
+            const res = await axios.get(`${BASE_URL}/api/posts`, {
+                params: { sort: "recommendation" },
+            });
             setPosts(res.data);
             setAllPosts(res.data);
             computeTrendingHashtags(res.data);
@@ -276,6 +283,13 @@ export default function HomePage() {
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-black text-gray-900 dark:text-white">
             <HeaderSlider />
+            {!isPro && (
+                <div className="bg-yellow-500 text-white text-center py-2 px-4">
+                    <Link href="/subscription" className="font-semibold underline">
+                        Subscribe Membership
+                    </Link>
+                </div>
+            )}
             {/* Outer Grid Layout */}
             <div
                 className="mx-auto max-w-5xl w-full grid"
@@ -315,6 +329,7 @@ export default function HomePage() {
                             ))}
                         </div>
                     </div>
+                    <TrendingTopics />
                 </aside>
 
                 {/* Main Content: Create Post & Posts List */}
