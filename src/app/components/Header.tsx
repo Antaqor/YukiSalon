@@ -250,7 +250,7 @@ export default function Header() {
                                     </li>
                                     <li>
                                         <Link
-                                            href="/profile"
+                                            href="/users"
                                             onClick={() => setIsMenuOpen(false)}
                                             className="flex items-center gap-2 hover:text-[#1D9BF0]"
                                         >
