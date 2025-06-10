@@ -202,7 +202,7 @@ export default function RootLayout({
                                 </li>
                                 <li>
                                     <Link
-                                        href="/profile"
+                                        href="/users"
                                         className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold
                                    text-gray-700 dark:text-white transition-smooth focus:outline-none
                                    dark:hover:text-[#181818] focus:ring-2 focus:ring-[#1D9BF0]"

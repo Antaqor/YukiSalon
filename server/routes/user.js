@@ -3,6 +3,19 @@ const router = express.Router();
 const User = require("../models/User");
 const authenticateToken = require("../middleware/authMiddleware");
 
+// Get all users (public)
+router.get("/", async (req, res) => {
+    try {
+        const users = await User.find().select(
+            "username profilePicture rating location"
+        );
+        res.json(users);
+    } catch (err) {
+        console.error("Fetch users error:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
 // Follow a user (idempotent)
 router.post("/:id/follow", authenticateToken, async (req, res) => {
     try {
