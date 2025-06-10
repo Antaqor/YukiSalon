@@ -11,6 +11,8 @@ export default function NewPostPage() {
     const { user } = useAuth();
     const [content, setContent] = useState("");
     const [imageFile, setImageFile] = useState<File | null>(null);
+    const [postType, setPostType] = useState("free");
+    const [price, setPrice] = useState(0);
     const [error, setError] = useState("");
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -37,6 +39,7 @@ export default function NewPostPage() {
         try {
             const formData = new FormData();
             formData.append("content", content);
+            formData.append("price", postType === "paid" ? String(price) : "0");
             if (imageFile) formData.append("image", imageFile);
 
             await axios.post(`${BASE_URL}/api/posts`, formData, {
@@ -74,6 +77,37 @@ export default function NewPostPage() {
                     <span className="block text-xs text-gray-700 truncate">
                         {imageFile.name}
                     </span>
+                )}
+                <div className="space-x-2 text-sm">
+                    <label>
+                        <input
+                            type="radio"
+                            name="type"
+                            value="free"
+                            checked={postType === "free"}
+                            onChange={() => setPostType("free")}
+                        />
+                        Free
+                    </label>
+                    <label>
+                        <input
+                            type="radio"
+                            name="type"
+                            value="paid"
+                            checked={postType === "paid"}
+                            onChange={() => setPostType("paid")}
+                        />
+                        Paid
+                    </label>
+                </div>
+                {postType === "paid" && (
+                    <input
+                        type="number"
+                        className="w-32 p-1 text-sm bg-gray-200 dark:bg-gray-800 rounded"
+                        placeholder="Price (VNT)"
+                        value={price}
+                        onChange={(e) => setPrice(Number(e.target.value))}
+                    />
                 )}
                 <textarea
                     placeholder="What's on your mind?"
