@@ -135,18 +135,32 @@ function MemberRow({
 }) {
   const { user } = useAuth();
   const [vnt, setVnt] = useState(member.vntBalance ?? 0);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const saveVnt = async () => {
     if (!user?.accessToken) return;
-    await fetch(`${BACKEND_URL}/users/${member._id}/vnt`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.accessToken}`,
-      },
-      body: JSON.stringify({ amount: vnt }),
-    });
-    onVntChange(member._id, vnt);
+    setSaving(true);
+    setError("");
+    try {
+      const res = await fetch(`${BACKEND_URL}/users/${member._id}/vnt`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.accessToken}`,
+        },
+        body: JSON.stringify({ amount: vnt }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to update");
+      }
+      onVntChange(member._id, vnt);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -171,9 +185,11 @@ function MemberRow({
         <button
           onClick={saveVnt}
           className="ml-1 px-2 py-1 bg-green-600 rounded"
+          disabled={saving}
         >
-          Save
+          {saving ? "..." : "Save"}
         </button>
+        {error && <span className="text-red-400 ml-2">{error}</span>}
       </td>
       <td className="p-2">{member.hasTransferred ? "✅" : ""}</td>
       <td className="p-2">
