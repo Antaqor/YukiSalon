@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "./context/AuthContext";
 import { FaHeart, FaRegHeart, FaComment, FaShare } from "react-icons/fa";
 import { FiCamera } from "react-icons/fi";
@@ -63,7 +64,8 @@ interface Hashtag {
 // Component
 // ────────────────────────────────────────────────────────────────
 export default function HomePage() {
-  const { user, loggedIn, login } = useAuth();
+  const { user, loggedIn, loading, login } = useAuth();
+  const router = useRouter();
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [allPosts, setAllPosts] = useState<Post[]>([]);
@@ -88,6 +90,12 @@ export default function HomePage() {
   const BASE_URL = "https://www.vone.mn";
   const UPLOADS_URL = `${BASE_URL}/api/uploads`;
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!loading && !loggedIn) {
+      router.push("/login");
+    }
+  }, [loading, loggedIn, router]);
 
   // ────────────────────────────────────────────────────────────
   // Fetch posts (location-aware “smart” sort)

@@ -88,6 +88,7 @@ export default function RootLayout({
                 <main className="flex-grow flex flex-col md:flex-row gap-0 pt-16">
                     {/* Зүүн талын Sidebar */}
                     <aside className="hidden md:block w-full md:w-1/4 border-r border-gray-200 dark:border-gray-700 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto fade-in-up">
+                        <div className="p-4 font-semibold">Wallet: 0 VNT</div>
                         <nav>
                             <ul className="space-y-1">
                                 <li>
@@ -204,6 +205,28 @@ export default function RootLayout({
                                             />
                                         </svg>
                                         <span className="dark:text-white">Дэлгүүр</span>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        href="/wallet"
+                                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 dark:text-white transition-smooth focus:outline-none hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="w-6 h-6 group-hover:text-[#1D9BF0] dark:text-white dark:group-hover:text-[#1D9BF0]"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2"
+                                                d="M2.25 6.75h19.5v10.5H2.25zM2.25 9h19.5"
+                                            />
+                                        </svg>
+                                        <span className="dark:text-white">Wallet</span>
                                     </Link>
                                 </li>
                                 <li>
