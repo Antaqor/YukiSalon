@@ -26,6 +26,10 @@ interface PostData {
     title: string;
     content: string;
     createdAt: string;
+    image?: string;
+    likes?: string[];
+    comments?: any[];
+    shares?: number;
 }
 
 export default function PublicProfilePage() {
@@ -40,6 +44,7 @@ export default function PublicProfilePage() {
     const [error, setError] = useState("");
 
     const BASE_URL = "https://www.vone.mn";
+    const UPLOADS_URL = `${BASE_URL}/api/uploads`;
 
     useEffect(() => {
         if (!userId) return;
@@ -146,14 +151,24 @@ export default function PublicProfilePage() {
                     {userPosts.map((post) => (
                         <div
                             key={post._id}
-                            className="p-4 bg-white dark:bg-black rounded-md shadow-sm border border-gray-100 dark:border-black"
+                            className="p-4 bg-white dark:bg-black rounded-md shadow-sm border border-gray-100 dark:border-black space-y-2"
                         >
                             {/* Post Title */}
                             <h3 className="text-md font-bold text-gray-800 dark:text-white mb-1">
                                 {post.title}
                             </h3>
                             {/* Post Content */}
-                            <p className="text-sm text-gray-700 dark:text-white mb-2">{post.content}</p>
+                            <p className="text-sm text-gray-700 dark:text-white">{post.content}</p>
+                            {post.image && (
+                                <img
+                                    src={`${UPLOADS_URL}/${post.image}`}
+                                    alt="Post"
+                                    className="w-full rounded-md"
+                                />
+                            )}
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                                {post.likes?.length || 0} Likes • {post.comments?.length || 0} Comments • {post.shares || 0} Shares
+                            </div>
                             {/* Post Date */}
                             <p className="text-xs text-gray-400 dark:text-white">
                                 {new Date(post.createdAt).toLocaleString()}
