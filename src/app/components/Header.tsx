@@ -8,6 +8,9 @@ export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { loggedIn, logout, user } = useAuth();
     const BASE_URL = "https://www.vone.mn";
+    const isPro =
+        user?.subscriptionExpiresAt &&
+        new Date(user.subscriptionExpiresAt) > new Date();
 
     return (
         <>
@@ -44,13 +47,15 @@ export default function Header() {
                         <div className="hidden md:flex items-center space-x-8 font-medium">
                             {loggedIn ? (
                                 <>
-                                    <Link
-                                        href="/subscription"
-                                        className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
-                                    >
-                                        Subscription
-                                        <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
-                                    </Link>
+                                    {!isPro && (
+                                        <Link
+                                            href="/subscription"
+                                            className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                        >
+                                            Subscription
+                                            <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                                        </Link>
+                                    )}
                                     <button
                                         onClick={logout}
                                         className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
@@ -125,15 +130,17 @@ export default function Header() {
                             <ul className="space-y-6">
                                 {loggedIn ? (
                                     <>
-                                        <li>
-                                            <Link
-                                                href="/subscription"
-                                                onClick={() => setIsMenuOpen(false)}
-                                                className="block text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
-                                            >
-                                                Subscription
-                                            </Link>
-                                        </li>
+                                        {!isPro && (
+                                            <li>
+                                                <Link
+                                                    href="/subscription"
+                                                    onClick={() => setIsMenuOpen(false)}
+                                                    className="block text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                                >
+                                                    Subscription
+                                                </Link>
+                                            </li>
+                                        )}
                                         <li>
                                             <button
                                                 onClick={() => {
@@ -288,7 +295,7 @@ export default function Header() {
                                         Wallet
                                     </Link>
                                 </li>
-                                {loggedIn && (
+                                {loggedIn && !isPro && (
                                     <li>
                                         <Link
                                             href="/subscription"
