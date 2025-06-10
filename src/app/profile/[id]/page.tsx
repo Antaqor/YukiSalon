@@ -12,6 +12,7 @@ import axios from "axios";
 interface UserData {
     _id: string;
     username: string;
+    coverImage?: string;
     profilePicture?: string;
     rating?: number;
     subscriptionExpiresAt?: string;
