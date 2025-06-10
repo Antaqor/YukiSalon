@@ -1,14 +1,18 @@
 const mongoose = require("mongoose");
 const { Schema, model, models } = mongoose;
 
-const CommentSchema = new Schema(
-    {
-        user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-        content: { type: String, required: true },
-        createdAt: { type: Date, default: Date.now },
-    },
-    { _id: false }
-);
+const ReplySchema = new Schema({
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    content: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
+});
+
+const CommentSchema = new Schema({
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    content: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
+    replies: [ReplySchema],
+});
 
 const PostSchema = new Schema(
     {
