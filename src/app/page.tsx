@@ -481,7 +481,7 @@ export default function HomePage() {
                             <img
                               src={`${UPLOADS_URL}/${post.image}`}
                               alt="Post"
-                              className="w-full aspect-video object-cover rounded-lg"
+                              className="w-full h-auto object-cover rounded-lg"
                               onError={(e) => (e.currentTarget.style.display = "none")}
                             />
                           </div>

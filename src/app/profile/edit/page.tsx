@@ -8,11 +8,17 @@ export default function EditProfilePage() {
   const router = useRouter();
   const [profileFile, setProfileFile] = useState<File | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [profilePreview, setProfilePreview] = useState<string | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [status, setStatus] = useState("");
 
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login");
+    }
+    if (user) {
+      setProfilePreview(user.profilePicture ? `https://www.vone.mn${user.profilePicture}` : null);
+      setCoverPreview(user.coverImage ? `https://www.vone.mn${user.coverImage}` : null);
     }
   }, [user, loading, router]);
 
@@ -47,11 +53,37 @@ export default function EditProfilePage() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block mb-1">Profile Picture</label>
-          <input type="file" accept="image/*" onChange={e => setProfileFile(e.target.files?.[0] || null)} />
+          {profilePreview && (
+            <img src={profilePreview} alt="Profile preview" className="w-24 h-24 object-cover rounded-full mb-2" />
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={e => {
+              const file = e.target.files?.[0] || null;
+              setProfileFile(file);
+              if (file) {
+                setProfilePreview(URL.createObjectURL(file));
+              }
+            }}
+          />
         </div>
         <div>
           <label className="block mb-1">Cover Image</label>
-          <input type="file" accept="image/*" onChange={e => setCoverFile(e.target.files?.[0] || null)} />
+          {coverPreview && (
+            <img src={coverPreview} alt="Cover preview" className="w-full h-40 object-cover rounded mb-2" />
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={e => {
+              const file = e.target.files?.[0] || null;
+              setCoverFile(file);
+              if (file) {
+                setCoverPreview(URL.createObjectURL(file));
+              }
+            }}
+          />
         </div>
         <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">Save</button>
       </form>
