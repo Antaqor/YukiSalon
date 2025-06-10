@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { FaCheckCircle } from "react-icons/fa";
+import { formatPostDate } from "../lib/formatDate";
 
 /** Match your user schema. No "name" field. */
 interface UserData {
@@ -112,6 +113,13 @@ export default function MyOwnProfilePage() {
         <div className="min-h-screen bg-white dark:bg-dark text-black dark:text-white font-sans">
             {/* My Profile Header */}
             <div className="text-center p-5 border-b border-gray-200">
+                {userData.coverImage && (
+                    <img
+                        src={`${BASE_URL}${userData.coverImage}`}
+                        alt="Cover"
+                        className="w-full h-40 object-cover rounded-md mb-4"
+                    />
+                )}
                 {/* Profile Picture */}
                 {userData.profilePicture ? (
                     <img
@@ -198,7 +206,7 @@ export default function MyOwnProfilePage() {
                                     {post.likes?.length || 0} Likes • {post.comments?.length || 0} Comments • {post.shares || 0} Shares
                                 </div>
                                 <p className="text-xs text-gray-400">
-                                    {new Date(post.createdAt).toLocaleString()}
+                                    {formatPostDate(post.createdAt)}
                                 </p>
                             </div>
                         ))}

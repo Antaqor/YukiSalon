@@ -60,6 +60,10 @@ export const metadata: Metadata = {
         apple: "/apple-touch-icon.png",
         shortcut: "/favicon-32x32.png",
     },
+    robots: {
+        index: true,
+        follow: true,
+    },
 };
 
 export default function RootLayout({
@@ -68,7 +72,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="mn">
+        <html lang="mn" className="dark">
         <body
             className={`${inter.className} flex flex-col min-h-screen bg-black text-white`}
         >

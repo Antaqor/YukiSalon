@@ -3,10 +3,11 @@ import React, { useState, useEffect, useCallback, ChangeEvent, useRef } from "re
 import axios from "axios";
 import Link from "next/link";
 import { useAuth } from "./context/AuthContext";
-import { FaHeart, FaComment, FaShare } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaComment, FaShare } from "react-icons/fa";
 import { FiCamera } from "react-icons/fi";
 import { motion } from "framer-motion";
 import HeaderSlider from "./components/HeaderSlider";
+import { formatPostDate } from "./lib/formatDate";
 
 interface UserData {
     _id: string;
@@ -58,6 +59,8 @@ export default function HomePage() {
     const [commentTexts, setCommentTexts] = useState<Record<string, string>>({});
     const [replyTexts, setReplyTexts] = useState<Record<string, string>>({});
     const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
+    const [likedPosts, setLikedPosts] = useState<string[]>([]);
+    const [sharedPosts, setSharedPosts] = useState<string[]>([]);
 
     const isPro = user?.subscriptionExpiresAt
         ? new Date(user.subscriptionExpiresAt) > new Date()
@@ -77,10 +80,18 @@ export default function HomePage() {
             setPosts(res.data);
             setAllPosts(res.data);
             computeTrendingHashtags(res.data);
+            if (user) {
+                const liked = res.data
+                    .filter((p: Post) =>
+                        p.likes.some((l: any) => (l._id || l) === user._id)
+                    )
+                    .map((p: Post) => p._id);
+                setLikedPosts(liked);
+            }
         } catch (err) {
             console.error("Post fetch error:", err);
         }
-    }, [BASE_URL]);
+    }, [BASE_URL, user]);
 
     // Compute trending hashtags
     const computeTrendingHashtags = (postsData: Post[]) => {
@@ -170,6 +181,7 @@ export default function HomePage() {
             setPosts((prev) =>
                 prev.map((p) => (p._id === postId ? { ...p, likes: updatedLikes } : p))
             );
+            setLikedPosts((prev) => [...prev, postId]);
         } catch (err) {
             console.error("Like error:", err);
         }
@@ -234,6 +246,7 @@ export default function HomePage() {
             setPosts((prev) =>
                 prev.map((p) => (p._id === postId ? { ...p, shares } : p))
             );
+            setSharedPosts((prev) => [...prev, postId]);
         } catch (err) {
             console.error("Share error:", err);
         }
@@ -430,7 +443,7 @@ export default function HomePage() {
                                                 )}
                                             </div>
                                             <span className="text-xs text-gray-500 dark:text-white">
-                                                {new Date(post.createdAt).toLocaleString()}
+                                                {formatPostDate(post.createdAt)}
                                             </span>
                                             {post.content && (
                                                 <p className="text-base whitespace-pre-wrap">
@@ -460,7 +473,11 @@ export default function HomePage() {
                                             className="flex items-center justify-center gap-1 hover:text-gray-800"
                                             aria-label={`Like (${post.likes.length})`}
                                         >
-                                            <FaHeart className="w-4 h-4" />
+                                            {likedPosts.includes(post._id) ? (
+                                                <FaHeart className="w-4 h-4 text-red-500" />
+                                            ) : (
+                                                <FaRegHeart className="w-4 h-4" />
+                                            )}
                                             <span>{post.likes.length}</span>
                                         </button>
 
@@ -482,7 +499,9 @@ export default function HomePage() {
                                             className="flex items-center justify-center gap-1 hover:text-gray-800"
                                             aria-label={`Share (${post.shares || 0})`}
                                         >
-                                        <FaShare className="w-4 h-4" />
+                                            <FaShare
+                                                className={`w-4 h-4 ${sharedPosts.includes(post._id) ? "text-green-500" : ""}`}
+                                            />
                                             <span>{post.shares || 0}</span>
                                         </button>
                                     </div>
