@@ -4,6 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import Header from "./components/Header";
+import TrendingHashtags from "./components/TrendingHashtags";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -347,47 +348,7 @@ export default function RootLayout({
                                 </ul>
                             </div>
 
-                            {/* Зөвлөмж болгож буй хэрэглэгчид */}
-                            <div className="p-4 transition-shadow duration-200 hover:shadow-md">
-                                <h2 className="flex items-center font-semibold mb-3">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="w-5 h-5 mr-2 text-[#1D9BF0]"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth="2"
-                                            d="M18 9v3m0
-                             0v3m0-3h3m-3
-                             0h-3m-2-5a4 4 0
-                             11-8 0 4 4 0
-                             018 0zM3 20a6
-                             6 0 0112 0v1H3v-1z"
-                                        />
-                                    </svg>
-                                    Зөвлөмж болгож буй хэрэглэгчид
-                                </h2>
-                                <div className="space-y-4">
-                                    <div className="flex items-center space-x-3">
-                                        <img
-                                            src="/placeholder-user.jpg"
-                                            alt="User avatar"
-                                            className="w-10 h-10 rounded-full"
-                                        />
-                                        <div className="flex-1">
-                                            <p className="font-semibold">Хэрэглэгч Нэг</p>
-                                            <p className="text-gray-500 text-sm">@userone</p>
-                                        </div>
-                                        <button className="bg-[#1D9BF0] text-white px-4 py-1 rounded-full hover:scale-105 transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-[#1D9BF0]">
-                                            Дагах
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            <TrendingHashtags />
                         </div>
                     </aside>
                 </main>

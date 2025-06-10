@@ -21,12 +21,9 @@ export default function Header() {
 
             <div className="fixed top-0 left-0 w-full z-[999] bg-white dark:bg-dark md:bg-white/80 dark:md:bg-dark/80 backdrop-blur-md">
                 {/* NAV BAR */}
-                <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-
-
-                    {/* Desktop Links */}
-                    <div className="hidden md:flex items-center space-x-8 font-medium">
-                        <ThemeToggle />
+                <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center">
+                    <ThemeToggle />
+                    <div className="ml-auto hidden md:flex items-center space-x-8 font-medium">
                         {loggedIn ? (
                             <button
                                 onClick={logout}
