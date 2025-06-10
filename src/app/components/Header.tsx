@@ -1,8 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import logo from "@/app/img/logo.svg";
 import { useAuth } from "../context/AuthContext";
 import ThemeToggle from "./ThemeToggle";
 
@@ -24,14 +22,7 @@ export default function Header() {
             <div className="fixed top-0 left-0 w-full z-[999] bg-white dark:bg-dark md:bg-white/80 dark:md:bg-dark/80 backdrop-blur-md">
                 {/* NAV BAR */}
                 <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                    {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2">
-                        <Image
-                            src={logo}
-                            alt="Лого"
-                            className="h-8 w-auto object-contain transition-transform hover:scale-105"
-                        />
-                    </Link>
+
 
                     {/* Desktop Links */}
                     <div className="hidden md:flex items-center space-x-8 font-medium">
@@ -39,7 +30,7 @@ export default function Header() {
                         {loggedIn ? (
                             <button
                                 onClick={logout}
-                                className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0]"
+                                className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
                             >
                                 Гарах
                                 <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
@@ -48,14 +39,14 @@ export default function Header() {
                             <>
                                 <Link
                                     href="/login"
-                                    className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0]"
+                                    className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
                                 >
                                     Нэвтрэх
                                     <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                                 </Link>
                                 <Link
                                     href="/register"
-                                    className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0]"
+                                    className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
                                 >
                                     Бүртгүүлэх
                                     <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
@@ -94,14 +85,7 @@ export default function Header() {
                     {/* This inner container stops the click event from bubbling up */}
                     <div onClick={(e) => e.stopPropagation()}>
                         {/* Drawer Header */}
-                        <div className="flex items-center justify-between p-4">
-                            <Link href="/" onClick={() => setIsMenuOpen(false)}>
-                                <Image
-                                    src={logo}
-                                    alt="Лого"
-                                    className="h-8 w-auto object-contain"
-                                />
-                            </Link>
+                        <div className="flex items-center justify-end p-4">
                             <button
                                 className="text-gray-500 dark:text-white text-3xl focus:outline-none hover:text-gray-700 dark:hover:text-white"
                                 onClick={() => setIsMenuOpen(false)}
@@ -124,7 +108,7 @@ export default function Header() {
                                                 logout();
                                                 setIsMenuOpen(false);
                                             }}
-                                            className="block text-left w-full text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0]"
+                                            className="block text-left w-full text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
                                         >
                                             Гарах
                                         </button>
@@ -135,7 +119,7 @@ export default function Header() {
                                             <Link
                                                 href="/login"
                                                 onClick={() => setIsMenuOpen(false)}
-                                                className="block text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0]"
+                                                className="block text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
                                             >
                                                 Нэвтрэх
                                             </Link>
@@ -144,7 +128,7 @@ export default function Header() {
                                             <Link
                                                 href="/register"
                                                 onClick={() => setIsMenuOpen(false)}
-                                                className="block text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0]"
+                                                className="block text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
                                             >
                                                 Бүртгүүлэх
                                             </Link>
@@ -154,13 +138,13 @@ export default function Header() {
                             </ul>
 
                             {/* Additional Nav Items */}
-                            <div className="mt-10 border-t pt-6">
+                            <div className="mt-10 border-t border-gray-200 dark:border-gray-700 pt-6">
                                 <ul className="space-y-4 text-lg font-semibold text-gray-700 dark:text-white">
                                     <li>
                                         <Link
                                             href="/"
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="flex items-center gap-2 hover:text-[#1D9BF0]"
+                                            className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -183,7 +167,7 @@ export default function Header() {
                                         <Link
                                             href="/book"
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="flex items-center gap-2 hover:text-[#1D9BF0]"
+                                            className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -206,7 +190,7 @@ export default function Header() {
                                         <Link
                                             href="/notifications"
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="flex items-center gap-2 hover:text-[#1D9BF0]"
+                                            className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -229,7 +213,7 @@ export default function Header() {
                                         <Link
                                             href="/shop"
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="flex items-center gap-2 hover:text-[#1D9BF0]"
+                                            className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -252,7 +236,7 @@ export default function Header() {
                                         <Link
                                             href="/users"
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="flex items-center gap-2 hover:text-[#1D9BF0]"
+                                            className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -275,7 +259,7 @@ export default function Header() {
                                         <Link
                                             href="/settings"
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="flex items-center gap-2 hover:text-[#1D9BF0]"
+                                            className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -292,7 +276,7 @@ export default function Header() {
                                         <Link
                                             href="/settings"
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="flex items-center gap-2 hover:text-[#1D9BF0]"
+                                            className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"

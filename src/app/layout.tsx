@@ -81,7 +81,7 @@ export default function RootLayout({
                 {/* Үндсэн Layout */}
                 <main className="flex-grow flex flex-col md:flex-row gap-0 pt-16">
                     {/* Зүүн талын Sidebar */}
-                    <aside className="hidden md:block w-full md:w-1/4 border-r border-gray-200 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto fade-in-up">
+                    <aside className="hidden md:block w-full md:w-1/4 border-r border-gray-200 dark:border-gray-700 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto fade-in-up">
                         <nav>
                             <ul className="space-y-1">
                                 <li>
@@ -89,11 +89,11 @@ export default function RootLayout({
                                         href="/"
                                         className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold
                                    text-gray-700 dark:text-white transition-smooth focus:outline-none
-                                   dark:hover:text-[#181818] focus:ring-2 focus:ring-[#1D9BF0]"
+                                   hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]"
                                    >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="w-6 h-6 group-hover:text-[#1D9BF0] dark:text-white dark:group-hover:text-[#181818]"
+                                            className="w-6 h-6 group-hover:text-[#1D9BF0] dark:text-white dark:group-hover:text-[#1D9BF0]"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
@@ -118,11 +118,11 @@ export default function RootLayout({
                                         href="/book"
                                         className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold
                                    text-gray-700 dark:text-white transition-smooth focus:outline-none
-                                   dark:hover:text-[#181818] focus:ring-2 focus:ring-[#1D9BF0]"
+                                   hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]"
                                    >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="w-6 h-6 group-hover:text-[#1D9BF0] dark:text-white dark:group-hover:text-[#181818]"
+                                            className="w-6 h-6 group-hover:text-[#1D9BF0] dark:text-white dark:group-hover:text-[#1D9BF0]"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
@@ -150,11 +150,11 @@ export default function RootLayout({
                                         href="/notifications"
                                         className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold
                                    text-gray-700 dark:text-white transition-smooth focus:outline-none
-                                   dark:hover:text-[#181818] focus:ring-2 focus:ring-[#1D9BF0]"
+                                   hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]"
                                    >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="w-6 h-6 group-hover:text-[#1D9BF0] dark:text-white dark:group-hover:text-[#181818]"
+                                            className="w-6 h-6 group-hover:text-[#1D9BF0] dark:text-white dark:group-hover:text-[#1D9BF0]"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
@@ -179,11 +179,11 @@ export default function RootLayout({
                                         href="/shop"
                                         className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold
                                    text-gray-700 dark:text-white transition-smooth focus:outline-none
-                                   dark:hover:text-[#181818] focus:ring-2 focus:ring-[#1D9BF0]"
+                                   hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]"
                                    >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="w-6 h-6 group-hover:text-[#1D9BF0] dark:text-white dark:group-hover:text-[#181818]"
+                                            className="w-6 h-6 group-hover:text-[#1D9BF0] dark:text-white dark:group-hover:text-[#1D9BF0]"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
@@ -205,11 +205,11 @@ export default function RootLayout({
                                         href="/users"
                                         className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold
                                    text-gray-700 dark:text-white transition-smooth focus:outline-none
-                                   dark:hover:text-[#181818] focus:ring-2 focus:ring-[#1D9BF0]"
+                                   hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]"
                                    >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="w-6 h-6 group-hover:text-[#1D9BF0] dark:text-white dark:group-hover:text-[#181818]"
+                                            className="w-6 h-6 group-hover:text-[#1D9BF0] dark:text-white dark:group-hover:text-[#1D9BF0]"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
@@ -232,13 +232,13 @@ export default function RootLayout({
                                         href="/settings"
                                         className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold
                                    text-gray-700 dark:text-white transition-smooth focus:outline-none
-                                   dark:hover:text-[#181818] focus:ring-2 focus:ring-[#1D9BF0]"
+                                   hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]"
                                    >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             viewBox="0 0 24 24"
                                             fill="currentColor"
-                                            className="w-6 h-6 group-hover:text-[#1D9BF0] dark:text-white dark:group-hover:text-[#181818]"
+                                            className="w-6 h-6 group-hover:text-[#1D9BF0] dark:text-white dark:group-hover:text-[#1D9BF0]"
                                         >
                                             <path d="M3 4.5C3 3.12 4.12
                                   2 5.5 2h13C19.88 2
@@ -259,13 +259,13 @@ export default function RootLayout({
                                         href="/settings"
                                         className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold
                                    text-gray-700 dark:text-white transition-smooth focus:outline-none
-                                   dark:hover:text-[#181818] focus:ring-2 focus:ring-[#1D9BF0]"
+                                   hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]"
                                    >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             viewBox="0 0 24 24"
                                             fill="currentColor"
-                                            className="w-6 h-6 group-hover:text-[#1D9BF0] dark:text-white dark:group-hover:text-[#181818]"
+                                            className="w-6 h-6 group-hover:text-[#1D9BF0] dark:text-white dark:group-hover:text-[#1D9BF0]"
                                         >
                                             <path d="M19.5 6H17V4.5C17
                                   3.12 15.88 2 14.5
@@ -291,7 +291,7 @@ export default function RootLayout({
                     </aside>
 
                     {/* Үндсэн контент */}
-                    <div className="w-full md:w-1/2 md:border-r md:border-gray-200">
+                    <div className="w-full md:w-1/2 md:border-r md:border-gray-200 dark:md:border-gray-700">
                         <div className="space-y-6">{children}</div>
                     </div>
 

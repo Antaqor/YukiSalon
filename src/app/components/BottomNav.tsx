@@ -22,30 +22,30 @@ const BottomNav: React.FC = () => {
                 {/* HOME */}
                 <button
                     onClick={() => router.push("/")}
-                    className="flex flex-col items-center text-black dark:text-white hover:text-gray-600 dark:hover:text-[#181818] transition p-1"
+                    className="flex flex-col items-center text-black dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] transition p-1"
                 >
-                    <HomeIcon className="h-6 w-6 sm:h-7 sm:w-7 dark:text-white" />
+                    <HomeIcon className="h-6 w-6 sm:h-7 sm:w-7 dark:text-white group-hover:text-[#1D9BF0] dark:group-hover:text-[#1D9BF0]" />
                 </button>
 
                 {/* TIME */}
                 <button
                     onClick={() => router.push("/orders")}
-                    className="flex flex-col items-center text-black dark:text-white hover:text-gray-600 dark:hover:text-[#181818] transition p-1"
+                    className="flex flex-col items-center text-black dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] transition p-1"
                 >
-                    <ClockIcon className="h-6 w-6 sm:h-7 sm:w-7 dark:text-white" />
+                    <ClockIcon className="h-6 w-6 sm:h-7 sm:w-7 dark:text-white group-hover:text-[#1D9BF0] dark:group-hover:text-[#1D9BF0]" />
                 </button>
                 <button
                     onClick={() => router.push("/orders")}
-                    className="flex flex-col items-center text-black dark:text-white hover:text-gray-600 dark:hover:text-[#181818] transition p-1"
+                    className="flex flex-col items-center text-black dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] transition p-1"
                 >
-                    <ShoppingBagIcon className="h-6 w-6 sm:h-7 sm:w-7 dark:text-white" />
+                    <ShoppingBagIcon className="h-6 w-6 sm:h-7 sm:w-7 dark:text-white group-hover:text-[#1D9BF0] dark:group-hover:text-[#1D9BF0]" />
                 </button>
                 {/* PROFILE */}
                 <button
                     onClick={() => router.push("/profile")}
-                    className="flex flex-col items-center text-black dark:text-white hover:text-gray-600 dark:hover:text-[#181818] transition p-1"
+                    className="flex flex-col items-center text-black dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] transition p-1"
                 >
-                    <UserCircleIcon className="h-6 w-6 sm:h-7 sm:w-7 dark:text-white" />
+                    <UserCircleIcon className="h-6 w-6 sm:h-7 sm:w-7 dark:text-white group-hover:text-[#1D9BF0] dark:group-hover:text-[#1D9BF0]" />
                 </button>
             </div>
         </nav>
