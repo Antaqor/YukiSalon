@@ -21,6 +21,7 @@ export interface AuthUser {
     subscriptionExpiresAt?: string;
     following?: string[];
     followers?: string[];
+    vntBalance?: number;
     accessToken?: string;
 }
 
@@ -54,6 +55,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             try {
                 const parsed = JSON.parse(storedUserStr) as AuthUser;
                 parsed.accessToken = token;
+                if (typeof parsed.vntBalance === "string") {
+                    parsed.vntBalance = Number(parsed.vntBalance);
+                }
                 setUser(parsed);
                 setLoggedIn(true);
             } catch {
@@ -67,6 +71,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const userWithSubscription = {
             ...newUser,
             subscriptionExpiresAt: newUser.subscriptionExpiresAt,
+            vntBalance:
+                newUser.vntBalance !== undefined
+                    ? newUser.vntBalance
+                    : user?.vntBalance,
             accessToken: token,
         };
         localStorage.setItem("user", JSON.stringify(userWithSubscription));
