@@ -74,6 +74,8 @@ export default function HomePage() {
   const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [content, setContent] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [postType, setPostType] = useState("free");
+  const [price, setPrice] = useState(0);
   const [error, setError] = useState("");
   const [trendingHashtags, setTrendingHashtags] = useState<Hashtag[]>([]);
   const [filterHashtag, setFilterHashtag] = useState<string>("");
@@ -171,6 +173,7 @@ export default function HomePage() {
     try {
       const formData = new FormData();
       formData.append("content", content);
+      formData.append("price", postType === "paid" ? String(price) : "0");
       if (imageFile) formData.append("image", imageFile);
 
       const { data } = await axios.post(`${BASE_URL}/api/posts`, formData, {
@@ -185,6 +188,8 @@ export default function HomePage() {
       computeTrendingHashtags([data.post, ...allPosts]);
       setContent("");
       setImageFile(null);
+      setPostType("free");
+      setPrice(0);
     } catch (err) {
       console.error("Create post error:", err);
       setError("Алдаа гарлаа");
@@ -426,12 +431,44 @@ export default function HomePage() {
                 >
                   <FiCamera className="w-5 h-5 text-gray-600 dark:text-white" />
                 </button>
-                {imageFile && (
-                  <span className="text-xs text-gray-700 truncate">
-                    {imageFile.name}
-                  </span>
-                )}
-              </div>
+              {imageFile && (
+                <span className="text-xs text-gray-700 truncate">
+                  {imageFile.name}
+                </span>
+              )}
+            </div>
+
+            <div className="space-x-2 text-sm">
+              <label>
+                <input
+                  type="radio"
+                  name="type"
+                  value="free"
+                  checked={postType === "free"}
+                  onChange={() => setPostType("free")}
+                />
+                Free
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="type"
+                  value="paid"
+                  checked={postType === "paid"}
+                  onChange={() => setPostType("paid")}
+                />
+                Paid
+              </label>
+            </div>
+            {postType === "paid" && (
+              <input
+                type="number"
+                className="w-32 p-1 text-sm bg-gray-200 dark:bg-gray-800 rounded"
+                placeholder="Price (VNT)"
+                value={price}
+                onChange={(e) => setPrice(Number(e.target.value))}
+              />
+            )}
 
               <textarea
                 placeholder="What's on your mind?"
@@ -521,23 +558,29 @@ export default function HomePage() {
                       </span>
 
                       {/* Content */}
-                      <div className={isLocked ? "blur-sm select-none" : ""}>
-                        {post.content && (
-                          <p className="text-base whitespace-pre-wrap">
-                            {post.content}
-                          </p>
-                        )}
-                        {post.image && (
-                          <div className="relative w-full overflow-hidden rounded-lg mt-2">
-                            <img
-                              src={`${UPLOADS_URL}/${post.image}`}
-                              alt="Post"
-                              className="w-full h-auto object-cover rounded-lg"
-                              onError={(e) => (e.currentTarget.style.display = "none")}
-                            />
-                          </div>
-                        )}
-                      </div>
+                      {isLocked ? (
+                        <div className="flex items-center justify-center h-32 bg-gray-800 rounded">
+                          <span className="text-xs text-white">Paid post – unlock to view</span>
+                        </div>
+                      ) : (
+                        <div>
+                          {post.content && (
+                            <p className="text-base whitespace-pre-wrap">
+                              {post.content}
+                            </p>
+                          )}
+                          {post.image && (
+                            <div className="relative w-full overflow-hidden rounded-lg mt-2">
+                              <img
+                                src={`${UPLOADS_URL}/${post.image}`}
+                                alt="Post"
+                                className="w-full h-auto object-cover rounded-lg"
+                                onError={(e) => (e.currentTarget.style.display = "none")}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      )}
 
                       {isLocked && (
                         <div className="mt-2">
