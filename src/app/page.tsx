@@ -558,40 +558,36 @@ export default function HomePage() {
                       </span>
 
                       {/* Content */}
-                      {isLocked ? (
-                        <div className="flex items-center justify-center h-32 bg-gray-800 rounded">
-                          <span className="text-xs text-white">Paid post – unlock to view</span>
-                        </div>
-                      ) : (
-                        <div>
-                          {post.content && (
-                            <p className="text-base whitespace-pre-wrap">
-                              {post.content}
-                            </p>
-                          )}
-                          {post.image && (
-                            <div className="relative w-full overflow-hidden rounded-lg mt-2">
-                              <img
-                                src={`${UPLOADS_URL}/${post.image}`}
-                                alt="Post"
-                                className="w-full h-auto object-cover rounded-lg"
-                                onError={(e) => (e.currentTarget.style.display = "none")}
-                              />
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {isLocked && (
-                        <div className="mt-2">
-                          <button
-                            onClick={() => handleUnlock(post._id)}
-                            className="px-3 py-1 text-xs bg-blue-600 text-white rounded"
+                      <div className="relative">
+                        {post.content && (
+                          <p
+                            className={`text-base whitespace-pre-wrap ${isLocked ? "opacity-20" : ""}`}
                           >
-                            Unlock for {post.price} VNT
-                          </button>
-                        </div>
-                      )}
+                            {post.content}
+                          </p>
+                        )}
+                        {post.image && (
+                          <div className="relative w-full overflow-hidden rounded-lg mt-2">
+                            <img
+                              src={`${UPLOADS_URL}/${post.image}`}
+                              alt="Post"
+                              className={`w-full h-auto object-cover rounded-lg ${isLocked ? "blur-md" : ""}`}
+                              onError={(e) => (e.currentTarget.style.display = "none")}
+                            />
+                          </div>
+                        )}
+                        {isLocked && (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-lg bg-black/50 backdrop-blur-md">
+                            <span className="text-xs text-white mb-2">Paid post – unlock to view</span>
+                            <button
+                              onClick={() => handleUnlock(post._id)}
+                              className="px-3 py-1 text-xs bg-blue-600 text-white rounded"
+                            >
+                              Unlock for {post.price} VNT
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
 
