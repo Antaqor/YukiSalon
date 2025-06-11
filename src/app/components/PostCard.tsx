@@ -2,8 +2,10 @@
 import React from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import { formatPostDate } from "../lib/formatDate";
+import { useAuth } from "../context/AuthContext";
 
 interface User {
+  _id?: string;
   username: string;
   profilePicture?: string;
   subscriptionExpiresAt?: string;
@@ -17,6 +19,9 @@ interface Post {
   likes?: string[];
   comments?: any[];
   shares?: number;
+  price?: number;
+  unlockedBy?: (string | { _id: string })[];
+  user?: { _id: string };
 }
 
 interface Props {
@@ -28,11 +33,17 @@ const BASE_URL = "https://www.vone.mn";
 const UPLOADS_URL = `${BASE_URL}/api/uploads`;
 
 export default function PostCard({ post, user }: Props) {
+  const { user: viewer } = useAuth();
   const isPro = user.subscriptionExpiresAt
     ? new Date(user.subscriptionExpiresAt) > new Date()
     : false;
+  const viewerId = viewer?._id;
+  const authorId = user._id || post.user?._id;
+  const isLocked =
+    !!post.price && post.price > 0 &&
+    (!viewerId || (authorId !== viewerId && !post.unlockedBy?.some((u: any) => (u._id || u) === viewerId)));
   return (
-    <div className="tweet border-b border-gray-700 p-4 max-w-xl mx-auto">
+    <div className="tweet border-b border-gray-700 p-4 max-w-xl mx-auto relative">
       <div className="flex gap-3">
         {user.profilePicture ? (
           <img
@@ -51,15 +62,23 @@ export default function PostCard({ post, user }: Props) {
               {formatPostDate(post.createdAt)}
             </span>
           </div>
-          <p className="text-gray-200 text-sm mt-1 whitespace-pre-wrap">
-            {post.content}
-          </p>
-          {post.image && (
-            <img
-              src={`${UPLOADS_URL}/${post.image}`}
-              alt="Post"
-              className="w-full rounded-lg mt-2 object-cover"
-            />
+          {isLocked ? (
+            <div className="flex items-center justify-center h-28 bg-gray-800 rounded">
+              <span className="text-xs text-white">Paid post – unlock to view</span>
+            </div>
+          ) : (
+            <div>
+              <p className="text-gray-200 text-sm mt-1 whitespace-pre-wrap">
+                {post.content}
+              </p>
+              {post.image && (
+                <img
+                  src={`${UPLOADS_URL}/${post.image}`}
+                  alt="Post"
+                  className="w-full rounded-lg mt-2 object-cover"
+                />
+              )}
+            </div>
           )}
           <div className="flex justify-between text-gray-400 text-xs mt-3">
             <span>{post.likes?.length || 0} Likes</span>
