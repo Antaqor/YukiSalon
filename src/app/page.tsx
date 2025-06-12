@@ -441,15 +441,17 @@ export default function HomePage() {
               >
                 Бүх
               </button>
-              {trendingHashtags.map((h) => (
-                <button
-                  key={h.tag}
-                  className="px-3 py-1 text-xs bg-gray-200 dark:bg-black rounded-full hover:bg-gray-300 dark:hover:bg-black"
-                  onClick={() => filterPostsByHashtag(h.tag)}
-                >
-                  {h.tag} ({h.count})
-                </button>
-              }))}
+              {trendingHashtags.map((h) => {
+                return (
+                  <button
+                    key={h.tag}
+                    className="px-3 py-1 text-xs bg-gray-200 dark:bg-black rounded-full hover:bg-gray-300 dark:hover:bg-black"
+                    onClick={() => filterPostsByHashtag(h.tag)}
+                  >
+                    {h.tag} ({h.count})
+                  </button>
+                );
+              })}
             </div>
           </div>
         </aside>
@@ -810,8 +812,8 @@ export default function HomePage() {
                     </div>
                   )}
                 </motion.div>
-              );
-            });
+              )
+            })
           )}
             {loadingPosts && pageNum > 1 && <LoadingSpinner />}
             <div ref={loadMoreRef} />
