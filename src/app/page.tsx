@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, {
   useState,
   useEffect,
@@ -129,11 +129,11 @@ export default function HomePage() {
           page,
           limit: 10,
         };
-      if (viewerCoords) {
-        params.currentLocation = `${viewerCoords.latitude},${viewerCoords.longitude}`;
-      } else if (user?.location) {
-        params.currentLocation = user.location;
-      }
+        if (viewerCoords) {
+          params.currentLocation = `${viewerCoords.latitude},${viewerCoords.longitude}`;
+        } else if (user?.location) {
+          params.currentLocation = user.location;
+        }
         const { data } = await axios.get<Post[]>(`${BASE_URL}/api/posts`, {
           params,
         });
@@ -441,17 +441,15 @@ export default function HomePage() {
               >
                 Бүх
               </button>
-              {trendingHashtags.map((h) => {
-                return (
-                  <button
-                    key={h.tag}
-                    className="px-3 py-1 text-xs bg-gray-200 dark:bg-black rounded-full hover:bg-gray-300 dark:hover:bg-black"
-                    onClick={() => filterPostsByHashtag(h.tag)}
-                  >
-                    {h.tag} ({h.count})
-                  </button>
-                );
-              })}
+              {trendingHashtags.map((h) => (
+                <button
+                  key={h.tag}
+                  className="px-3 py-1 text-xs bg-gray-200 dark:bg-black rounded-full hover:bg-gray-300 dark:hover:bg-black"
+                  onClick={() => filterPostsByHashtag(h.tag)}
+                >
+                  {h.tag} ({h.count})
+                </button>
+              ))}
             </div>
           </div>
         </aside>
@@ -492,44 +490,44 @@ export default function HomePage() {
                 >
                   <FiCamera className="w-5 h-5 text-gray-600 dark:text-white" />
                 </button>
-              {imageFile && (
-                <span className="text-xs text-gray-700 truncate">
-                  {imageFile.name}
-                </span>
-              )}
-            </div>
+                {imageFile && (
+                  <span className="text-xs text-gray-700 truncate">
+                    {imageFile.name}
+                  </span>
+                )}
+              </div>
 
-            <div className="space-x-2 text-sm">
-              <label>
+              <div className="space-x-2 text-sm">
+                <label>
+                  <input
+                    type="radio"
+                    name="type"
+                    value="free"
+                    checked={postType === "free"}
+                    onChange={() => setPostType("free")}
+                  />
+                  Free
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="type"
+                    value="paid"
+                    checked={postType === "paid"}
+                    onChange={() => setPostType("paid")}
+                  />
+                  Paid
+                </label>
+              </div>
+              {postType === "paid" && (
                 <input
-                  type="radio"
-                  name="type"
-                  value="free"
-                  checked={postType === "free"}
-                  onChange={() => setPostType("free")}
+                  type="number"
+                  className="w-32 p-1 text-sm bg-gray-200 dark:bg-gray-800 rounded"
+                  placeholder="Price (VNT)"
+                  value={price}
+                  onChange={(e) => setPrice(Number(e.target.value))}
                 />
-                Free
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="type"
-                  value="paid"
-                  checked={postType === "paid"}
-                  onChange={() => setPostType("paid")}
-                />
-                Paid
-              </label>
-            </div>
-            {postType === "paid" && (
-              <input
-                type="number"
-                className="w-32 p-1 text-sm bg-gray-200 dark:bg-gray-800 rounded"
-                placeholder="Price (VNT)"
-                value={price}
-                onChange={(e) => setPrice(Number(e.target.value))}
-              />
-            )}
+              )}
 
               <textarea
                 placeholder="What's on your mind?"
@@ -550,15 +548,15 @@ export default function HomePage() {
             </div>
           )}
 
-      <div className="flex justify-end p-4">
-        <button
-          onClick={refreshPosts}
-          aria-label="Refresh feed"
-          className={`p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 ${refreshing ? "animate-spin" : ""}`}
-        >
-          <ArrowPathIcon className="w-5 h-5" />
-        </button>
-      </div>
+          <div className="flex justify-end p-4">
+            <button
+              onClick={refreshPosts}
+              aria-label="Refresh feed"
+              className={`p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 ${refreshing ? "animate-spin" : ""}`}
+            >
+              <ArrowPathIcon className="w-5 h-5" />
+            </button>
+          </div>
 
           {/* Posts list */}
           <div className="m-0 p-0">
@@ -573,248 +571,249 @@ export default function HomePage() {
               ))
             ) : (
               posts.map((post, idx) => {
-              const postUser = post.user;
-              const isLocked =
-                !!post.price && post.price > 0 &&
-                (!user ||
-                  (postUser?._id !== user._id &&
-                    !post.unlockedBy?.some((u) => (u as any) === user._id)));
+                const postUser = post.user;
+                const isLocked =
+                  !!post.price &&
+                  post.price > 0 &&
+                  (!user ||
+                    (postUser?._id !== user._id &&
+                      !post.unlockedBy?.some((u) => (u as any) === user._id)));
 
-              return (
-                <motion.div
-                  key={post._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.02 }}
-                  className="bg-white dark:bg-black p-6 grid gap-4 border-b border-gray-200 dark:border-[#2F3336]"
-                >
-                  {/* Header */}
-                  <div className="grid grid-cols-[auto,1fr] gap-5">
-                    {/* Avatar */}
-                    <div className="self-start">
-                      {postUser?.profilePicture ? (
-                        <img
-                          src={`${BASE_URL}${postUser.profilePicture}`}
-                          alt="Avatar"
-                          className="w-12 h-12 object-cover rounded-md"
-                          onError={(e) => (e.currentTarget.style.display = "none")}
-                        />
-                      ) : (
-                        <div className="w-12 h-12 rounded-md bg-gray-300 animate-pulse" />
-                      )}
-                    </div>
-
-                    {/* Body */}
-                    <div className="grid gap-2">
-                      <div className="grid grid-cols-[1fr,auto] items-center">
-                        <Link href={`/profile/${postUser?._id || ""}`}>
-                          <span className="text-sm font-semibold hover:underline">
-                            {postUser?.username || "Unknown User"}
-                          </span>
-                        </Link>
-
-                        {postUser && user && user._id !== postUser._id && (
-                          <div>
-                            {user.following?.includes(postUser._id) ? (
-                              <button
-                                onClick={() => handleUnfollow(postUser._id)}
-                                className="text-green-600 text-xs"
-                              >
-                                Unfollow
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() => handleFollow(postUser._id)}
-                                className="text-[#1D9BF0] text-xs"
-                              >
-                                Follow
-                              </button>
-                            )}
-                          </div>
+                return (
+                  <motion.div
+                    key={post._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.02 }}
+                    className="bg-white dark:bg-black p-6 grid gap-4 border-b border-gray-200 dark:border-[#2F3336]"
+                  >
+                    {/* Header */}
+                    <div className="grid grid-cols-[auto,1fr] gap-5">
+                      {/* Avatar */}
+                      <div className="self-start">
+                        {postUser?.profilePicture ? (
+                          <img
+                            src={`${BASE_URL}${postUser.profilePicture}`}
+                            alt="Avatar"
+                            className="w-12 h-12 object-cover rounded-md"
+                            onError={(e) => (e.currentTarget.style.display = "none")}
+                          />
+                        ) : (
+                          <div className="w-12 h-12 rounded-md bg-gray-300 animate-pulse" />
                         )}
                       </div>
 
-                      <span className="text-xs text-gray-500 dark:text-white">
-                        {formatPostDate(post.createdAt)}
-                      </span>
-                      {post.price && post.price > 0 ? (
-                        <LockClosedIcon className="w-3 h-3 text-yellow-400 ml-1 inline" />
-                      ) : (
-                        <BoltIcon className="w-3 h-3 text-green-400 ml-1 inline" />
-                      )}
+                      {/* Body */}
+                      <div className="grid gap-2">
+                        <div className="grid grid-cols-[1fr,auto] items-center">
+                          <Link href={`/profile/${postUser?._id || ""}`}>
+                            <span className="text-sm font-semibold hover:underline">
+                              {postUser?.username || "Unknown User"}
+                            </span>
+                          </Link>
 
-                      {/* Content */}
-                      <div className="relative">
-                        {post.content && (
-                          <p
-                            className={`text-base whitespace-pre-wrap ${isLocked ? "opacity-20" : ""}`}
-                          >
-                            {post.content}
-                          </p>
-                        )}
-                        {post.image && (
-                          <div className="relative w-full overflow-hidden rounded-lg mt-2">
-                            <img
-                              src={`${UPLOADS_URL}/${post.image}`}
-                              alt="Post"
-                              className={`w-full h-auto object-cover rounded-lg ${isLocked ? "blur-md" : ""}`}
-                              onError={(e) => (e.currentTarget.style.display = "none")}
-                            />
-                          </div>
-                        )}
-                        {isLocked && (
-                          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-lg bg-black/50 backdrop-blur-md">
-                            <span className="text-xs text-white mb-2">Paid post – unlock to view</span>
-                            <button
-                              onClick={() => handleUnlock(post._id)}
-                              className="px-3 py-1 text-xs bg-blue-600 text-white rounded"
-                            >
-                              Unlock for {post.price} VNT
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="grid grid-cols-3 items-center text-xs text-gray-600 dark:text-white w-full mt-2">
-                    {/* Like */}
-                    <button
-                      onClick={() => handleLike(post._id)}
-                      disabled={!loggedIn}
-                      className="flex items-center justify-center gap-1 hover:text-gray-800"
-                      aria-label={`Like (${post.likes.length})`}
-                    >
-                      {likedPosts.includes(post._id) ? (
-                        <HeartSolid className="w-4 h-4 text-red-500" />
-                      ) : (
-                        <HeartOutline className="w-4 h-4" />
-                      )}
-                      <span>{post.likes.length}</span>
-                    </button>
-
-                    {/* Comment */}
-                    <button
-                      onClick={() => toggleComments(post._id)}
-                      disabled={!loggedIn}
-                      className="flex items-center justify-center gap-1 hover:text-gray-800"
-                      aria-label={`Comment (${post.comments?.length || 0})`}
-                    >
-                      <ChatBubbleOvalLeftIcon className="w-4 h-4" />
-                      <span>{post.comments?.length || 0}</span>
-                    </button>
-
-                    {/* Share */}
-                    <button
-                      onClick={() => handleShare(post._id)}
-                      disabled={!loggedIn}
-                      className="flex items-center justify-center gap-1 hover:text-gray-800"
-                      aria-label={`Share (${post.shares || 0})`}
-                    >
-                      <ShareIcon
-                        className={`w-4 h-4 ${
-                          sharedPosts.includes(post._id) ? "text-green-500" : ""
-                        }`}
-                      />
-                      <span>{post.shares || 0}</span>
-                    </button>
-                  </div>
-
-                  {/* Comment section */}
-                  {openComments[post._id] && (
-                    <div className="mt-4 space-y-3">
-                      {post.comments?.map((comment) => (
-                        <div key={comment._id} className="ml-4">
-                          <div className="flex items-start gap-2">
-                            {comment.user?.profilePicture && (
-                              <img
-                                src={`${BASE_URL}${comment.user.profilePicture}`}
-                                alt="avatar"
-                                className="w-6 h-6 rounded-full object-cover"
-                              />
-                            )}
-                            <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded p-2">
-                              <p className="text-sm font-semibold">
-                                {comment.user?.username}
-                              </p>
-                              <p className="text-sm">{comment.content}</p>
-
-                              {/* Replies */}
-                              {comment.replies?.map((reply) => (
-                                <div
-                                  key={reply._id}
-                                  className="ml-4 mt-2 flex gap-2 items-start"
-                                >
-                                  {reply.user?.profilePicture && (
-                                    <img
-                                      src={`${BASE_URL}${reply.user.profilePicture}`}
-                                      alt="avatar"
-                                      className="w-5 h-5 rounded-full object-cover"
-                                    />
-                                  )}
-                                  <div className="flex-1 bg-gray-50 dark:bg-gray-900 rounded p-2">
-                                    <p className="text-xs font-semibold">
-                                      {reply.user?.username}
-                                    </p>
-                                    <p className="text-xs">{reply.content}</p>
-                                  </div>
-                                </div>
-                              ))}
-
-                              {/* Reply box */}
-                              <div className="flex items-center mt-2">
-                                <input
-                                  type="text"
-                                  placeholder="Reply..."
-                                  className="flex-1 text-xs border border-gray-300 dark:border-gray-700 rounded p-1"
-                                  value={replyTexts[comment._id] || ""}
-                                  onChange={(e) =>
-                                    setReplyTexts((prev) => ({
-                                      ...prev,
-                                      [comment._id]: e.target.value,
-                                    }))
-                                  }
-                                />
+                          {postUser && user && user._id !== postUser._id && (
+                            <div>
+                              {user.following?.includes(postUser._id) ? (
                                 <button
-                                  onClick={() => handleReply(post._id, comment._id)}
-                                  className="ml-2 text-xs text-blue-500"
+                                  onClick={() => handleUnfollow(postUser._id)}
+                                  className="text-green-600 text-xs"
                                 >
-                                  Reply
+                                  Unfollow
                                 </button>
+                              ) : (
+                                <button
+                                  onClick={() => handleFollow(postUser._id)}
+                                  className="text-[#1D9BF0] text-xs"
+                                >
+                                  Follow
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        <span className="text-xs text-gray-500 dark:text-white">
+                          {formatPostDate(post.createdAt)}
+                        </span>
+                        {post.price && post.price > 0 ? (
+                          <LockClosedIcon className="w-3 h-3 text-yellow-400 ml-1 inline" />
+                        ) : (
+                          <BoltIcon className="w-3 h-3 text-green-400 ml-1 inline" />
+                        )}
+
+                        {/* Content */}
+                        <div className="relative">
+                          {post.content && (
+                            <p
+                              className={`text-base whitespace-pre-wrap ${isLocked ? "opacity-20" : ""}`}
+                            >
+                              {post.content}
+                            </p>
+                          )}
+                          {post.image && (
+                            <div className="relative w-full overflow-hidden rounded-lg mt-2">
+                              <img
+                                src={`${UPLOADS_URL}/${post.image}`}
+                                alt="Post"
+                                className={`w-full h-auto object-cover rounded-lg ${isLocked ? "blur-md" : ""}`}
+                                onError={(e) => (e.currentTarget.style.display = "none")}
+                              />
+                            </div>
+                          )}
+                          {isLocked && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center rounded-lg bg-black/50 backdrop-blur-md">
+                              <span className="text-xs text-white mb-2">Paid post – unlock to view</span>
+                              <button
+                                onClick={() => handleUnlock(post._id)}
+                                className="px-3 py-1 text-xs bg-blue-600 text-white rounded"
+                              >
+                                Unlock for {post.price} VNT
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="grid grid-cols-3 items-center text-xs text-gray-600 dark:text-white w-full mt-2">
+                      {/* Like */}
+                      <button
+                        onClick={() => handleLike(post._id)}
+                        disabled={!loggedIn}
+                        className="flex items-center justify-center gap-1 hover:text-gray-800"
+                        aria-label={`Like (${post.likes.length})`}
+                      >
+                        {likedPosts.includes(post._id) ? (
+                          <HeartSolid className="w-4 h-4 text-red-500" />
+                        ) : (
+                          <HeartOutline className="w-4 h-4" />
+                        )}
+                        <span>{post.likes.length}</span>
+                      </button>
+
+                      {/* Comment */}
+                      <button
+                        onClick={() => toggleComments(post._id)}
+                        disabled={!loggedIn}
+                        className="flex items-center justify-center gap-1 hover:text-gray-800"
+                        aria-label={`Comment (${post.comments?.length || 0})`}
+                      >
+                        <ChatBubbleOvalLeftIcon className="w-4 h-4" />
+                        <span>{post.comments?.length || 0}</span>
+                      </button>
+
+                      {/* Share */}
+                      <button
+                        onClick={() => handleShare(post._id)}
+                        disabled={!loggedIn}
+                        className="flex items-center justify-center gap-1 hover:text-gray-800"
+                        aria-label={`Share (${post.shares || 0})`}
+                      >
+                        <ShareIcon
+                          className={`w-4 h-4 ${
+                            sharedPosts.includes(post._id) ? "text-green-500" : ""
+                          }`}
+                        />
+                        <span>{post.shares || 0}</span>
+                      </button>
+                    </div>
+
+                    {/* Comment section */}
+                    {openComments[post._id] && (
+                      <div className="mt-4 space-y-3">
+                        {post.comments?.map((comment) => (
+                          <div key={comment._id} className="ml-4">
+                            <div className="flex items-start gap-2">
+                              {comment.user?.profilePicture && (
+                                <img
+                                  src={`${BASE_URL}${comment.user.profilePicture}`}
+                                  alt="avatar"
+                                  className="w-6 h-6 rounded-full object-cover"
+                                />
+                              )}
+                              <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded p-2">
+                                <p className="text-sm font-semibold">
+                                  {comment.user?.username}
+                                </p>
+                                <p className="text-sm">{comment.content}</p>
+
+                                {/* Replies */}
+                                {comment.replies?.map((reply) => (
+                                  <div
+                                    key={reply._id}
+                                    className="ml-4 mt-2 flex gap-2 items-start"
+                                  >
+                                    {reply.user?.profilePicture && (
+                                      <img
+                                        src={`${BASE_URL}${reply.user.profilePicture}`}
+                                        alt="avatar"
+                                        className="w-5 h-5 rounded-full object-cover"
+                                      />
+                                    )}
+                                    <div className="flex-1 bg-gray-50 dark:bg-gray-900 rounded p-2">
+                                      <p className="text-xs font-semibold">
+                                        {reply.user?.username}
+                                      </p>
+                                      <p className="text-xs">{reply.content}</p>
+                                    </div>
+                                  </div>
+                                ))}
+
+                                {/* Reply box */}
+                                <div className="flex items-center mt-2">
+                                  <input
+                                    type="text"
+                                    placeholder="Reply..."
+                                    className="flex-1 text-xs border border-gray-300 dark:border-gray-700 rounded p-1"
+                                    value={replyTexts[comment._id] || ""}
+                                    onChange={(e) =>
+                                      setReplyTexts((prev) => ({
+                                        ...prev,
+                                        [comment._id]: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                  <button
+                                    onClick={() => handleReply(post._id, comment._id)}
+                                    className="ml-2 text-xs text-blue-500"
+                                  >
+                                    Reply
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
 
-                      {/* New comment box */}
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          placeholder="Add a comment..."
-                          className="flex-1 text-sm border border-gray-300 dark:border-gray-700 rounded p-2"
-                          value={commentTexts[post._id] || ""}
-                          onChange={(e) =>
-                            setCommentTexts((prev) => ({
-                              ...prev,
-                              [post._id]: e.target.value,
-                            }))
-                          }
-                        />
-                        <button
-                          onClick={() => handleComment(post._id)}
-                          className="text-sm text-blue-500"
-                        >
-                          Post
-                        </button>
+                        {/* New comment box */}
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            placeholder="Add a comment..."
+                            className="flex-1 text-sm border border-gray-300 dark:border-gray-700 rounded p-2"
+                            value={commentTexts[post._id] || ""}
+                            onChange={(e) =>
+                              setCommentTexts((prev) => ({
+                                ...prev,
+                                [post._id]: e.target.value,
+                              }))
+                            }
+                          />
+                          <button
+                            onClick={() => handleComment(post._id)}
+                            className="text-sm text-blue-500"
+                          >
+                            Post
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </motion.div>
-              )
-            })
-          )}
+                    )}
+                  </motion.div>
+                );
+              })
+            )}
             {loadingPosts && pageNum > 1 && <LoadingSpinner />}
             <div ref={loadMoreRef} />
           </div>
