@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { AuthProvider } from "../context/AuthContext";
 import { CartProvider } from "../context/CartContext";
 import { ThemeProvider } from "../context/ThemeContext";
@@ -15,6 +16,7 @@ import Link from "next/link";
 
 export default function LayoutClient({ children }: { children: React.ReactNode }) {
   const [mountLoading, setMountLoading] = useState(true);
+  const pathname = usePathname();
 
   useEffect(() => {
     const timer = setTimeout(() => setMountLoading(false), 500);
@@ -25,7 +27,10 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
     <ThemeProvider>
       <CartProvider>
         <AuthProvider>
-          {mountLoading && <LoadingOverlay />}
+          {mountLoading &&
+            (pathname === "/" ||
+              pathname.startsWith("/users") ||
+              pathname.startsWith("/profile")) && <LoadingOverlay />}
           <NavigationLoader />
           <div className="max-w-7xl w-full mx-auto md:px-6">
             <SidebarControl />

@@ -488,7 +488,7 @@ export default function HomePage() {
                   onClick={triggerFileInput}
                   className="p-2 border border-gray-200 dark:border-black rounded-full hover:bg-gray-100 dark:hover:bg-black"
                 >
-                  <FiCamera className="w-5 h-5 text-gray-600 dark:text-white" />
+                  <FiCamera className="w-5 h-5 text-[#1D9BF0]" />
                 </button>
                 {imageFile && (
                   <span className="text-xs text-gray-700 truncate">

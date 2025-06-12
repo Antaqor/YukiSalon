@@ -66,7 +66,7 @@ export default function PostCard({ post, user }: Props) {
     }
   };
   return (
-    <div className="tweet border-b border-gray-700 p-4 max-w-xl mx-auto relative">
+    <div className="bg-white dark:bg-black p-6 grid gap-4 border-b border-gray-200 dark:border-[#2F3336]">
       <div className="flex gap-3">
         {user.profilePicture ? (
           <img
