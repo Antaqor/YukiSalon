@@ -50,15 +50,6 @@ const BottomNav: React.FC = () => {
                     <HomeIcon className="h-7 w-7" />
                 </button>
 
-                {/* SHOP / SEARCH */}
-                <button
-                    onClick={() => router.push("/shop")}
-                    aria-label="Shop"
-                    className="p-1 text-black dark:text-white"
-                >
-                    <MagnifyingGlassIcon className="h-7 w-7" />
-                </button>
-
                 {/* NEW POST */}
                 <button
                     onClick={() => router.push("/new-post")}

@@ -203,75 +203,6 @@ export default function Header() {
                                             Нүүр
                                         </Link>
                                     </li>
-                                    <li>
-                                        <Link
-                                            href="/book"
-                                            onClick={() => setIsMenuOpen(false)}
-                                            className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="w-6 h-6"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth="2"
-                                                    d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 006 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
-                                                />
-                                            </svg>
-                                            Ном
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link
-                                            href="/notifications"
-                                            onClick={() => setIsMenuOpen(false)}
-                                            className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="w-6 h-6"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth="2"
-                                                    d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
-                                                />
-                                            </svg>
-                                            Мэдээлэл
-                                        </Link>
-                                    </li>
-                                    <li>
-                                    <Link
-                                        href="/shop"
-                                        onClick={() => setIsMenuOpen(false)}
-                                        className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
-                                    >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="w-6 h-6"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth="2"
-                                                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                                                />
-                                            </svg>
-                                        Дэлгүүр
-                                    </Link>
-                                </li>
                                 <li>
                                     <Link
                                         href="/wallet"
@@ -358,23 +289,6 @@ export default function Header() {
                                                 <path d="M3 4.5C3 3.12 4.12 2 5.5 2h13C19.88 2 21 3.12 21 4.5v15c0 1.38-1.12 2.5-2.5 2.5h-13C4.12 22 3 20.88 3 19.5v-15zM5.5 4c-.28 0-.5.22-.5.5v15c0 .28.22.5.5.5h13c.28 0 .5-.22.5-.5v-15c0-.28-.22-.5-.5-.5h-13zM16 10H8V8h8v2zm-8 2h8v2H8v-2z" />
                                             </svg>
                                             Таск
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link
-                                            href="/settings"
-                                            onClick={() => setIsMenuOpen(false)}
-                                            className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 24 24"
-                                                fill="currentColor"
-                                                className="w-6 h-6"
-                                            >
-                                                <path d="M19.5 6H17V4.5C17 3.12 15.88 2 14.5 2h-5C8.12 2 7 3.12 7 4.5V6H4.5C3.12 6 2 7.12 2 8.5v10C2 19.88 3.12 21 4.5 21h15c1.38 0 2.5-1.12 2.5-2.5v-10C22 7.12 20.88 6 19.5 6zM9 4.5c0-.28.23-.5.5-.5h5c.28 0 .5.22.5.5V6H9V4.5zm11 14c0 .28-.22.5-.5.5h-15c-.27 0-.5-.22-.5-.5v-3.04c.59.35 1.27.54 2 .54h5v1h2v-1h5c.73 0 1.41-.19 2-.54v3.04zm0-6.49c0 1.1-.9 1.99-2 1.99h-5v-1h-2v1H6c-1.1 0-2-.9-2-2V8.5c0-.28.23-.5.5-.5h15c.28 0 .5.22.5.5v3.51z"/>
-                                            </svg>
-                                            Ажил
                                         </Link>
                                     </li>
                                 </ul>
