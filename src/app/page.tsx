@@ -449,7 +449,7 @@ export default function HomePage() {
                 >
                   {h.tag} ({h.count})
                 </button>
-              ))}
+              }))}
             </div>
           </div>
         </aside>
@@ -811,7 +811,7 @@ export default function HomePage() {
                   )}
                 </motion.div>
               );
-            })}
+              ))}
             {loadingPosts && pageNum > 1 && <LoadingSpinner />}
             <div ref={loadMoreRef} />
           </div>
