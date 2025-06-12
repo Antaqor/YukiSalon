@@ -51,24 +51,7 @@ div {
     transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* Futuristic loading spinner */
-.loader.futuristic {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    border: 4px solid transparent;
-    border-top-color: #1D9BF0;
-    animation: spin 1s linear infinite;
-}
 
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
 
 /* Skeleton placeholder */
 @keyframes pulse {
