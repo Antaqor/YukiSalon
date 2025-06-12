@@ -1,5 +1,6 @@
 "use client";
 import React, { useRef, useState } from "react";
+import { FiCamera } from "react-icons/fi";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
@@ -71,7 +72,7 @@ export default function NewPostPage() {
                     onClick={triggerFileInput}
                     className="p-2 border border-gray-200 dark:border-black rounded-full hover:bg-gray-100 dark:hover:bg-black"
                 >
-                    Upload Image
+                    <FiCamera className="w-5 h-5 text-[#1D9BF0]" />
                 </button>
                 {imageFile && (
                     <span className="block text-xs text-gray-700 truncate">

@@ -7,7 +7,11 @@ export default function NavigationLoader() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const start = () => setLoading(true);
+    const shouldShow = (url: string) =>
+      url === "/" || url.startsWith("/users") || url.startsWith("/profile");
+    const start = (url: string) => {
+      if (shouldShow(url)) setLoading(true);
+    };
     const end = () => setLoading(false);
     Router.events.on("routeChangeStart", start);
     Router.events.on("routeChangeComplete", end);
