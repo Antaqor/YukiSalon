@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
+import { LockClosedIcon, BoltIcon } from "@heroicons/react/24/solid";
 import { formatPostDate } from "../lib/formatDate";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
@@ -83,6 +84,11 @@ export default function PostCard({ post, user }: Props) {
             <span className="text-gray-400 ml-1 text-xs">
               {formatPostDate(post.createdAt)}
             </span>
+            {post.price && post.price > 0 ? (
+              <LockClosedIcon className="w-3 h-3 text-yellow-400 ml-1" />
+            ) : (
+              <BoltIcon className="w-3 h-3 text-green-400 ml-1" />
+            )}
           </div>
           <div className="relative">
             {post.content && (

@@ -58,9 +58,13 @@ const haversine = (lat1, lon1, lat2, lon2) => {
 // ---------------------------------------------------------------------------
 router.get("/", async (req, res) => {
   try {
-    const { user, sort, currentLocation } = req.query;
+    const { user, sort, currentLocation, page = 1, limit = 10 } = req.query;
     const filter = {};
     if (user) filter.user = user;
+
+    const pageNum = Math.max(parseInt(page), 1);
+    const limitNum = Math.min(parseInt(limit), 50);
+    const skip = (pageNum - 1) * limitNum;
 
     // ---------- 1. Recommendation sort ----------
     if (sort === "recommendation") {
@@ -68,6 +72,8 @@ router.get("/", async (req, res) => {
         { $match: filter },
         { $addFields: { likesCount: { $size: "$likes" } } },
         { $sort: { likesCount: -1, createdAt: -1 } },
+        { $skip: skip },
+        { $limit: limitNum },
       ]);
 
       await Post.populate(posts, {
@@ -129,7 +135,8 @@ router.get("/", async (req, res) => {
       });
 
       scored.sort((a, b) => b.score - a.score);
-      return res.json(scored.map((s) => s.post));
+      const sliced = scored.slice(skip, skip + limitNum);
+      return res.json(sliced.map((s) => s.post));
     }
 
     // ---------- 3. Default (chronological) ----------
@@ -137,7 +144,9 @@ router.get("/", async (req, res) => {
       .populate("user", "username profilePicture")
       .populate("comments.user", "username profilePicture")
       .populate("comments.replies.user", "username profilePicture")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum);
 
     return res.json(posts);
   } catch (err) {

@@ -10,8 +10,20 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "./context/AuthContext";
-import { FaHeart, FaRegHeart, FaComment, FaShare } from "react-icons/fa";
+import {
+  HeartIcon as HeartSolid,
+  LockClosedIcon,
+  BoltIcon,
+} from "@heroicons/react/24/solid";
+import {
+  HeartIcon as HeartOutline,
+  ChatBubbleOvalLeftIcon,
+  ShareIcon,
+  ArrowPathIcon,
+} from "@heroicons/react/24/outline";
 import { FiCamera } from "react-icons/fi";
+import LoadingSkeleton from "./components/LoadingSkeleton";
+import LoadingSpinner from "./components/LoadingSpinner";
 import { motion } from "framer-motion";
 import { formatPostDate } from "./lib/formatDate";
 import useCurrentLocation from "./hooks/useCurrentLocation";
@@ -84,6 +96,11 @@ export default function HomePage() {
   const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
   const [likedPosts, setLikedPosts] = useState<string[]>([]);
   const [sharedPosts, setSharedPosts] = useState<string[]>([]);
+  const [pageNum, setPageNum] = useState(1);
+  const [loadingPosts, setLoadingPosts] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const viewerCoords = useCurrentLocation();
   const isPro =
@@ -102,34 +119,69 @@ export default function HomePage() {
   // ────────────────────────────────────────────────────────────
   // Fetch posts (location-aware smart sort)
   // ────────────────────────────────────────────────────────────
-  const fetchPosts = useCallback(async () => {
-    try {
-      const params: Record<string, string> = { sort: "smart" };
+  const fetchPosts = useCallback(
+    async (page: number, append = false) => {
+      if (loadingPosts) return;
+      setLoadingPosts(true);
+      try {
+        const params: Record<string, string | number> = {
+          sort: "smart",
+          page,
+          limit: 10,
+        };
       if (viewerCoords) {
         params.currentLocation = `${viewerCoords.latitude},${viewerCoords.longitude}`;
       } else if (user?.location) {
         params.currentLocation = user.location;
       }
+        const { data } = await axios.get<Post[]>(`${BASE_URL}/api/posts`, {
+          params,
+        });
+        if (append) {
+          setPosts((prev) => [...prev, ...data]);
+          setAllPosts((prev) => [...prev, ...data]);
+        } else {
+          setPosts(data);
+          setAllPosts(data);
+        }
+        computeTrendingHashtags([...allPosts, ...data]);
+        setHasMore(data.length === 10);
 
-      const { data } = await axios.get<Post[]>(`${BASE_URL}/api/posts`, { params });
-      setPosts(data);
-      setAllPosts(data);
-      computeTrendingHashtags(data);
-
-      if (user) {
-        const liked = data
-          .filter((p) => p.likes.some((l: any) => (l._id || l) === user._id))
-          .map((p) => p._id);
-        setLikedPosts(liked);
+        if (user && !append) {
+          const liked = data
+            .filter((p) => p.likes.some((l: any) => (l._id || l) === user._id))
+            .map((p) => p._id);
+          setLikedPosts(liked);
+        }
+      } catch (err) {
+        console.error("Post fetch error:", err);
+      } finally {
+        setLoadingPosts(false);
       }
-    } catch (err) {
-      console.error("Post fetch error:", err);
-    }
-  }, [user, viewerCoords]);
+    },
+    [user, viewerCoords, loadingPosts, allPosts]
+  );
 
   useEffect(() => {
-    fetchPosts();
+    fetchPosts(1);
   }, [fetchPosts]);
+
+  useEffect(() => {
+    if (pageNum > 1) fetchPosts(pageNum, true);
+  }, [pageNum, fetchPosts]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore && !loadingPosts) {
+        setPageNum((p) => p + 1);
+      }
+    });
+    const el = loadMoreRef.current;
+    if (el) observer.observe(el);
+    return () => {
+      if (el) observer.unobserve(el);
+    };
+  }, [hasMore, loadingPosts]);
 
   // ────────────────────────────────────────────────────────────
   // Helpers
@@ -160,6 +212,13 @@ export default function HomePage() {
   const triggerFileInput = () => fileInputRef.current?.click();
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) setImageFile(e.target.files[0]);
+  };
+
+  const refreshPosts = async () => {
+    setRefreshing(true);
+    setPageNum(1);
+    await fetchPosts(1);
+    setRefreshing(false);
   };
 
   // ────────────────────────────────────────────────────────────
@@ -489,9 +548,29 @@ export default function HomePage() {
             </div>
           )}
 
+      <div className="flex justify-end p-4">
+        <button
+          onClick={refreshPosts}
+          aria-label="Refresh feed"
+          className={`p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 ${refreshing ? "animate-spin" : ""}`}
+        >
+          <ArrowPathIcon className="w-5 h-5" />
+        </button>
+      </div>
+
           {/* Posts list */}
           <div className="m-0 p-0">
-            {posts.map((post, idx) => {
+            {loadingPosts && pageNum === 1 ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-white dark:bg-black p-6 border-b border-gray-200 dark:border-[#2F3336]"
+                >
+                  <LoadingSkeleton lines={4} />
+                </div>
+              ))
+            ) : (
+              posts.map((post, idx) => {
               const postUser = post.user;
               const isLocked =
                 !!post.price && post.price > 0 &&
@@ -556,6 +635,11 @@ export default function HomePage() {
                       <span className="text-xs text-gray-500 dark:text-white">
                         {formatPostDate(post.createdAt)}
                       </span>
+                      {post.price && post.price > 0 ? (
+                        <LockClosedIcon className="w-3 h-3 text-yellow-400 ml-1 inline" />
+                      ) : (
+                        <BoltIcon className="w-3 h-3 text-green-400 ml-1 inline" />
+                      )}
 
                       {/* Content */}
                       <div className="relative">
@@ -601,9 +685,9 @@ export default function HomePage() {
                       aria-label={`Like (${post.likes.length})`}
                     >
                       {likedPosts.includes(post._id) ? (
-                        <FaHeart className="w-4 h-4 text-red-500" />
+                        <HeartSolid className="w-4 h-4 text-red-500" />
                       ) : (
-                        <FaRegHeart className="w-4 h-4" />
+                        <HeartOutline className="w-4 h-4" />
                       )}
                       <span>{post.likes.length}</span>
                     </button>
@@ -615,7 +699,7 @@ export default function HomePage() {
                       className="flex items-center justify-center gap-1 hover:text-gray-800"
                       aria-label={`Comment (${post.comments?.length || 0})`}
                     >
-                      <FaComment className="w-4 h-4" />
+                      <ChatBubbleOvalLeftIcon className="w-4 h-4" />
                       <span>{post.comments?.length || 0}</span>
                     </button>
 
@@ -626,7 +710,7 @@ export default function HomePage() {
                       className="flex items-center justify-center gap-1 hover:text-gray-800"
                       aria-label={`Share (${post.shares || 0})`}
                     >
-                      <FaShare
+                      <ShareIcon
                         className={`w-4 h-4 ${
                           sharedPosts.includes(post._id) ? "text-green-500" : ""
                         }`}
@@ -728,6 +812,8 @@ export default function HomePage() {
                 </motion.div>
               );
             })}
+            {loadingPosts && pageNum > 1 && <LoadingSpinner />}
+            <div ref={loadMoreRef} />
           </div>
         </main>
       </div>
