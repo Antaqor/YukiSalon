@@ -85,7 +85,18 @@ export default function PublicProfilePage() {
 
     // ---------------- RENDER LOGIC ----------------
     if (loading) {
-        return <div className="p-4 text-center">Уншиж байна...</div>;
+        return (
+            <div className="p-4 space-y-4">
+                <div className="h-40 bg-gray-800 rounded animate-pulse" />
+                <div className="flex items-center space-x-4 animate-pulse">
+                    <div className="w-20 h-20 rounded-full bg-gray-700" />
+                    <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-gray-700 rounded w-1/2" />
+                        <div className="h-4 bg-gray-700 rounded w-1/3" />
+                    </div>
+                </div>
+            </div>
+        );
     }
     if (error) {
         return <div className="p-4 text-red-500 text-center">{error}</div>;

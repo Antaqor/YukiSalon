@@ -34,7 +34,16 @@ export default function UsersPage() {
     }, [BASE_URL]);
 
     if (loading) {
-        return <div className="p-4 text-center">Уншиж байна...</div>;
+        return (
+            <div className="p-4 grid gap-4 grid-cols-[repeat(auto-fit,minmax(160px,1fr))]">
+                {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="bg-gray-800 rounded-lg p-4 animate-pulse flex flex-col items-center">
+                        <div className="w-20 h-20 rounded-full bg-gray-700 mb-3" />
+                        <div className="h-4 w-3/4 bg-gray-700 rounded" />
+                    </div>
+                ))}
+            </div>
+        );
     }
     if (error) {
         return <div className="p-4 text-center text-red-500">{error}</div>;

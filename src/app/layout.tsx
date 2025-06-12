@@ -8,8 +8,11 @@ import TrendingHashtags from "./components/TrendingHashtags";
 import BottomNav from "./components/BottomNav";
 import SidebarControl from "./components/SidebarControl";
 import WalletBalance from "./components/WalletBalance";
+import NavigationLoader from "./components/NavigationLoader";
+import LoadingOverlay from "./components/LoadingOverlay";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -74,6 +77,13 @@ export default function RootLayout({
                                    }: {
     children: React.ReactNode;
 }) {
+    const [mountLoading, setMountLoading] = useState(true);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setMountLoading(false), 500);
+        return () => clearTimeout(timer);
+    }, []);
+
     return (
         <html lang="mn" className="dark">
         <body
@@ -82,6 +92,8 @@ export default function RootLayout({
         <ThemeProvider>
         <CartProvider>
         <AuthProvider>
+            {mountLoading && <LoadingOverlay />}
+            <NavigationLoader />
             <div className="max-w-7xl w-full mx-auto md:px-6">
 
             <SidebarControl />
