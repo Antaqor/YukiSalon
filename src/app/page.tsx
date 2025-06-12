@@ -811,7 +811,8 @@ export default function HomePage() {
                   )}
                 </motion.div>
               );
-              ))}
+            });
+          )}
             {loadingPosts && pageNum > 1 && <LoadingSpinner />}
             <div ref={loadMoreRef} />
           </div>
