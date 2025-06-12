@@ -96,7 +96,18 @@ export default function MyOwnProfilePage() {
 
     // ---------------- RENDER LOGIC ----------------
     if (loadingProfile) {
-        return <div className="p-4">Профайл ачааллаж байна...</div>;
+        return (
+            <div className="p-4 space-y-4">
+                <div className="h-40 bg-gray-800 rounded animate-pulse" />
+                <div className="flex items-center space-x-4 animate-pulse">
+                    <div className="w-20 h-20 rounded-full bg-gray-700" />
+                    <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-gray-700 rounded w-1/2" />
+                        <div className="h-4 bg-gray-700 rounded w-1/3" />
+                    </div>
+                </div>
+            </div>
+        );
     }
     if (error) {
         return <div className="p-4 text-red-500">{error}</div>;
@@ -161,7 +172,11 @@ export default function MyOwnProfilePage() {
                     Миний нийтлэлүүд
                 </h3>
                 {loadingPosts ? (
-                    <div className="text-gray-400">Нийтлэлүүд ачааллаж байна...</div>
+                    <div className="space-y-4">
+                        {Array.from({ length: 2 }).map((_, i) => (
+                            <div key={i} className="h-32 bg-gray-800 rounded animate-pulse" />
+                        ))}
+                    </div>
                 ) : userPosts.length > 0 ? (
                     <div className="space-y-4">
                         {userPosts.map((post) => (
