@@ -51,8 +51,6 @@ div {
     transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-
-
 /* Skeleton placeholder */
 @keyframes pulse {
     0%, 100% { opacity: 1; }
@@ -62,3 +60,5 @@ div {
 .animate-pulse div {
     animation: pulse 1.5s ease-in-out infinite;
 }
+
+
