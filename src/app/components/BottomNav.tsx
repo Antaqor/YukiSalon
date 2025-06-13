@@ -76,6 +76,22 @@ const BottomNav: React.FC = () => {
                 >
                     <WalletIcon className="h-7 w-7" />
                 </button>
+                {/* SALON */}
+                <button
+                    onClick={() => router.push("/salon")}
+                    aria-label="Salon"
+                    className="p-1 text-black dark:text-white"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-7 w-7"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7h16M4 12h16M4 17h16" />
+                    </svg>
+                </button>
             </div>
         </nav>
     );

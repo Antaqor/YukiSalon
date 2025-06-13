@@ -226,6 +226,29 @@ export default function Header() {
                                         Wallet
                                     </Link>
                                 </li>
+                                <li>
+                                    <Link
+                                        href="/salon"
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="flex items-center gap-2 hover:text-brandPink dark:hover:text-brandPink"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="w-6 h-6"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2"
+                                                d="M4 7h16M4 12h16M4 17h16"
+                                            />
+                                        </svg>
+                                        Salon
+                                    </Link>
+                                </li>
                                 {loggedIn && !isPro && (
                                     <li>
                                         <Link
