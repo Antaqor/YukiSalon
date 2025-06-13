@@ -22,7 +22,6 @@ import {
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import { FiCamera } from "react-icons/fi";
-import LoadingSkeleton from "./components/LoadingSkeleton";
 import LoadingSpinner from "./components/LoadingSpinner";
 import { motion } from "framer-motion";
 import { formatPostDate } from "./lib/formatDate";
@@ -99,6 +98,7 @@ export default function HomePage() {
   const [pageNum, setPageNum] = useState(1);
   const [loadingPosts, setLoadingPosts] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const loadingPostsRef = useRef(false);
   const [refreshing, setRefreshing] = useState(false);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -121,7 +121,8 @@ export default function HomePage() {
   // ────────────────────────────────────────────────────────────
   const fetchPosts = useCallback(
     async (page: number, append = false) => {
-      if (loadingPosts) return;
+      if (loadingPostsRef.current) return;
+      loadingPostsRef.current = true;
       setLoadingPosts(true);
       try {
         const params: Record<string, string | number> = {
@@ -138,13 +139,17 @@ export default function HomePage() {
           params,
         });
         if (append) {
-          setPosts((prev) => [...prev, ...data]);
+          setPosts((prev) => {
+            const merged = [...prev, ...data];
+            computeTrendingHashtags(merged);
+            return merged;
+          });
           setAllPosts((prev) => [...prev, ...data]);
         } else {
+          computeTrendingHashtags(data);
           setPosts(data);
           setAllPosts(data);
         }
-        computeTrendingHashtags([...allPosts, ...data]);
         setHasMore(data.length === 10);
 
         if (user && !append) {
@@ -157,9 +162,10 @@ export default function HomePage() {
         console.error("Post fetch error:", err);
       } finally {
         setLoadingPosts(false);
+        loadingPostsRef.current = false;
       }
     },
-    [user, viewerCoords, loadingPosts, allPosts]
+    [user, viewerCoords]
   );
 
   useEffect(() => {
@@ -242,9 +248,12 @@ export default function HomePage() {
         },
       });
 
-      setPosts((prev) => [data.post, ...prev]);
+      setPosts((prev) => {
+        const updated = [data.post, ...prev];
+        computeTrendingHashtags(updated);
+        return updated;
+      });
       setAllPosts((prev) => [data.post, ...prev]);
-      computeTrendingHashtags([data.post, ...allPosts]);
       setContent("");
       setImageFile(null);
       setPostType("free");
@@ -560,15 +569,8 @@ export default function HomePage() {
 
           {/* Posts list */}
           <div className="m-0 p-0">
-            {loadingPosts && pageNum === 1 ? (
-              Array.from({ length: 4 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="bg-white dark:bg-black p-6 border-b border-gray-200 dark:border-[#2F3336]"
-                >
-                  <LoadingSkeleton lines={4} />
-                </div>
-              ))
+          {loadingPosts && pageNum === 1 ? (
+              <LoadingSpinner />
             ) : (
               posts.map((post, idx) => {
                 const postUser = post.user;
