@@ -9,7 +9,6 @@ import Header from "./Header";
 import TrendingHashtags from "./TrendingHashtags";
 import BottomNav from "./BottomNav";
 import SidebarControl from "./SidebarControl";
-import WalletBalance from "./WalletBalance";
 import NavigationLoader from "./NavigationLoader";
 import LoadingOverlay from "./LoadingOverlay";
 import Link from "next/link";
@@ -40,7 +39,6 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                 id="left-sidebar"
                 className="hidden md:block w-full md:w-1/4 border-r border-gray-200 dark:border-gray-700 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto fade-in-up"
               >
-                <WalletBalance />
                 <nav>
                   <ul className="space-y-1">
                     <li>
@@ -67,23 +65,6 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                     </li>
                     <li>
                       <Link
-                        href="/wallet"
-                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 dark:text-white transition-smooth focus:outline-none hover:text-brandCyan dark:hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="w-6 h-6 group-hover:text-brandCyan dark:text-white dark:group-hover:text-brandCyan"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.25 6.75h19.5v10.5H2.25zM2.25 9h19.5" />
-                        </svg>
-                        <span className="dark:text-white">Wallet</span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
                         href="/users"
                         className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 dark:text-white transition-smooth focus:outline-none hover:text-brandCyan dark:hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
                       >
@@ -97,22 +78,6 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                         <span className="dark:text-white">Гишүүд</span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/settings"
-                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 dark:text-white transition-smooth focus:outline-none hover:text-brandCyan dark:hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="w-6 h-6 group-hover:text-brandCyan dark:text-white dark:group-hover:text-brandCyan"
-                        >
-                          <path d="M3 4.5C3 3.12 4.12 2 5.5 2h13C19.88 2 21 3.12 21 4.5v15c0 1.38-1.12 2.5-2.5 2.5h-13C4.12 22 3 20.88 3 19.5v-15zM5.5 4c-.28 0-.5.22-.5.5v15c0 .28.22.5.5.5h13c.28 0 .5-.22.5-.5v-15c0-.28-.22-.5-.5-.5h-13zM16 10H8V8h8v2zm-8 2h8v2H8v-2z" />
-                        </svg>
-                        <span className="dark:text-white">Таск</span>
                       </Link>
                     </li>
                   </ul>
