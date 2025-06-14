@@ -11,6 +11,7 @@ interface GameState {
   ore: number;
   stock: number[];
   mine: (id: number) => void;
+  reset: () => void;
 }
 
 const useGame = create<GameState>((set) => ({
@@ -22,6 +23,12 @@ const useGame = create<GameState>((set) => ({
       ore: s.ore + 1,
       coins: s.coins + 5,
       stock: s.stock.filter((id) => id !== blockId),
+    })),
+  reset: () =>
+    set(() => ({
+      coins: 0,
+      ore: 0,
+      stock: Array.from({ length: 100 }, (_, i) => i),
     })),
 }));
 
@@ -74,11 +81,19 @@ function World() {
 function HUD() {
   const coins = useGame((s) => s.coins);
   const ore = useGame((s) => s.ore);
+  const stock = useGame((s) => s.stock);
+  const reset = useGame((s) => s.reset);
   return (
     <div className="absolute top-4 left-4 bg-neutral-900/80 p-4 rounded-xl shadow text-cyan-300 space-y-1 text-sm">
       <div>💰 Coins: {coins}</div>
       <div>⛏️ Ore: {ore}</div>
+      {stock.length === 0 && (
+        <div className="text-green-400">All ore mined!</div>
+      )}
       <div className="text-neutral-400">Click gold blocks to mine → earn coins</div>
+      <button onClick={reset} className="mt-1 px-2 py-1 bg-cyan-700 rounded text-white">
+        Reset Game
+      </button>
     </div>
   );
 }
