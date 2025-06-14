@@ -11,7 +11,7 @@ module.exports = {
       colors: {
         dark: '#000000', // Pure black for dark mode background
         light: '#ffffff', // Light color for text
-        brandPink: '#FF577F'
+        brandCyan: '#00FFFC'
       },
       fontFamily: {
         sans: ['Inter', 'Helvetica', 'Arial', 'sans-serif'], // Minimalistic and clean font stack

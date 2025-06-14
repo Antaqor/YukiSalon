@@ -16,9 +16,9 @@ export default function AddToCartButton({ product }: { product: Product }) {
   return (
     <button
       onClick={handleClick}
-      className="bg-[#1D9BF0] text-white px-6 py-2 rounded
+      className="bg-brandCyan text-black px-6 py-2 rounded
                  hover:opacity-90 hover:scale-[1.02] transition
-                 focus:outline-none focus:ring-2 focus:ring-[#1D9BF0]"
+                 focus:outline-none focus:ring-2 focus:ring-brandCyan"
     >
       Сагсанд нэмэх
     </button>

@@ -434,7 +434,7 @@ export default function HomePage() {
         <aside>
           <div className="bg-white dark:bg-black p-4 grid gap-3">
             <div className="grid grid-cols-[auto,1fr] items-center gap-2">
-              <FiCamera className="w-5 h-5 text-[#1D9BF0]" />
+              <FiCamera className="w-5 h-5 text-brandCyan" />
               <h2 className="text-base font-semibold">Тренд хэштегүүд</h2>
             </div>
             <div
@@ -497,7 +497,7 @@ export default function HomePage() {
                   onClick={triggerFileInput}
                   className="p-2 border border-gray-200 dark:border-black rounded-full hover:bg-gray-100 dark:hover:bg-black"
                 >
-                  <FiCamera className="w-5 h-5 text-[#1D9BF0]" />
+                  <FiCamera className="w-5 h-5 text-brandCyan" />
                 </button>
                 {imageFile && (
                   <span className="text-xs text-gray-700 truncate">
@@ -550,7 +550,7 @@ export default function HomePage() {
 
               <button
                 onClick={createPost}
-                className="mt-3 bg-[#1D9BF0] text-white text-xs px-4 py-2 rounded hover:bg-[#1A8CD8]"
+                className="mt-3 bg-brandCyan text-black text-xs px-4 py-2 rounded hover:bg-[#00d4d4]"
               >
                 Post
               </button>
@@ -626,7 +626,7 @@ export default function HomePage() {
                               ) : (
                                 <button
                                   onClick={() => handleFollow(postUser._id)}
-                                  className="text-[#1D9BF0] text-xs"
+                                  className="text-brandCyan text-xs"
                                 >
                                   Follow
                                 </button>
