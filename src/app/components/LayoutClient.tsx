@@ -46,11 +46,11 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                     <li>
                       <Link
                         href="/"
-                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 dark:text-white transition-smooth focus:outline-none hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]"
+                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 dark:text-white transition-smooth focus:outline-none hover:text-brandCyan dark:hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className="w-6 h-6 group-hover:text-[#1D9BF0] dark:text-white dark:group-hover:text-[#1D9BF0]"
+                          className="w-6 h-6 group-hover:text-brandCyan dark:text-white dark:group-hover:text-brandCyan"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -68,11 +68,11 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                     <li>
                       <Link
                         href="/wallet"
-                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 dark:text-white transition-smooth focus:outline-none hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]"
+                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 dark:text-white transition-smooth focus:outline-none hover:text-brandCyan dark:hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className="w-6 h-6 group-hover:text-[#1D9BF0] dark:text-white dark:group-hover:text-[#1D9BF0]"
+                          className="w-6 h-6 group-hover:text-brandCyan dark:text-white dark:group-hover:text-brandCyan"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -85,11 +85,11 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                     <li>
                       <Link
                         href="/salon"
-                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 dark:text-white transition-smooth focus:outline-none hover:text-brandPink dark:hover:text-brandPink focus:ring-2 focus:ring-brandPink"
+                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 dark:text-white transition-smooth focus:outline-none hover:text-brandCyan dark:hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className="w-6 h-6 group-hover:text-brandPink dark:text-white dark:group-hover:text-brandPink"
+                          className="w-6 h-6 group-hover:text-brandCyan dark:text-white dark:group-hover:text-brandCyan"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -102,11 +102,11 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                     <li>
                       <Link
                         href="/users"
-                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 dark:text-white transition-smooth focus:outline-none hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]"
+                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 dark:text-white transition-smooth focus:outline-none hover:text-brandCyan dark:hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className="w-6 h-6 group-hover:text-[#1D9BF0] dark:text-white dark:group-hover:text-[#1D9BF0]"
+                          className="w-6 h-6 group-hover:text-brandCyan dark:text-white dark:group-hover:text-brandCyan"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -119,13 +119,13 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                     <li>
                       <Link
                         href="/settings"
-                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 dark:text-white transition-smooth focus:outline-none hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]"
+                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 dark:text-white transition-smooth focus:outline-none hover:text-brandCyan dark:hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
                           fill="currentColor"
-                          className="w-6 h-6 group-hover:text-[#1D9BF0] dark:text-white dark:group-hover:text-[#1D9BF0]"
+                          className="w-6 h-6 group-hover:text-brandCyan dark:text-white dark:group-hover:text-brandCyan"
                         >
                           <path d="M3 4.5C3 3.12 4.12 2 5.5 2h13C19.88 2 21 3.12 21 4.5v15c0 1.38-1.12 2.5-2.5 2.5h-13C4.12 22 3 20.88 3 19.5v-15zM5.5 4c-.28 0-.5.22-.5.5v15c0 .28.22.5.5.5h13c.28 0 .5-.22.5-.5v-15c0-.28-.22-.5-.5-.5h-13zM16 10H8V8h8v2zm-8 2h8v2H8v-2z" />
                         </svg>
@@ -147,7 +147,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                     <h2 className="flex items-center font-semibold mb-3">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="w-5 h-5 mr-2 text-[#1D9BF0]"
+                        className="w-5 h-5 mr-2 text-brandCyan"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -158,17 +158,17 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                     </h2>
                     <ul className="space-y-3">
                       <li>
-                        <a href="#" className="text-[#1D9BF0] hover:underline transition-colors duration-200">
+                        <a href="#" className="text-brandCyan hover:underline transition-colors duration-200">
                           #Инноваци
                         </a>
                       </li>
                       <li>
-                        <a href="#" className="text-[#1D9BF0] hover:underline transition-colors duration-200">
+                        <a href="#" className="text-brandCyan hover:underline transition-colors duration-200">
                           #Сүлжээ
                         </a>
                       </li>
                       <li>
-                        <a href="#" className="text-[#1D9BF0] hover:underline transition-colors duration-200">
+                        <a href="#" className="text-brandCyan hover:underline transition-colors duration-200">
                           #DAO
                         </a>
                       </li>

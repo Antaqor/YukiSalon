@@ -23,7 +23,7 @@ export default function Header() {
                 `}</style>
             )}
 
-            <div className="fixed top-0 left-0 w-full z-[999] bg-white dark:bg-dark md:bg-white/80 dark:md:bg-dark/80 backdrop-blur-md">
+            <div className="fixed top-0 left-0 w-full z-[999] bg-black/70 dark:bg-black/70 backdrop-blur-md border-b-2 border-brandCyan">
                 {/* NAV BAR */}
                 <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center">
                     <div className="ml-auto flex items-center space-x-4">
@@ -50,35 +50,35 @@ export default function Header() {
                                     {!isPro && (
                                         <Link
                                             href="/subscription"
-                                            className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                            className="relative group text-gray-700 dark:text-white hover:text-brandCyan dark:hover:text-brandCyan"
                                         >
                                             Subscription
-                                            <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                                            <span className="absolute left-0 bottom-0 w-full h-0.5 bg-brandCyan scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                                         </Link>
                                     )}
                                     <button
                                         onClick={logout}
-                                        className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                        className="relative group text-gray-700 dark:text-white hover:text-brandCyan dark:hover:text-brandCyan"
                                     >
                                         Гарах
-                                        <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                                        <span className="absolute left-0 bottom-0 w-full h-0.5 bg-brandCyan scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                                     </button>
                                 </>
                             ) : (
                                 <>
                                     <Link
                                         href="/login"
-                                    className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                    className="relative group text-gray-700 dark:text-white hover:text-brandCyan dark:hover:text-brandCyan"
                                 >
                                     Нэвтрэх
-                                    <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                                    <span className="absolute left-0 bottom-0 w-full h-0.5 bg-brandCyan scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                                 </Link>
                                 <Link
                                     href="/register"
-                                    className="relative group text-gray-700 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] bg-yellow-300 text-black px-2 rounded"
+                                    className="relative group text-gray-700 dark:text-white hover:text-brandCyan dark:hover:text-brandCyan bg-yellow-300 text-black px-2 rounded"
                                 >
                                     Бүртгүүлэх
-                                    <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#1D9BF0] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                                    <span className="absolute left-0 bottom-0 w-full h-0.5 bg-brandCyan scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                                 </Link>
                             </>
                         )}
@@ -135,7 +135,7 @@ export default function Header() {
                                                 <Link
                                                     href="/subscription"
                                                     onClick={() => setIsMenuOpen(false)}
-                                                    className="block text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                                    className="block text-xl font-medium text-gray-800 dark:text-white hover:text-brandCyan dark:hover:text-brandCyan"
                                                 >
                                                     Subscription
                                                 </Link>
@@ -147,7 +147,7 @@ export default function Header() {
                                                     logout();
                                                     setIsMenuOpen(false);
                                                 }}
-                                                className="block text-left w-full text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                                className="block text-left w-full text-xl font-medium text-gray-800 dark:text-white hover:text-brandCyan dark:hover:text-brandCyan"
                                             >
                                                 Гарах
                                             </button>
@@ -159,7 +159,7 @@ export default function Header() {
                                             <Link
                                                 href="/login"
                                                 onClick={() => setIsMenuOpen(false)}
-                                                className="block text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                                className="block text-xl font-medium text-gray-800 dark:text-white hover:text-brandCyan dark:hover:text-brandCyan"
                                             >
                                                 Нэвтрэх
                                             </Link>
@@ -168,7 +168,7 @@ export default function Header() {
                                             <Link
                                                 href="/register"
                                                 onClick={() => setIsMenuOpen(false)}
-                                                className="block text-xl font-medium text-gray-800 dark:text-white hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0] bg-yellow-300 text-black px-2 rounded"
+                                                className="block text-xl font-medium text-gray-800 dark:text-white hover:text-brandCyan dark:hover:text-brandCyan bg-yellow-300 text-black px-2 rounded"
                                             >
                                                 Бүртгүүлэх
                                             </Link>
@@ -184,7 +184,7 @@ export default function Header() {
                                         <Link
                                             href="/"
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                            className="flex items-center gap-2 hover:text-brandCyan dark:hover:text-brandCyan"
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -207,7 +207,7 @@ export default function Header() {
                                     <Link
                                         href="/wallet"
                                         onClick={() => setIsMenuOpen(false)}
-                                        className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                        className="flex items-center gap-2 hover:text-brandCyan dark:hover:text-brandCyan"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -230,7 +230,7 @@ export default function Header() {
                                     <Link
                                         href="/salon"
                                         onClick={() => setIsMenuOpen(false)}
-                                        className="flex items-center gap-2 hover:text-brandPink dark:hover:text-brandPink"
+                                        className="flex items-center gap-2 hover:text-brandCyan dark:hover:text-brandCyan"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -254,7 +254,7 @@ export default function Header() {
                                         <Link
                                             href="/subscription"
                                             onClick={() => setIsMenuOpen(false)}
-                                                className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                                className="flex items-center gap-2 hover:text-brandCyan dark:hover:text-brandCyan"
                                             >
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -278,7 +278,7 @@ export default function Header() {
                                         <Link
                                             href="/users"
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                            className="flex items-center gap-2 hover:text-brandCyan dark:hover:text-brandCyan"
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -301,7 +301,7 @@ export default function Header() {
                                         <Link
                                             href="/settings"
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="flex items-center gap-2 hover:text-[#1D9BF0] dark:hover:text-[#1D9BF0]"
+                                            className="flex items-center gap-2 hover:text-brandCyan dark:hover:text-brandCyan"
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"

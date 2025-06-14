@@ -72,7 +72,7 @@ export default function NewPostPage() {
                     onClick={triggerFileInput}
                     className="p-2 border border-gray-200 dark:border-black rounded-full hover:bg-gray-100 dark:hover:bg-black"
                 >
-                    <FiCamera className="w-5 h-5 text-[#1D9BF0]" />
+                    <FiCamera className="w-5 h-5 text-brandCyan" />
                 </button>
                 {imageFile && (
                     <span className="block text-xs text-gray-700 truncate">
@@ -120,7 +120,7 @@ export default function NewPostPage() {
                 {error && <p className="text-red-500 text-xs">{error}</p>}
                 <button
                     onClick={createPost}
-                    className="mt-3 bg-[#1D9BF0] text-white text-xs px-4 py-2 rounded hover:bg-[#1A8CD8]"
+                    className="mt-3 bg-brandCyan text-black text-xs px-4 py-2 rounded hover:bg-[#00d4d4]"
                 >
                     Post
                 </button>

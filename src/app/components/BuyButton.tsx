@@ -20,9 +20,9 @@ export default function BuyButton({ bookId, finalPrice }: BuyButtonProps) {
         <>
             <button
                 onClick={handleBuy}
-                className="bg-[#1D9BF0] text-white px-6 py-2 rounded
+                className="bg-brandCyan text-black px-6 py-2 rounded
                    hover:opacity-90 hover:scale-[1.02]
-                   transition focus:outline-none focus:ring-2 focus:ring-[#1D9BF0]"
+                   transition focus:outline-none focus:ring-2 focus:ring-brandCyan"
             >
                 Худалдаж авах
             </button>

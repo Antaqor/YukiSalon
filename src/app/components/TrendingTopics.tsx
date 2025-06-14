@@ -46,7 +46,7 @@ const TrendingTopics: React.FC = () => {
   return (
     <div className="p-4 transition-shadow duration-200 hover:shadow-md">
       <h2 className="flex items-center font-semibold mb-3">
-        <FiTrendingUp className="w-5 h-5 mr-2 text-[#1D9BF0]" />
+        <FiTrendingUp className="w-5 h-5 mr-2 text-brandCyan" />
         Юу болж байна вэ
       </h2>
       <ul className="space-y-2 text-sm">

@@ -35,13 +35,13 @@ export default function SalonPage() {
           alt="Yuki Salon"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <h1 className="absolute bottom-4 left-4 text-3xl font-bold text-brandPink drop-shadow-md">
+        <h1 className="absolute bottom-4 left-4 text-3xl font-bold text-brandCyan drop-shadow-md">
           Yuki Salon
         </h1>
       </div>
 
       <div className="max-w-md w-full p-4 space-y-4">
-        <h2 className="text-2xl font-semibold text-center text-brandPink">
+        <h2 className="text-2xl font-semibold text-center text-brandCyan">
           Book your time
         </h2>
         <ul className="grid grid-cols-2 gap-4">
@@ -53,7 +53,7 @@ export default function SalonPage() {
                 className={`w-full py-2 rounded text-sm font-medium transition-colors ${
                   booked.includes(t)
                     ? "bg-gray-500 cursor-not-allowed"
-                    : "bg-brandPink hover:bg-pink-600"
+                    : "bg-brandCyan hover:bg-pink-600"
                 }`}
               >
                 {booked.includes(t) ? `Booked ${t}` : t}
@@ -63,7 +63,7 @@ export default function SalonPage() {
         </ul>
         {booked.length > 0 && (
           <div className="mt-4">
-            <h3 className="text-lg font-semibold mb-2 text-brandPink">
+            <h3 className="text-lg font-semibold mb-2 text-brandCyan">
               Your bookings
             </h3>
             <ul className="space-y-1 text-sm">

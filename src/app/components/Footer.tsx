@@ -14,13 +14,13 @@ const Footer: React.FC = () => {
 
                 {/* Navigation Links */}
                 <nav className="text-sm space-x-4">
-                    <Link href="/terms" className="hover:text-brandPink">
+                    <Link href="/terms" className="hover:text-brandCyan">
                         Terms
                     </Link>
-                    <Link href="/privacy" className="hover:text-brandPink">
+                    <Link href="/privacy" className="hover:text-brandCyan">
                         Privacy
                     </Link>
-                    <Link href="/contact" className="hover:text-brandPink">
+                    <Link href="/contact" className="hover:text-brandCyan">
                         Contact
                     </Link>
                 </nav>
