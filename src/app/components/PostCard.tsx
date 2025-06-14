@@ -84,7 +84,7 @@ export default function PostCard({ post, user }: Props) {
           <img
             src={`${BASE_URL}${user.profilePicture}`}
             alt="avatar"
-            className="w-10 h-10 rounded-full object-cover blur-sm group-hover:blur-0 transition"
+            className="w-10 h-10 rounded-full object-cover"
           />
         ) : (
           <div className="w-10 h-10 rounded-full bg-gray-300" />

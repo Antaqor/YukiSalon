@@ -65,10 +65,6 @@ interface Post {
   user?: UserData;
 }
 
-interface Hashtag {
-  tag: string;
-  count: number;
-}
 
 // ────────────────────────────────────────────────────────────────
 // Component
@@ -82,8 +78,6 @@ export default function HomePage() {
   const [content, setContent] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [error, setError] = useState("");
-  const [trendingHashtags, setTrendingHashtags] = useState<Hashtag[]>([]);
-  const [filterHashtag, setFilterHashtag] = useState<string>("");
   const [commentTexts, setCommentTexts] = useState<Record<string, string>>({});
   const [replyTexts, setReplyTexts] = useState<Record<string, string>>({});
   const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
@@ -133,14 +127,9 @@ export default function HomePage() {
           params,
         });
         if (append) {
-          setPosts((prev) => {
-            const merged = [...prev, ...data];
-            computeTrendingHashtags(merged);
-            return merged;
-          });
+          setPosts((prev) => [...prev, ...data]);
           setAllPosts((prev) => [...prev, ...data]);
         } else {
-          computeTrendingHashtags(data);
           setPosts(data);
           setAllPosts(data);
         }
@@ -186,28 +175,7 @@ export default function HomePage() {
   // ────────────────────────────────────────────────────────────
   // Helpers
   // ────────────────────────────────────────────────────────────
-  const computeTrendingHashtags = (postsData: Post[]) => {
-    const hashtagCount: Record<string, number> = {};
-    postsData.forEach((post) => {
-      const hashtags = post.content.match(/#\w+/g);
-      if (hashtags)
-        hashtags.forEach((tag) => {
-          hashtagCount[tag] = (hashtagCount[tag] || 0) + 1;
-        });
-    });
 
-    const trending = Object.entries(hashtagCount)
-      .map(([tag, count]) => ({ tag, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
-    setTrendingHashtags(trending);
-  };
-
-  const filterPostsByHashtag = (hashtag: string) => {
-    setFilterHashtag(hashtag);
-    if (!hashtag) return setPosts(allPosts);
-    setPosts(allPosts.filter((p) => p.content.includes(hashtag)));
-  };
 
   const triggerFileInput = () => fileInputRef.current?.click();
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -242,11 +210,7 @@ export default function HomePage() {
         },
       });
 
-      setPosts((prev) => {
-        const updated = [data.post, ...prev];
-        computeTrendingHashtags(updated);
-        return updated;
-      });
+      setPosts((prev) => [data.post, ...prev]);
       setAllPosts((prev) => [data.post, ...prev]);
       setContent("");
       setImageFile(null);
@@ -406,38 +370,7 @@ export default function HomePage() {
             "var(--barcelona-threadline-column-width) minmax(0, 1fr)",
         }}
       >
-        {/* Sidebar: trending hashtags */}
-        <aside>
-          <div className="bg-white p-4 grid gap-3">
-            <div className="grid grid-cols-[auto,1fr] items-center gap-2">
-              <FiCamera className="w-5 h-5 text-brandCyan" />
-              <h2 className="text-base font-semibold">Тренд хэштегүүд</h2>
-            </div>
-            <div
-              className="gap-2"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
-              }}
-            >
-              <button
-                className="px-3 py-1 text-xs bg-gray-200 rounded-full hover:bg-gray-300"
-                onClick={() => filterPostsByHashtag("")}
-              >
-                Бүх
-              </button>
-              {trendingHashtags.map((h) => (
-                <button
-                  key={h.tag}
-                  className="px-3 py-1 text-xs bg-gray-200 rounded-full hover:bg-gray-300"
-                  onClick={() => filterPostsByHashtag(h.tag)}
-                >
-                  {h.tag} ({h.count})
-                </button>
-              ))}
-            </div>
-          </div>
-        </aside>
+
 
         {/* Main content */}
         <main>
@@ -536,7 +469,7 @@ export default function HomePage() {
                           <img
                             src={`${BASE_URL}${postUser.profilePicture}`}
                             alt="Avatar"
-                            className="w-12 h-12 object-cover rounded-md blur-sm group-hover:blur-0 transition"
+                            className="w-12 h-12 object-cover rounded-md"
                             onError={(e) => (e.currentTarget.style.display = "none")}
                           />
                         ) : (

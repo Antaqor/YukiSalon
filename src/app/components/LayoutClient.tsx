@@ -6,7 +6,6 @@ import { AuthProvider } from "../context/AuthContext";
 import { CartProvider } from "../context/CartContext";
 import { ThemeProvider } from "../context/ThemeContext";
 import Header from "./Header";
-import TrendingHashtags from "./TrendingHashtags";
 import TopActiveMembers from "./TopActiveMembers";
 import BottomNav from "./BottomNav";
 import SidebarControl from "./SidebarControl";
@@ -93,7 +92,6 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
               >
                 <div className="space-y-6">
                   <TopActiveMembers />
-                  <TrendingHashtags />
                 </div>
               </aside>
             </main>
