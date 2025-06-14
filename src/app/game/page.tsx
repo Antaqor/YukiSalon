@@ -2,9 +2,9 @@
 
 export const dynamic = "force-dynamic";
 
-import dynamic from "next/dynamic";
+import dynamicImport from "next/dynamic";
 
-const GameClient = dynamic(() => import("./GameClient"), { ssr: false });
+const GameClient = dynamicImport(() => import("./GameClient"), { ssr: false });
 
 export default function GamePage() {
   return <GameClient />;
