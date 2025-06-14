@@ -329,6 +329,14 @@ export default function HomePage() {
         prev.map((p) => (p._id === postId ? { ...p, shares: data.shares } : p))
       );
       setSharedPosts((prev) => [...prev, postId]);
+      const postToShare = posts.find((p) => p._id === postId);
+      const shareLink = `${window.location.origin}/profile/${postToShare?.user?._id || ""}?post=${postId}`;
+      try {
+        await navigator.clipboard.writeText(shareLink);
+        alert("Share link copied!");
+      } catch {
+        console.warn("Clipboard copy failed");
+      }
     } catch (err) {
       console.error("Share error:", err);
     }
@@ -522,14 +530,14 @@ export default function HomePage() {
                     className="bg-white dark:bg-black p-6 grid gap-4 border-b border-gray-200 dark:border-[#2F3336]"
                   >
                     {/* Header */}
-                    <div className="grid grid-cols-[auto,1fr] gap-5">
+                    <div className="grid grid-cols-[auto,1fr] gap-5 group">
                       {/* Avatar */}
                       <div className="self-start">
                         {postUser?.profilePicture ? (
                           <img
                             src={`${BASE_URL}${postUser.profilePicture}`}
                             alt="Avatar"
-                            className="w-12 h-12 object-cover rounded-md"
+                            className="w-12 h-12 object-cover rounded-md blur-sm group-hover:blur-0 transition"
                             onError={(e) => (e.currentTarget.style.display = "none")}
                           />
                         ) : (

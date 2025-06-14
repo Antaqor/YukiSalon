@@ -79,12 +79,12 @@ export default function PostCard({ post, user }: Props) {
   };
   return (
     <div className="bg-white dark:bg-black p-6 grid gap-4 border-b border-gray-200 dark:border-[#2F3336]">
-      <div className="flex gap-3">
+      <div className="flex gap-3 group">
         {user.profilePicture ? (
           <img
             src={`${BASE_URL}${user.profilePicture}`}
             alt="avatar"
-            className="w-10 h-10 rounded-full object-cover"
+            className="w-10 h-10 rounded-full object-cover blur-sm group-hover:blur-0 transition"
           />
         ) : (
           <div className="w-10 h-10 rounded-full bg-gray-300" />
