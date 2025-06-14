@@ -40,7 +40,7 @@ export default function Header() {
             )}
 
             <div
-                className={`fixed top-0 left-0 w-full z-[999] bg-white/30 dark:bg-white/10 backdrop-blur-xl shadow-md transition-transform duration-300 ${hideHeader ? "-translate-y-full" : "translate-y-0"}`}
+                className={`fixed top-0 left-0 w-full z-[999] bg-gradient-to-b from-white/40 via-white/20 to-transparent dark:from-white/20 dark:via-white/10 dark:to-transparent backdrop-blur-xl shadow-md transition-transform duration-300 ${hideHeader ? "-translate-y-full" : "translate-y-0"}`}
             >
                 {/* NAV BAR */}
                 <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center">
