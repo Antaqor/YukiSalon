@@ -22,7 +22,6 @@ import {
 } from "@heroicons/react/24/outline";
 import { FiCamera } from "react-icons/fi";
 import LoadingSpinner from "./components/LoadingSpinner";
-import HomeSlider from "./components/HomeSlider";
 import { motion } from "framer-motion";
 import { formatPostDate } from "./lib/formatDate";
 import useCurrentLocation from "./hooks/useCurrentLocation";
@@ -228,6 +227,7 @@ export default function HomePage() {
   const createPost = async () => {
     setError("");
     if (!content.trim()) return setError("Контентыг бөглөнө үү");
+    if (content.length > 500) return setError("Хэт урт контент");
     if (!user?.accessToken) return setError("Нэвтэрч ороогүй байна.");
 
     try {
@@ -387,7 +387,7 @@ export default function HomePage() {
   // UI
   // ────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-900">
+    <div className="min-h-screen bg-white text-gray-900">
       {/* Membership banner */}
       {loggedIn && !isPro && (
         <div className="bg-yellow-500 text-white text-center py-2 px-4">
@@ -397,7 +397,6 @@ export default function HomePage() {
         </div>
       )}
 
-      <HomeSlider />
 
       {/* Outer grid */}
       <div
@@ -472,7 +471,7 @@ export default function HomePage() {
                 />
                 <button
                   onClick={triggerFileInput}
-                  className="p-2 border border-gray-200 rounded-full hover:bg-gray-100"
+                  className="p-2 border border-gray-200 rounded-full hover:bg-gray-200"
                 >
                   <FiCamera className="w-5 h-5 text-brandCyan" />
                 </button>
@@ -484,7 +483,7 @@ export default function HomePage() {
               </div>
 
 
-              <textarea
+              <textarea maxLength={500}
                 placeholder="What's on your mind?"
                 className="w-full text-sm text-gray-900 border border-gray-200 rounded p-2 focus:outline-none"
                 rows={3}

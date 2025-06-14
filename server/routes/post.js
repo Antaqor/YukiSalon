@@ -197,6 +197,9 @@ router.post("/:id/like", authenticateToken, async (req, res) => {
     post.likes.push(req.user._id);
     await post.save();
     await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
+    if (post.user && post.user.toString() !== req.user._id.toString()) {
+      await User.findByIdAndUpdate(post.user, { $inc: { rating: 1 } });
+    }
     await post.populate("likes", "username");
 
     res.json({ message: "Post liked", likesCount: post.likes.length, likes: post.likes });
@@ -276,7 +279,9 @@ router.post("/:id/share", authenticateToken, async (req, res) => {
     await post.save();
 
     await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
-
+    if (post.user && post.user.toString() !== req.user._id.toString()) {
+      await User.findByIdAndUpdate(post.user, { $inc: { rating: 1 } });
+    }
     res.json({ shares: post.shares });
   } catch (err) {
     console.error("Share error:", err);
