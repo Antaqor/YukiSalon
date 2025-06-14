@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef, useState } from "react";
-import { FiCamera } from "react-icons/fi";
+import { FiCamera, FiX } from "react-icons/fi";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
@@ -14,6 +14,7 @@ export default function NewPostPage() {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [error, setError] = useState("");
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const MAX_LENGTH = 500;
 
     const triggerFileInput = () => {
         fileInputRef.current?.click();
@@ -23,6 +24,10 @@ export default function NewPostPage() {
         if (e.target.files?.[0]) {
             setImageFile(e.target.files[0]);
         }
+    };
+
+    const removeImage = () => {
+        setImageFile(null);
     };
 
     const createPost = async () => {
@@ -59,9 +64,9 @@ export default function NewPostPage() {
     };
 
     return (
-        <div className="min-h-screen bg-white text-gray-900 p-4">
-            <div className="max-w-xl mx-auto space-y-4">
-                <h1 className="text-xl font-bold">Create Post</h1>
+        <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center p-4">
+            <div className="w-full max-w-xl space-y-6 bg-gray-900 p-6 rounded-2xl shadow-xl transition-smooth">
+                <h1 className="text-2xl font-semibold">Create Post</h1>
                 <input
                     type="file"
                     accept="image/*"
@@ -69,28 +74,50 @@ export default function NewPostPage() {
                     onChange={handleFileChange}
                     className="hidden"
                 />
-                <button
-                    onClick={triggerFileInput}
-                    className="p-2 border border-gray-200 rounded-full hover:bg-gray-200"
-                >
-                    <FiCamera className="w-5 h-5 text-brandCyan" />
-                </button>
-                {imageFile && (
-                    <span className="block text-xs text-gray-700 truncate">
-                        {imageFile.name}
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={triggerFileInput}
+                        className="p-3 border border-gray-700 rounded-full tesla-hover"
+                        aria-label="Add image"
+                    >
+                        <FiCamera className="w-5 h-5 text-brandCyan" />
+                    </button>
+                    {imageFile && (
+                        <div className="relative w-full">
+                            <img
+                                src={URL.createObjectURL(imageFile)}
+                                alt="preview"
+                                className="h-32 w-full object-cover rounded-lg"
+                            />
+                            <button
+                                type="button"
+                                onClick={removeImage}
+                                className="absolute top-1 right-1 bg-black/60 text-white p-1 rounded-full"
+                            >
+                                <FiX className="w-3 h-3" />
+                            </button>
+                        </div>
+                    )}
+                </div>
+                <div className="relative">
+                    <textarea
+                        maxLength={MAX_LENGTH}
+                        placeholder="What's happening?"
+                        className="w-full bg-gray-800 text-sm text-white border border-gray-700 rounded-lg p-3 pr-12 focus:outline-none focus:border-brandCyan resize-none"
+                        rows={4}
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                    />
+                    <span
+                        className={`absolute bottom-2 right-3 text-xs ${content.length > MAX_LENGTH * 0.9 ? "text-red-500" : "text-gray-400"}`}
+                    >
+                        {content.length}/{MAX_LENGTH}
                     </span>
-                )}
-                <textarea maxLength={500}
-                    placeholder="What's on your mind?"
-                    className="w-full text-sm text-gray-900 border border-gray-200 rounded p-2 focus:outline-none"
-                    rows={3}
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                />
+                </div>
                 {error && <p className="text-red-500 text-xs">{error}</p>}
                 <button
                     onClick={createPost}
-                    className="mt-3 bg-brandCyan text-black text-xs px-4 py-2 rounded hover:bg-[#00d4d4]"
+                    className="w-full bg-brandCyan text-black font-medium px-4 py-2 rounded-lg tesla-hover"
                 >
                     Post
                 </button>
