@@ -7,6 +7,7 @@ import { CartProvider } from "../context/CartContext";
 import { ThemeProvider } from "../context/ThemeContext";
 import Header from "./Header";
 import TrendingHashtags from "./TrendingHashtags";
+import TopActiveMembers from "./TopActiveMembers";
 import BottomNav from "./BottomNav";
 import SidebarControl from "./SidebarControl";
 import NavigationLoader from "./NavigationLoader";
@@ -91,37 +92,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                 className="hidden md:block w-full md:w-1/4 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto p-2 fade-in-up"
               >
                 <div className="space-y-6">
-                  <div className="p-4 transition-shadow duration-200 hover:shadow-md">
-                    <h2 className="flex items-center font-semibold mb-3">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-5 h-5 mr-2 text-brandCyan"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                      </svg>
-                      Идэвхтэй сэдвүүд
-                    </h2>
-                    <ul className="space-y-3">
-                      <li>
-                        <a href="#" className="text-brandCyan hover:underline transition-colors duration-200">
-                          #Инноваци
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#" className="text-brandCyan hover:underline transition-colors duration-200">
-                          #Сүлжээ
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#" className="text-brandCyan hover:underline transition-colors duration-200">
-                          #DAO
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
+                  <TopActiveMembers />
                   <TrendingHashtags />
                 </div>
               </aside>
