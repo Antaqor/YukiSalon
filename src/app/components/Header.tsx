@@ -23,7 +23,7 @@ export default function Header() {
                 `}</style>
             )}
 
-            <div className="fixed top-0 left-0 w-full z-[999] bg-black/70 dark:bg-black/70 backdrop-blur-md border-b-2 border-brandCyan">
+            <div className="fixed top-0 left-0 w-full z-[999] bg-white/30 dark:bg-white/10 backdrop-blur-xl shadow-md">
                 {/* NAV BAR */}
                 <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center">
                     <div className="ml-auto flex items-center space-x-4">
