@@ -48,7 +48,7 @@ const TrendingHashtags: React.FC = () => {
         {tags.map((t) => (
           <span
             key={t.tag}
-            className="px-3 py-1 text-xs bg-gray-200 dark:bg-black rounded-full"
+            className="px-3 py-1 text-xs bg-gray-200 rounded-full"
           >
             {t.tag} ({t.count})
           </span>

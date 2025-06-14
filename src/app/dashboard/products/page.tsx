@@ -143,7 +143,7 @@ export default function ProductDashboardPage() {
 
   /* ── render ──────────────────────────────────────── */
   return (
-    <main className="min-h-screen bg-black text-gray-100 px-4 py-8">
+    <main className="min-h-screen bg-white text-black px-4 py-8">
       <div className="max-w-5xl mx-auto space-y-10">
         <h1 className="text-3xl font-bold mb-2 text-center uppercase tracking-wider">
           Барааны Админ Самбар
@@ -152,7 +152,7 @@ export default function ProductDashboardPage() {
         {status && <p className="text-center text-red-400 mb-4">{status}</p>}
 
         {/* ── create form ─────────────────────────────── */}
-        <section className="bg-[#16181C] border border-gray-700 p-4 rounded space-y-4">
+        <section className="bg-white border border-gray-300 p-4 rounded space-y-4">
           <h2 className="text-xl font-semibold">Бараа нэмэх</h2>
 
           <form
@@ -270,9 +270,9 @@ function ProductRow({
   const [salePrice, setSalePrice] = useState(product.salePrice);
 
   return (
-    <div className="bg-[#16181C] border border-gray-700 p-4 rounded flex flex-col md:flex-row gap-4 items-start">
+    <div className="bg-white border border-gray-300 p-4 rounded flex flex-col md:flex-row gap-4 items-start">
       {/* thumbnail */}
-      <div className="w-24 h-24 bg-[#222] flex-shrink-0 overflow-hidden">
+      <div className="w-24 h-24 bg-gray-100 flex-shrink-0 overflow-hidden">
         {product.imageUrl ? (
           <img
             src={`https://www.vone.mn/${product.imageUrl}`}
@@ -289,9 +289,9 @@ function ProductRow({
       {/* editable fields */}
       <div className="flex-1 grid grid-cols-2 gap-2">
         <div className="col-span-2">
-          <label className="text-sm text-gray-300">Нэр</label>
+          <label className="text-sm text-gray-700">Нэр</label>
           <input
-            className="w-full bg-gray-800 p-1 rounded"
+            className="w-full bg-gray-100 p-1 rounded"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -308,25 +308,25 @@ function ProductRow({
         </div>
 
         <div className="col-span-2">
-          <label className="text-sm text-gray-300">Тайлбар</label>
+          <label className="text-sm text-gray-700">Тайлбар</label>
           <textarea
-            className="w-full bg-gray-800 p-1 rounded"
+            className="w-full bg-gray-100 p-1 rounded"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
 
         <div className="col-span-2 flex items-center gap-3">
-          <label className="text-sm text-gray-300">Хямдрал?</label>
+          <label className="text-sm text-gray-700">Хямдрал?</label>
           <input
             type="checkbox"
             checked={saleActive}
             onChange={(e) => setSaleActive(e.target.checked)}
           />
-          <label className="text-sm text-gray-300">Sale Price:</label>
+          <label className="text-sm text-gray-700">Sale Price:</label>
           <input
             type="number"
-            className="bg-gray-800 p-1 rounded w-20"
+            className="bg-gray-100 p-1 rounded w-20"
             value={salePrice}
             onChange={(e) => setSalePrice(Number(e.target.value))}
           />

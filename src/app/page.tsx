@@ -387,7 +387,7 @@ export default function HomePage() {
   // UI
   // ────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-black text-gray-900 dark:text-white">
+    <div className="min-h-screen bg-gray-100 text-gray-900">
       {/* Membership banner */}
       {loggedIn && !isPro && (
         <div className="bg-yellow-500 text-white text-center py-2 px-4">
@@ -409,7 +409,7 @@ export default function HomePage() {
       >
         {/* Sidebar: trending hashtags */}
         <aside>
-          <div className="bg-white dark:bg-black p-4 grid gap-3">
+          <div className="bg-white p-4 grid gap-3">
             <div className="grid grid-cols-[auto,1fr] items-center gap-2">
               <FiCamera className="w-5 h-5 text-brandCyan" />
               <h2 className="text-base font-semibold">Тренд хэштегүүд</h2>
@@ -422,7 +422,7 @@ export default function HomePage() {
               }}
             >
               <button
-                className="px-3 py-1 text-xs bg-gray-200 dark:bg-black rounded-full hover:bg-gray-300 dark:hover:bg-black"
+                className="px-3 py-1 text-xs bg-gray-200 rounded-full hover:bg-gray-300"
                 onClick={() => filterPostsByHashtag("")}
               >
                 Бүх
@@ -430,7 +430,7 @@ export default function HomePage() {
               {trendingHashtags.map((h) => (
                 <button
                   key={h.tag}
-                  className="px-3 py-1 text-xs bg-gray-200 dark:bg-black rounded-full hover:bg-gray-300 dark:hover:bg-black"
+                  className="px-3 py-1 text-xs bg-gray-200 rounded-full hover:bg-gray-300"
                   onClick={() => filterPostsByHashtag(h.tag)}
                 >
                   {h.tag} ({h.count})
@@ -444,7 +444,7 @@ export default function HomePage() {
         <main>
           {/* Prompt login */}
           {!loggedIn && (
-            <div className="bg-white dark:bg-black p-6 text-center space-y-3">
+            <div className="bg-white p-6 text-center space-y-3">
               <p>Feed үзэхийн тулд нэвтрэх эсвэл бүртгүүлэх шаардлагатай.</p>
               <Link href="/login" className="text-blue-600 underline">
                 Нэвтрэх
@@ -460,7 +460,7 @@ export default function HomePage() {
 
           {/* Create post */}
           {loggedIn && (
-            <div className="bg-white dark:bg-black grid gap-4 p-6">
+            <div className="bg-white grid gap-4 p-6">
               {/* Upload */}
               <div className="grid grid-cols-[auto,1fr] items-center gap-2">
                 <input
@@ -472,7 +472,7 @@ export default function HomePage() {
                 />
                 <button
                   onClick={triggerFileInput}
-                  className="p-2 border border-gray-200 dark:border-black rounded-full hover:bg-gray-100 dark:hover:bg-black"
+                  className="p-2 border border-gray-200 rounded-full hover:bg-gray-100"
                 >
                   <FiCamera className="w-5 h-5 text-brandCyan" />
                 </button>
@@ -486,7 +486,7 @@ export default function HomePage() {
 
               <textarea
                 placeholder="What's on your mind?"
-                className="w-full text-sm text-gray-900 dark:text-white border border-gray-200 dark:border-black rounded p-2 focus:outline-none"
+                className="w-full text-sm text-gray-900 border border-gray-200 rounded p-2 focus:outline-none"
                 rows={3}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
@@ -507,7 +507,7 @@ export default function HomePage() {
             <button
               onClick={refreshPosts}
               aria-label="Refresh feed"
-              className={`p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 ${refreshing ? "animate-spin" : ""}`}
+              className={`p-2 rounded-full hover:bg-gray-200 ${refreshing ? "animate-spin" : ""}`}
             >
               <ArrowPathIcon className="w-5 h-5" />
             </button>
@@ -527,7 +527,7 @@ export default function HomePage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.02 }}
-                    className="bg-white dark:bg-black p-6 grid gap-4 border-b border-gray-200 dark:border-[#2F3336]"
+                    className="bg-white p-6 grid gap-4 border-b border-gray-200"
                   >
                     {/* Header */}
                     <div className="grid grid-cols-[auto,1fr] gap-5 group">
@@ -575,7 +575,7 @@ export default function HomePage() {
                           )}
                         </div>
 
-                        <span className="text-xs text-gray-500 dark:text-white">
+                        <span className="text-xs text-gray-500">
                           {formatPostDate(post.createdAt)}
                         </span>
                         <BoltIcon className="w-3 h-3 text-green-400 ml-1 inline" />
@@ -600,7 +600,7 @@ export default function HomePage() {
                     </div>
 
                     {/* Actions */}
-                    <div className="grid grid-cols-3 items-center text-xs text-gray-600 dark:text-white w-full mt-2">
+                    <div className="grid grid-cols-3 items-center text-xs text-gray-600 w-full mt-2">
                       {/* Like */}
                       <button
                         onClick={() => handleLike(post._id)}
@@ -656,7 +656,7 @@ export default function HomePage() {
                                   className="w-6 h-6 rounded-full object-cover"
                                 />
                               )}
-                              <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded p-2">
+                              <div className="flex-1 bg-gray-100 rounded p-2">
                                 <p className="text-sm font-semibold">
                                   {comment.user?.username}
                                 </p>
@@ -675,7 +675,7 @@ export default function HomePage() {
                                         className="w-5 h-5 rounded-full object-cover"
                                       />
                                     )}
-                                    <div className="flex-1 bg-gray-50 dark:bg-gray-900 rounded p-2">
+                                    <div className="flex-1 bg-gray-50 rounded p-2">
                                       <p className="text-xs font-semibold">
                                         {reply.user?.username}
                                       </p>
@@ -689,7 +689,7 @@ export default function HomePage() {
                                   <input
                                     type="text"
                                     placeholder="Reply..."
-                                    className="flex-1 text-xs border border-gray-300 dark:border-gray-700 rounded p-1"
+                                    className="flex-1 text-xs border border-gray-300 rounded p-1"
                                     value={replyTexts[comment._id] || ""}
                                     onChange={(e) =>
                                       setReplyTexts((prev) => ({
@@ -715,7 +715,7 @@ export default function HomePage() {
                           <input
                             type="text"
                             placeholder="Add a comment..."
-                            className="flex-1 text-sm border border-gray-300 dark:border-gray-700 rounded p-2"
+                            className="flex-1 text-sm border border-gray-300 rounded p-2"
                             value={commentTexts[post._id] || ""}
                             onChange={(e) =>
                               setCommentTexts((prev) => ({

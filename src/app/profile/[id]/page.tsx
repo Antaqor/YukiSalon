@@ -111,10 +111,10 @@ export default function PublicProfilePage() {
 
     // ---------------- UI ----------------
     return (
-        <div className="min-h-screen bg-black text-white font-sans">
+        <div className="min-h-screen bg-white text-black font-sans">
             {/* Top Navigation */}
             <div className="fixed top-0 left-0 w-full h-12 flex items-center px-4 backdrop-blur-md z-10 bg-black/60">
-                <button onClick={() => router.back()} aria-label="Back" className="mr-2 text-white">&#8592;</button>
+                <button onClick={() => router.back()} aria-label="Back" className="mr-2 text-black">&#8592;</button>
                 <h1 className="font-bold flex-1 text-center">{userData.username}</h1>
             </div>
 

@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const Footer: React.FC = () => {
     return (
-        <footer className="bg-gray-100 dark:bg-black text-gray-600 dark:text-white py-6 mt-8">
+        <footer className="bg-white text-gray-600 py-6 mt-8">
             <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 {/* Copyright Text */}
                 <p className="text-sm mb-2 sm:mb-0">

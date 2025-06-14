@@ -78,7 +78,7 @@ export default function PostCard({ post, user }: Props) {
     }
   };
   return (
-    <div className="bg-white dark:bg-black p-6 grid gap-4 border-b border-gray-200 dark:border-[#2F3336]">
+    <div className="bg-white p-6 grid gap-4 border-b border-gray-200">
       <div className="flex gap-3 group">
         {user.profilePicture ? (
           <img
@@ -91,7 +91,7 @@ export default function PostCard({ post, user }: Props) {
         )}
         <div className="flex-1">
           <div className="flex items-center gap-1 text-sm">
-            <span className="font-bold text-white">{user.username}</span>
+            <span className="font-bold text-black">{user.username}</span>
             {isPro && <FaCheckCircle className="text-yellow-400 w-3 h-3" />}
             <span className="text-gray-400 ml-1 text-xs">
               {formatPostDate(post.createdAt)}
@@ -100,7 +100,7 @@ export default function PostCard({ post, user }: Props) {
           </div>
           <div className="relative">
             {post.content && (
-              <p className="text-gray-200 text-sm mt-1 whitespace-pre-wrap">
+              <p className="text-gray-800 text-sm mt-1 whitespace-pre-wrap">
                 {post.content}
               </p>
             )}
@@ -112,10 +112,10 @@ export default function PostCard({ post, user }: Props) {
               />
             )}
           </div>
-          <div className="grid grid-cols-3 items-center text-gray-400 text-xs mt-3">
+          <div className="grid grid-cols-3 items-center text-gray-500 text-xs mt-3">
             <button
               onClick={handleLike}
-              className="flex items-center justify-center gap-1 hover:text-gray-200"
+              className="flex items-center justify-center gap-1 hover:text-gray-700"
               aria-label="Like"
             >
               {liked ? (
@@ -128,7 +128,7 @@ export default function PostCard({ post, user }: Props) {
             <span className="text-center">{post.comments?.length || 0} Comments</span>
             <button
               onClick={handleShare}
-              className="flex items-center justify-center gap-1 hover:text-gray-200"
+              className="flex items-center justify-center gap-1 hover:text-gray-700"
               aria-label="Share"
             >
               <ShareIcon className={shared ? "w-4 h-4 text-green-500" : "w-4 h-4"} />

@@ -55,7 +55,7 @@ export default function NewPostPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-black text-gray-900 dark:text-white p-4">
+        <div className="min-h-screen bg-gray-100 text-gray-900 p-4">
             <div className="max-w-xl mx-auto space-y-4">
                 <h1 className="text-xl font-bold">Create Post</h1>
                 <input
@@ -67,7 +67,7 @@ export default function NewPostPage() {
                 />
                 <button
                     onClick={triggerFileInput}
-                    className="p-2 border border-gray-200 dark:border-black rounded-full hover:bg-gray-100 dark:hover:bg-black"
+                    className="p-2 border border-gray-200 rounded-full hover:bg-gray-100"
                 >
                     <FiCamera className="w-5 h-5 text-brandCyan" />
                 </button>
@@ -78,7 +78,7 @@ export default function NewPostPage() {
                 )}
                 <textarea
                     placeholder="What's on your mind?"
-                    className="w-full text-sm text-gray-900 dark:text-white border border-gray-200 dark:border-black rounded p-2 focus:outline-none"
+                    className="w-full text-sm text-gray-900 border border-gray-200 rounded p-2 focus:outline-none"
                     rows={3}
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
