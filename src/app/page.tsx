@@ -20,11 +20,10 @@ import {
   ShareIcon,
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
-import { FiCamera } from "react-icons/fi";
+import { FiCamera, FiSmile } from "react-icons/fi";
 import LoadingSpinner from "./components/LoadingSpinner";
 import { motion } from "framer-motion";
 import { formatPostDate } from "./lib/formatDate";
-import useCurrentLocation from "./hooks/useCurrentLocation";
 
 // ────────────────────────────────────────────────────────────────
 // Types
@@ -78,6 +77,7 @@ export default function HomePage() {
   const [content, setContent] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [error, setError] = useState("");
+  const [showEmojis, setShowEmojis] = useState(false);
   const [commentTexts, setCommentTexts] = useState<Record<string, string>>({});
   const [replyTexts, setReplyTexts] = useState<Record<string, string>>({});
   const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
@@ -89,8 +89,8 @@ export default function HomePage() {
   const loadingPostsRef = useRef(false);
   const [refreshing, setRefreshing] = useState(false);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const emojis = ["😀","😂","😍","😢","👍","🙏","🔥","🎉","🤔","🤩"];
 
-  const viewerCoords = useCurrentLocation();
   const isPro =
     user?.subscriptionExpiresAt &&
     new Date(user.subscriptionExpiresAt) > new Date();
@@ -105,7 +105,7 @@ export default function HomePage() {
   }, [loading, loggedIn, router]);
 
   // ────────────────────────────────────────────────────────────
-  // Fetch posts (location-aware smart sort)
+  // Fetch posts (latest first)
   // ────────────────────────────────────────────────────────────
   const fetchPosts = useCallback(
     async (page: number, append = false) => {
@@ -114,15 +114,9 @@ export default function HomePage() {
       setLoadingPosts(true);
       try {
         const params: Record<string, string | number> = {
-          sort: "smart",
           page,
           limit: 10,
         };
-        if (viewerCoords) {
-          params.currentLocation = `${viewerCoords.latitude},${viewerCoords.longitude}`;
-        } else if (user?.location) {
-          params.currentLocation = user.location;
-        }
         const { data } = await axios.get<Post[]>(`${BASE_URL}/api/posts`, {
           params,
         });
@@ -148,7 +142,7 @@ export default function HomePage() {
         loadingPostsRef.current = false;
       }
     },
-    [user, viewerCoords]
+    [user]
   );
 
   useEffect(() => {
@@ -394,7 +388,7 @@ export default function HomePage() {
           {loggedIn && (
             <div className="bg-white grid gap-4 p-6">
               {/* Upload */}
-              <div className="grid grid-cols-[auto,1fr] items-center gap-2">
+              <div className="grid grid-cols-[auto,auto,1fr] items-center gap-2 relative">
                 <input
                   type="file"
                   accept="image/*"
@@ -408,6 +402,21 @@ export default function HomePage() {
                 >
                   <FiCamera className="w-5 h-5 text-brandCyan" />
                 </button>
+                <button
+                  onClick={() => setShowEmojis((p) => !p)}
+                  className="p-2 border border-gray-200 rounded-full hover:bg-gray-200"
+                >
+                  <FiSmile className="w-5 h-5 text-brandCyan" />
+                </button>
+                {showEmojis && (
+                  <div className="absolute left-0 top-full mt-2 bg-white border rounded shadow grid grid-cols-5 gap-1 p-2 z-10">
+                    {emojis.map((e) => (
+                      <button key={e} onClick={() => setContent((c) => c + e)} className="text-xl">
+                        {e}
+                      </button>
+                    ))}
+                  </div>
+                )}
                 {imageFile && (
                   <span className="text-xs text-gray-700 truncate">
                     {imageFile.name}
