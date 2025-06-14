@@ -6,14 +6,14 @@ import LayoutClient from "./components/LayoutClient";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    metadataBase: new URL(" https://www.vone.mn"),
+    metadataBase: new URL("https://www.vone.mn"),
     title: {
         default: "VONE",
         template: "%s | VONE",
     },
-    description: "VONE - Сүлжээ ба инновацийн дараагийн үеийн платформ.",
-    keywords: ["VONE", "Community", "DAO", "Network", "Zaluusiin Network"],
-    authors: [{ name: "Vone Tech", url: " https://www.vone.mn" }],
+    description: "VONE - Сүлжээ, инноваци, олон нийтийн хүчийг нэгтгэсэн платформ.",
+    keywords: ["VONE", "Community", "DAO", "Network", "Innovation", "Social Network"],
+    authors: [{ name: "Vone Tech", url: "https://www.vone.mn" }],
     verification: {
         google: "YOUR_GOOGLE_SITE_VERIFICATION_TOKEN",
         yandex: "YOUR_YANDEX_SITE_VERIFICATION_TOKEN",
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "VONE – Дараагийн үеийн платформ",
         description: "VONE CLAN-д нэгдээрэй – Сүлжээ, инновацийн хамт олон.",
-        url: " https://www.vone.mn",
+        url: "https://www.vone.mn",
         siteName: "VONE",
         images: [
             {
@@ -44,10 +44,10 @@ export const metadata: Metadata = {
         creator: "@your_twitter_handle",
     },
     alternates: {
-        canonical: " https://www.vone.mn",
+        canonical: "https://www.vone.mn",
         languages: {
-            "mn-MN": " https://www.vone.mn/mn-mn",
-            "en-US": " https://www.vone.mn/en-us",
+            "mn-MN": "https://www.vone.mn/mn-mn",
+            "en-US": "https://www.vone.mn/en-us",
         },
     },
     icons: {
@@ -63,8 +63,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="mn" className="dark">
-            <body className={`${inter.className} flex flex-col min-h-screen bg-black text-white`}>
+        <html lang="mn">
+            <body className={`${inter.className} flex flex-col min-h-screen bg-white text-gray-900`}>
                 <LayoutClient>{children}</LayoutClient>
             </body>
         </html>

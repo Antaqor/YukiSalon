@@ -44,8 +44,8 @@ export default function Header() {
             >
                 {/* NAV BAR */}
                 <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center">
-                    <Link href="/" className="flex items-center" aria-label="Home">
-                        <img src="/antaqor-wolf.svg" alt="Antaqor" className="w-8 h-8 mr-4" />
+                    <Link href="/" className="flex items-center text-2xl font-bold text-brandCyan" aria-label="Home">
+                        Vone
                     </Link>
                     <div className="ml-auto flex items-center space-x-4">
                         {loggedIn ? (
@@ -199,7 +199,7 @@ export default function Header() {
                             </ul>
 
                             {/* Additional Nav Items */}
-                            <div className="mt-10 border-t border-gray-200 dark:border-gray-700 pt-6">
+                            <div className="mt-10 border-t border-supportBorder pt-6">
                                 <ul className="space-y-4 text-lg font-semibold text-gray-700 dark:text-white">
                                     <li>
                                         <Link

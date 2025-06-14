@@ -37,7 +37,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
             <main className="flex-grow flex flex-col md:flex-row gap-0 pt-16">
               <aside
                 id="left-sidebar"
-                className="hidden md:block w-full md:w-1/4 border-r border-gray-200 dark:border-gray-700 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto fade-in-up"
+                className="hidden md:block w-full md:w-1/4 border-r border-supportBorder sticky top-16 h-[calc(100vh-80px)] overflow-y-auto fade-in-up"
               >
                 <nav>
                   <ul className="space-y-1">
@@ -83,7 +83,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                   </ul>
                 </nav>
               </aside>
-              <div className="w-full md:w-1/2 md:border-r md:border-gray-200 dark:md:border-gray-700">
+              <div className="w-full md:w-1/2 md:border-r md:border-supportBorder">
                 <div className="space-y-6">{children}</div>
               </div>
               <aside
@@ -127,7 +127,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
               </aside>
             </main>
           </div>
-          <footer className="w-full text-sm text-center py-4 border-t border-gray-300">
+          <footer className="w-full text-sm text-center py-4 border-t border-supportBorder">
             <p className="text-gray-600">© 2025 THE VONE CLAN. Бүх эрх хуулиар хамгаалагдсан.</p>
           </footer>
           <BottomNav />
