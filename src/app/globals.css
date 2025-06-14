@@ -23,6 +23,11 @@ html {
     --support-border: #F6F3E1;
 }
 
+html.dark {
+    background-color: #080808;
+    color-scheme: dark;
+}
+
 /* Minimal fade-in-up animation for sidebars */
 @keyframes fadeInUp {
     0% {
