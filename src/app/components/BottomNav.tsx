@@ -31,8 +31,8 @@ const BottomNav: React.FC = () => {
 
     return (
         <nav
-            className={`fixed bottom-0 left-0 w-full md:hidden transition-all backdrop-blur-xl border-t border-white/30 dark:border-white/10 shadow-lg ${
-                scrolledDown ? "bg-gradient-to-br from-white/40 via-white/20 to-white/10 dark:from-white/20 dark:via-white/10 dark:to-white/5" : "bg-gradient-to-br from-white/30 via-white/10 to-white/5 dark:from-white/10 dark:via-white/5 dark:to-white/0"
+            className={`fixed bottom-0 left-0 w-full md:hidden transition-all backdrop-blur-xl border-t border-supportBorder shadow-lg ${
+                scrolledDown ? "bg-gradient-to-br from-white/40 via-white/20 to-white/10" : "bg-gradient-to-br from-white/30 via-white/10 to-white/5"
             }`}
         >
             <div

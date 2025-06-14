@@ -17,10 +17,10 @@ body {
 }
 
 html {
-    background-color: #000000;
-    color-scheme: dark;
+    background-color: #ffffff;
+    color-scheme: light;
     --brand-color: #00FFFC;
-    --brand-hover: #00d4d4;
+    --support-border: #F6F3E1;
 }
 
 /* Minimal fade-in-up animation for sidebars */
