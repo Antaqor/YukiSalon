@@ -12,7 +12,6 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "./context/AuthContext";
 import {
   HeartIcon as HeartSolid,
-  LockClosedIcon,
   BoltIcon,
 } from "@heroicons/react/24/solid";
 import {
@@ -40,7 +39,6 @@ interface UserData {
   subscriptionExpiresAt?: string;
   accessToken?: string;
   rating?: number;
-  vntBalance?: number; // wallet balance
 }
 
 interface Reply {
@@ -65,8 +63,6 @@ interface Post {
   likes: string[] | UserData[];
   comments?: Comment[];
   shares?: number;
-  price?: number; // undefined or 0 → free
-  unlockedBy?: (string | UserData)[];
   user?: UserData;
 }
 
@@ -86,8 +82,6 @@ export default function HomePage() {
   const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [content, setContent] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [postType, setPostType] = useState("free");
-  const [price, setPrice] = useState(0);
   const [error, setError] = useState("");
   const [trendingHashtags, setTrendingHashtags] = useState<Hashtag[]>([]);
   const [filterHashtag, setFilterHashtag] = useState<string>("");
@@ -229,7 +223,7 @@ export default function HomePage() {
   };
 
   // ────────────────────────────────────────────────────────────
-  // CRUD (create, like, comment, reply, share, unlock, follow)
+  // CRUD (create, like, comment, reply, share, follow)
   // ────────────────────────────────────────────────────────────
   const createPost = async () => {
     setError("");
@@ -239,7 +233,6 @@ export default function HomePage() {
     try {
       const formData = new FormData();
       formData.append("content", content);
-      formData.append("price", postType === "paid" ? String(price) : "0");
       if (imageFile) formData.append("image", imageFile);
 
       const { data } = await axios.post(`${BASE_URL}/api/posts`, formData, {
@@ -257,8 +250,6 @@ export default function HomePage() {
       setAllPosts((prev) => [data.post, ...prev]);
       setContent("");
       setImageFile(null);
-      setPostType("free");
-      setPrice(0);
     } catch (err) {
       console.error("Create post error:", err);
       setError("Алдаа гарлаа");
@@ -343,31 +334,6 @@ export default function HomePage() {
     }
   };
 
-  const handleUnlock = async (postId: string) => {
-    if (!user || !user._id || !user.accessToken) return;
-    try {
-      const { data } = await axios.post(
-        `${BASE_URL}/api/posts/${postId}/unlock`,
-        {},
-        { headers: { Authorization: `Bearer ${user.accessToken}` } }
-      );
-
-      const userId = user._id;
-      setPosts((prev) =>
-        prev.map((p) =>
-          p._id === postId
-            ? { ...p, unlockedBy: [...(p.unlockedBy ?? []), userId] }
-            : p
-        )
-      );
-
-      if (typeof data.vntBalance === "number") {
-        login({ ...user, vntBalance: data.vntBalance }, user.accessToken);
-      }
-    } catch (err) {
-      console.error("Unlock error:", err);
-    }
-  };
 
   const handleFollow = async (targetId: string) => {
     if (!user?.accessToken) return;
@@ -509,37 +475,6 @@ export default function HomePage() {
                 )}
               </div>
 
-              <div className="space-x-2 text-sm">
-                <label>
-                  <input
-                    type="radio"
-                    name="type"
-                    value="free"
-                    checked={postType === "free"}
-                    onChange={() => setPostType("free")}
-                  />
-                  Free
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="type"
-                    value="paid"
-                    checked={postType === "paid"}
-                    onChange={() => setPostType("paid")}
-                  />
-                  Paid
-                </label>
-              </div>
-              {postType === "paid" && (
-                <input
-                  type="number"
-                  className="w-32 p-1 text-sm bg-gray-200 dark:bg-gray-800 rounded"
-                  placeholder="Price (VNT)"
-                  value={price}
-                  onChange={(e) => setPrice(Number(e.target.value))}
-                />
-              )}
 
               <textarea
                 placeholder="What's on your mind?"
@@ -577,12 +512,6 @@ export default function HomePage() {
             ) : (
               posts.map((post, idx) => {
                 const postUser = post.user;
-                const isLocked =
-                  !!post.price &&
-                  post.price > 0 &&
-                  (!user ||
-                    (postUser?._id !== user._id &&
-                      !post.unlockedBy?.some((u) => (u as any) === user._id)));
 
                 return (
                   <motion.div
@@ -641,40 +570,21 @@ export default function HomePage() {
                         <span className="text-xs text-gray-500 dark:text-white">
                           {formatPostDate(post.createdAt)}
                         </span>
-                        {post.price && post.price > 0 ? (
-                          <LockClosedIcon className="w-3 h-3 text-yellow-400 ml-1 inline" />
-                        ) : (
-                          <BoltIcon className="w-3 h-3 text-green-400 ml-1 inline" />
-                        )}
+                        <BoltIcon className="w-3 h-3 text-green-400 ml-1 inline" />
 
                         {/* Content */}
                         <div className="relative">
                           {post.content && (
-                            <p
-                              className={`text-base whitespace-pre-wrap ${isLocked ? "opacity-20" : ""}`}
-                            >
-                              {post.content}
-                            </p>
+                            <p className="text-base whitespace-pre-wrap">{post.content}</p>
                           )}
                           {post.image && (
                             <div className="relative w-full overflow-hidden rounded-lg mt-2">
                               <img
                                 src={`${UPLOADS_URL}/${post.image}`}
                                 alt="Post"
-                                className={`w-full h-auto object-cover rounded-lg ${isLocked ? "blur-md" : ""}`}
+                                className="w-full h-auto object-cover rounded-lg"
                                 onError={(e) => (e.currentTarget.style.display = "none")}
                               />
-                            </div>
-                          )}
-                          {isLocked && (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center rounded-lg bg-black/50 backdrop-blur-md">
-                              <span className="text-xs text-white mb-2">Paid post – unlock to view</span>
-                              <button
-                                onClick={() => handleUnlock(post._id)}
-                                className="px-3 py-1 text-xs bg-blue-600 text-white rounded"
-                              >
-                                Unlock for {post.price} VNT
-                              </button>
                             </div>
                           )}
                         </div>

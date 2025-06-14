@@ -1,7 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
-import { LockClosedIcon, BoltIcon } from "@heroicons/react/24/solid";
+import { BoltIcon, HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
+import { HeartIcon as HeartOutline, ShareIcon } from "@heroicons/react/24/outline";
 import { formatPostDate } from "../lib/formatDate";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
@@ -21,8 +22,6 @@ interface Post {
   likes?: string[];
   comments?: any[];
   shares?: number;
-  price?: number;
-  unlockedBy?: (string | { _id: string })[];
   user?: { _id: string };
 }
 
@@ -40,29 +39,42 @@ export default function PostCard({ post, user }: Props) {
     ? new Date(user.subscriptionExpiresAt) > new Date()
     : false;
   const viewerId = viewer?._id;
-  const authorId = user._id || post.user?._id;
-  const initiallyLocked =
-    !!post.price &&
-    post.price > 0 &&
-    (!viewerId ||
-      (authorId !== viewerId &&
-        !post.unlockedBy?.some((u: any) => (u._id || u) === viewerId)));
-  const [locked, setLocked] = useState(initiallyLocked);
+  const [liked, setLiked] = useState(
+    post.likes?.some((l) => (l as any) === viewerId) ?? false
+  );
+  const [likes, setLikes] = useState(post.likes?.length || 0);
+  const [shared, setShared] = useState(false);
+  const [shares, setShares] = useState(post.shares || 0);
 
-  const handleUnlock = async () => {
-    if (!viewer || !viewer._id || !viewer.accessToken) return;
+  const handleLike = async () => {
+    if (!viewer?.accessToken) return;
     try {
       const { data } = await axios.post(
-        `${BASE_URL}/api/posts/${post._id}/unlock`,
+        `${BASE_URL}/api/posts/${post._id}/like`,
         {},
         { headers: { Authorization: `Bearer ${viewer.accessToken}` } }
       );
-      setLocked(false);
-      if (typeof data.vntBalance === "number") {
-        login({ ...viewer, vntBalance: data.vntBalance }, viewer.accessToken);
-      }
+      setLikes(data.likes.length);
+      setLiked(true);
+      login({ ...viewer, rating: (viewer.rating || 0) + 1 }, viewer.accessToken);
     } catch (err) {
-      console.error("Unlock error:", err);
+      console.error("Like error:", err);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!viewer?.accessToken || shared) return;
+    try {
+      const { data } = await axios.post(
+        `${BASE_URL}/api/posts/${post._id}/share`,
+        {},
+        { headers: { Authorization: `Bearer ${viewer.accessToken}` } }
+      );
+      setShares(data.shares);
+      setShared(true);
+      login({ ...viewer, rating: (viewer.rating || 0) + 1 }, viewer.accessToken);
+    } catch (err) {
+      console.error("Share error:", err);
     }
   };
   return (
@@ -84,19 +96,11 @@ export default function PostCard({ post, user }: Props) {
             <span className="text-gray-400 ml-1 text-xs">
               {formatPostDate(post.createdAt)}
             </span>
-            {post.price && post.price > 0 ? (
-              <LockClosedIcon className="w-3 h-3 text-yellow-400 ml-1" />
-            ) : (
-              <BoltIcon className="w-3 h-3 text-green-400 ml-1" />
-            )}
+            <BoltIcon className="w-3 h-3 text-green-400 ml-1" />
           </div>
           <div className="relative">
             {post.content && (
-              <p
-                className={`text-gray-200 text-sm mt-1 whitespace-pre-wrap ${
-                  locked ? "opacity-20" : ""
-                }`}
-              >
+              <p className="text-gray-200 text-sm mt-1 whitespace-pre-wrap">
                 {post.content}
               </p>
             )}
@@ -104,27 +108,32 @@ export default function PostCard({ post, user }: Props) {
               <img
                 src={`${UPLOADS_URL}/${post.image}`}
                 alt="Post"
-                className={`w-full rounded-lg mt-2 object-cover ${locked ? "blur-md" : ""}`}
+                className="w-full rounded-lg mt-2 object-cover"
               />
             )}
-            {locked && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center rounded-lg bg-black/50 backdrop-blur-md">
-                <span className="text-xs text-white mb-2">Paid post – unlock to view</span>
-                {post.price && post.price > 0 && (
-                  <button
-                    onClick={handleUnlock}
-                    className="px-3 py-1 text-xs bg-blue-600 text-white rounded"
-                  >
-                    Unlock for {post.price} VNT
-                  </button>
-                )}
-              </div>
-            )}
           </div>
-          <div className="flex justify-between text-gray-400 text-xs mt-3">
-            <span>{post.likes?.length || 0} Likes</span>
-            <span>{post.comments?.length || 0} Comments</span>
-            <span>{post.shares || 0} Shares</span>
+          <div className="grid grid-cols-3 items-center text-gray-400 text-xs mt-3">
+            <button
+              onClick={handleLike}
+              className="flex items-center justify-center gap-1 hover:text-gray-200"
+              aria-label="Like"
+            >
+              {liked ? (
+                <HeartSolid className="w-4 h-4 text-red-500" />
+              ) : (
+                <HeartOutline className="w-4 h-4" />
+              )}
+              <span>{likes}</span>
+            </button>
+            <span className="text-center">{post.comments?.length || 0} Comments</span>
+            <button
+              onClick={handleShare}
+              className="flex items-center justify-center gap-1 hover:text-gray-200"
+              aria-label="Share"
+            >
+              <ShareIcon className={shared ? "w-4 h-4 text-green-500" : "w-4 h-4"} />
+              <span>{shares}</span>
+            </button>
           </div>
         </div>
       </div>

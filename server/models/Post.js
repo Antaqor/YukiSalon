@@ -19,8 +19,6 @@ const PostSchema = new Schema(
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
         content: { type: String, required: true },
         image: { type: String }, // stores just the filename, e.g., "123456789-image.png"
-        price: { type: Number, default: 0 },
-        unlockedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
         likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
         comments: [CommentSchema],
         shares: { type: Number, default: 0 },
