@@ -1,9 +1,11 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Stats } from "@react-three/drei";
 import { Suspense, useMemo } from "react";
-import create from "zustand";
+import { create } from "zustand";
 
 // -------- Zustand store --------
 interface GameState {
