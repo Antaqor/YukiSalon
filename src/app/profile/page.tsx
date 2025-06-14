@@ -98,12 +98,12 @@ export default function MyOwnProfilePage() {
     if (loadingProfile) {
         return (
             <div className="p-4 space-y-4">
-                <div className="h-40 bg-gray-800 rounded animate-pulse" />
+                <div className="h-40 bg-gray-200 rounded animate-pulse" />
                 <div className="flex items-center space-x-4 animate-pulse">
-                    <div className="w-20 h-20 rounded-full bg-gray-700" />
+                    <div className="w-20 h-20 rounded-full bg-gray-300" />
                     <div className="flex-1 space-y-2">
-                        <div className="h-4 bg-gray-700 rounded w-1/2" />
-                        <div className="h-4 bg-gray-700 rounded w-1/3" />
+                        <div className="h-4 bg-gray-300 rounded w-1/2" />
+                        <div className="h-4 bg-gray-300 rounded w-1/3" />
                     </div>
                 </div>
             </div>
@@ -122,10 +122,10 @@ export default function MyOwnProfilePage() {
 
     // ---------------- UI ----------------
     return (
-        <div className="min-h-screen bg-black text-white font-sans">
+        <div className="min-h-screen bg-white text-black font-sans">
             {/* Top Navigation */}
             <div className="fixed top-0 left-0 w-full h-12 flex items-center px-4 backdrop-blur-md z-10 bg-black/60">
-                <button onClick={() => router.back()} aria-label="Back" className="mr-2 text-white">
+                <button onClick={() => router.back()} aria-label="Back" className="mr-2 text-black">
                     &#8592;
                 </button>
                 <h1 className="font-bold flex-1 text-center">{userData.username}</h1>
@@ -137,7 +137,7 @@ export default function MyOwnProfilePage() {
                 {userData.coverImage && (
                     <img src={`${BASE_URL}${userData.coverImage}`} alt="Cover" className="absolute inset-0 w-full h-full object-cover" />
                 )}
-                <div className="absolute -bottom-16 left-4 w-32 h-32 rounded-full border-4 border-[#0d0d0d] overflow-hidden bg-gray-800">
+                <div className="absolute -bottom-16 left-4 w-32 h-32 rounded-full border-4 border-[#0d0d0d] overflow-hidden bg-gray-200">
                     {userData.profilePicture ? (
                         <img src={`${BASE_URL}${userData.profilePicture}`} alt="avatar" className="w-full h-full object-cover" />
                     ) : null}
@@ -174,7 +174,7 @@ export default function MyOwnProfilePage() {
                 {loadingPosts ? (
                     <div className="space-y-4">
                         {Array.from({ length: 2 }).map((_, i) => (
-                            <div key={i} className="h-32 bg-gray-800 rounded animate-pulse" />
+                            <div key={i} className="h-32 bg-gray-200 rounded animate-pulse" />
                         ))}
                     </div>
                 ) : userPosts.length > 0 ? (

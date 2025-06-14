@@ -44,11 +44,11 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                     <li>
                       <Link
                         href="/"
-                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 dark:text-white transition-smooth focus:outline-none hover:text-brandCyan dark:hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
+                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 transition-smooth focus:outline-none hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className="w-6 h-6 group-hover:text-brandCyan dark:text-white dark:group-hover:text-brandCyan"
+                          className="w-6 h-6 group-hover:text-brandCyan"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -60,24 +60,24 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                             d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                           />
                         </svg>
-                        <span className="dark:text-white">Нүүр</span>
+                        <span>Нүүр</span>
                       </Link>
                     </li>
                     <li>
                       <Link
                         href="/users"
-                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 dark:text-white transition-smooth focus:outline-none hover:text-brandCyan dark:hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
+                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 transition-smooth focus:outline-none hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className="w-6 h-6 group-hover:text-brandCyan dark:text-white dark:group-hover:text-brandCyan"
+                          className="w-6 h-6 group-hover:text-brandCyan"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
-                        <span className="dark:text-white">Гишүүд</span>
+                        <span>Гишүүд</span>
                       </Link>
                     </li>
                   </ul>

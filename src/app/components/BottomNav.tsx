@@ -42,7 +42,7 @@ const BottomNav: React.FC = () => {
                 <button
                     onClick={() => router.push("/")}
                     aria-label="Home"
-                    className="p-1 text-black dark:text-white"
+                    className="p-1 text-black"
                 >
                     <HomeIcon className="h-7 w-7" />
                 </button>
@@ -51,7 +51,7 @@ const BottomNav: React.FC = () => {
                 <button
                     onClick={() => router.push("/new-post")}
                     aria-label="New Post"
-                    className="p-1 text-black dark:text-white"
+                    className="p-1 text-black"
                 >
                     <PlusCircleIcon className="h-8 w-8" />
                 </button>
@@ -60,7 +60,7 @@ const BottomNav: React.FC = () => {
                 <button
                     onClick={() => router.push("/notifications")}
                     aria-label="Notifications"
-                    className="p-1 text-black dark:text-white"
+                    className="p-1 text-black"
                 >
                     <BellIcon className="h-7 w-7" />
                 </button>

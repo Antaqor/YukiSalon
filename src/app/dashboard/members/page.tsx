@@ -94,7 +94,7 @@ export default function MembersDashboard() {
   };
 
   return (
-    <main className="min-h-screen bg-black text-gray-100 p-4">
+    <main className="min-h-screen bg-white text-black p-4">
       <div className="max-w-xl mx-auto space-y-6">
         <h1 className="text-2xl font-bold text-center">
           Гишүүдийн Менежмент

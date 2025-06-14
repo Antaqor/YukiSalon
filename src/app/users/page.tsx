@@ -50,13 +50,13 @@ export default function UsersPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white dark:bg-dark text-black dark:text-white p-4">
+        <div className="min-h-screen bg-white text-black p-4">
             <h1 className="text-2xl font-bold mb-6 text-center">Гишүүд</h1>
             <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(160px,1fr))]">
                 {users.map((user) => (
                     <Link key={user._id} href={`/profile/${user._id}`}>
                         <motion.div
-                            className="bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg p-4 flex flex-col items-center shadow-sm"
+                            className="bg-white border border-gray-200 rounded-lg p-4 flex flex-col items-center shadow-sm"
                             whileHover={{ scale: 1.05, y: -4 }}
                             transition={{ type: "spring", stiffness: 300 }}
                         >
@@ -67,14 +67,14 @@ export default function UsersPage() {
                                 className="w-20 h-20 rounded-full object-cover mb-3"
                             />
                         ) : (
-                            <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 mb-3" />
+                            <div className="w-20 h-20 rounded-full bg-gray-200 mb-3" />
                         )}
-                        <p className="font-semibold text-gray-800 dark:text-white">{user.username}</p>
+                        <p className="font-semibold text-gray-800">{user.username}</p>
                         {user.location && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{user.location}</p>
+                            <p className="text-xs text-gray-500 mt-1">{user.location}</p>
                         )}
                         {user.rating && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">★ {user.rating}</p>
+                            <p className="text-xs text-gray-500 mt-1">★ {user.rating}</p>
                         )}
                         </motion.div>
                     </Link>

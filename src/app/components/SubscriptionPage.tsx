@@ -94,7 +94,7 @@ export default function SubscriptionPage() {
     };
 
     return (
-        <div className="max-w-xl mx-auto p-4 text-white bg-dark">
+        <div className="max-w-xl mx-auto p-4 text-black bg-white">
             <h1 className="text-2xl font-bold mb-4 text-center">
                 Сарын Гишүүнчлэл
             </h1>
