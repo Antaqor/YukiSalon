@@ -1,9 +1,5 @@
-import dynamicImport from "next/dynamic";
-
-// Dynamically import the client component so it is never
-// executed on the server during prerendering. This avoids
-// errors from libraries that depend on browser-only APIs.
-const GameClient = dynamicImport(() => import("./GameClient"), { ssr: false });
+// Import a client component that lazily loads the actual game client.
+import GameClient from "./GameClientWrapper";
 
 // Disable static rendering for this page since the Three.js based
 // components rely on browser APIs that are not available during
