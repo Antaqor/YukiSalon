@@ -32,10 +32,8 @@ const BottomNav: React.FC = () => {
 
     return (
         <nav
-            className={`fixed bottom-0 left-0 w-full md:hidden transition-all ${
-                scrolledDown
-                    ? "bg-white/60 dark:bg-black/60 backdrop-blur-md"
-                    : "bg-white dark:bg-black"
+            className={`fixed bottom-0 left-0 w-full md:hidden transition-all backdrop-blur-xl border-t border-white/30 dark:border-white/10 shadow-lg ${
+                scrolledDown ? "bg-white/30 dark:bg-white/10" : "bg-white/20 dark:bg-white/5"
             }`}
         >
             <div
@@ -75,22 +73,6 @@ const BottomNav: React.FC = () => {
                     className="p-1 text-black dark:text-white"
                 >
                     <WalletIcon className="h-7 w-7" />
-                </button>
-                {/* SALON */}
-                <button
-                    onClick={() => router.push("/salon")}
-                    aria-label="Salon"
-                    className="p-1 text-black dark:text-white"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-7 w-7"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7h16M4 12h16M4 17h16" />
-                    </svg>
                 </button>
             </div>
         </nav>

@@ -88,4 +88,23 @@ div {
     animation-delay: 0.3s;
 }
 
+.glitch-wolf {
+    width: 6rem;
+    height: 6rem;
+    background: url('/antaqor-wolf.svg') center/contain no-repeat;
+    position: relative;
+}
+.glitch-wolf::before,
+.glitch-wolf::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: inherit;
+    mix-blend-mode: overlay;
+    animation: glitchAnim 0.7s infinite;
+}
+.glitch-wolf::after {
+    animation-delay: 0.3s;
+}
+
 

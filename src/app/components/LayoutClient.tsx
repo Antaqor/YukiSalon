@@ -84,23 +84,6 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                     </li>
                     <li>
                       <Link
-                        href="/salon"
-                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 dark:text-white transition-smooth focus:outline-none hover:text-brandCyan dark:hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="w-6 h-6 group-hover:text-brandCyan dark:text-white dark:group-hover:text-brandCyan"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 7h16M4 12h16M4 17h16" />
-                        </svg>
-                        <span className="dark:text-white">Salon</span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
                         href="/users"
                         className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 dark:text-white transition-smooth focus:outline-none hover:text-brandCyan dark:hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
                       >

@@ -1,16 +1,32 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [hideHeader, setHideHeader] = useState(false);
     const { loggedIn, logout, user } = useAuth();
     const BASE_URL = "https://www.vone.mn";
     const isPro =
         user?.subscriptionExpiresAt &&
         new Date(user.subscriptionExpiresAt) > new Date();
+
+    useEffect(() => {
+        let lastY = window.scrollY;
+        const onScroll = () => {
+            const currentY = window.scrollY;
+            if (currentY > lastY && currentY > 50) {
+                setHideHeader(true);
+            } else if (currentY < lastY) {
+                setHideHeader(false);
+            }
+            lastY = currentY;
+        };
+        window.addEventListener("scroll", onScroll);
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
 
     return (
         <>
@@ -23,9 +39,14 @@ export default function Header() {
                 `}</style>
             )}
 
-            <div className="fixed top-0 left-0 w-full z-[999] bg-white/30 dark:bg-white/10 backdrop-blur-xl shadow-md">
+            <div
+                className={`fixed top-0 left-0 w-full z-[999] bg-white/30 dark:bg-white/10 backdrop-blur-xl shadow-md transition-transform duration-300 ${hideHeader ? "-translate-y-full" : "translate-y-0"}`}
+            >
                 {/* NAV BAR */}
                 <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center">
+                    <Link href="/" className="flex items-center" aria-label="Home">
+                        <img src="/antaqor-wolf.svg" alt="Antaqor" className="w-8 h-8 mr-4" />
+                    </Link>
                     <div className="ml-auto flex items-center space-x-4">
                         {loggedIn ? (
                             <Link href="/profile" aria-label="Profile">
@@ -224,29 +245,6 @@ export default function Header() {
                                             />
                                         </svg>
                                         Wallet
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link
-                                        href="/salon"
-                                        onClick={() => setIsMenuOpen(false)}
-                                        className="flex items-center gap-2 hover:text-brandCyan dark:hover:text-brandCyan"
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="w-6 h-6"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth="2"
-                                                d="M4 7h16M4 12h16M4 17h16"
-                                            />
-                                        </svg>
-                                        Salon
                                     </Link>
                                 </li>
                                 {loggedIn && !isPro && (
