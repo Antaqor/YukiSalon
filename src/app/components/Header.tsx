@@ -1,32 +1,17 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [hideHeader, setHideHeader] = useState(false);
     const { loggedIn, logout, user } = useAuth();
     const BASE_URL = "https://www.vone.mn";
     const isPro =
         user?.subscriptionExpiresAt &&
         new Date(user.subscriptionExpiresAt) > new Date();
 
-    useEffect(() => {
-        let lastY = window.scrollY;
-        const onScroll = () => {
-            const currentY = window.scrollY;
-            if (currentY > lastY && currentY > 50) {
-                setHideHeader(true);
-            } else if (currentY < lastY) {
-                setHideHeader(false);
-            }
-            lastY = currentY;
-        };
-        window.addEventListener("scroll", onScroll);
-        return () => window.removeEventListener("scroll", onScroll);
-    }, []);
 
     return (
         <>
@@ -40,7 +25,7 @@ export default function Header() {
             )}
 
             <div
-                className={`fixed top-0 left-0 w-full z-[999] bg-gradient-to-b from-white/40 via-white/20 to-transparent backdrop-blur-xl shadow-md transition-transform duration-300 ${hideHeader ? "-translate-y-full" : "translate-y-0"}`}
+                className="fixed top-0 left-0 w-full z-[999] bg-gradient-to-b from-white/40 via-white/20 to-transparent backdrop-blur-xl shadow-md"
             >
                 {/* NAV BAR */}
                 <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center">
