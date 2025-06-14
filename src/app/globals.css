@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+@import '~slick-carousel/slick/slick.css';
+@import '~slick-carousel/slick/slick-theme.css';
+
 /* No dark background; let Tailwind's default or overridden classes handle it */
 .square-card {
     border-radius: 0; /* Example custom override */
@@ -61,6 +64,28 @@ div {
 
 .animate-pulse div {
     animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes glitchAnim {
+    0% { transform: translate(0); }
+    20% { transform: translate(-5px, -5px); }
+    40% { transform: translate(5px, 5px); }
+    60% { transform: translate(-5px, 5px); }
+    80% { transform: translate(5px, -5px); }
+    100% { transform: translate(0); }
+}
+
+.glitch-bg::before,
+.glitch-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: inherit;
+    mix-blend-mode: overlay;
+    animation: glitchAnim 0.7s infinite;
+}
+.glitch-bg::after {
+    animation-delay: 0.3s;
 }
 
 

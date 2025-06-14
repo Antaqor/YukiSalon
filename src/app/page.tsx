@@ -23,6 +23,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { FiCamera } from "react-icons/fi";
 import LoadingSpinner from "./components/LoadingSpinner";
+import HomeSlider from "./components/HomeSlider";
 import { motion } from "framer-motion";
 import { formatPostDate } from "./lib/formatDate";
 import useCurrentLocation from "./hooks/useCurrentLocation";
@@ -421,6 +422,8 @@ export default function HomePage() {
           </Link>
         </div>
       )}
+
+      <HomeSlider />
 
       {/* Outer grid */}
       <div
