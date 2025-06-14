@@ -4,14 +4,15 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
     HomeIcon,
-    MagnifyingGlassIcon,
     PlusCircleIcon,
     BellIcon,
 } from "@heroicons/react/24/outline";
+import AddPostModal from "./AddPostModal";
 
 const BottomNav: React.FC = () => {
     const router = useRouter();
     const [scrolledDown, setScrolledDown] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         let lastY = window.scrollY;
@@ -30,6 +31,7 @@ const BottomNav: React.FC = () => {
     }, []);
 
     return (
+        <>
         <nav
             className={`fixed bottom-0 left-0 w-full md:hidden transition-all backdrop-blur-xl border-t border-supportBorder shadow-lg ${
                 scrolledDown ? "bg-gradient-to-br from-white/40 via-white/20 to-white/10" : "bg-gradient-to-br from-white/30 via-white/10 to-white/5"
@@ -49,7 +51,7 @@ const BottomNav: React.FC = () => {
 
                 {/* NEW POST */}
                 <button
-                    onClick={() => router.push("/new-post")}
+                    onClick={() => setShowModal(true)}
                     aria-label="New Post"
                     className="p-1 text-black"
                 >
@@ -67,6 +69,16 @@ const BottomNav: React.FC = () => {
 
             </div>
         </nav>
+        {showModal && (
+            <AddPostModal
+                onClose={() => setShowModal(false)}
+                onPost={() => {
+                    setShowModal(false);
+                    router.refresh();
+                }}
+            />
+        )}
+        </>
     );
 };
 
