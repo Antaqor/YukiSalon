@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { CheckIcon } from '@heroicons/react/24/outline';
-import { AcademicCapIcon } from '@heroicons/react/24/solid';
+import { AcademicCapIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { useAuth } from '../context/AuthContext';
 
 interface Lesson {
   id: number;
@@ -13,7 +14,6 @@ interface Lesson {
   completed: boolean;
 }
 
-const isAdmin = true;
 
 function extractVideoId(url: string) {
   const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([A-Za-z0-9_-]{11})/;
@@ -22,11 +22,15 @@ function extractVideoId(url: string) {
 }
 
 export default function ClassroomPage() {
+  const { user } = useAuth();
+  const isAdmin = user?.username === 'Antaqor';
+
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [selected, setSelected] = useState<Lesson | null>(null);
   const [newTitle, setNewTitle] = useState('');
   const [newUrl, setNewUrl] = useState('');
   const [newDesc, setNewDesc] = useState('');
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem('lessons');
@@ -67,6 +71,36 @@ export default function ClassroomPage() {
     );
   };
 
+  const startEditLesson = (lesson: Lesson) => {
+    setEditingId(lesson.id);
+    setNewTitle(lesson.title);
+    setNewUrl(lesson.url);
+    setNewDesc(lesson.description || '');
+  };
+
+  const saveLesson = () => {
+    if (editingId === null) return;
+    setLessons((prev) =>
+      prev.map((l) =>
+        l.id === editingId ? { ...l, title: newTitle, url: newUrl, description: newDesc } : l
+      )
+    );
+    if (selected && selected.id === editingId) {
+      setSelected({ ...selected, title: newTitle, url: newUrl, description: newDesc });
+    }
+    setEditingId(null);
+    setNewTitle('');
+    setNewUrl('');
+    setNewDesc('');
+  };
+
+  const deleteLesson = (id: number) => {
+    setLessons((prev) => prev.filter((l) => l.id !== id));
+    if (selected && selected.id === id) {
+      setSelected(null);
+    }
+  };
+
   const progress = lessons.length
     ? Math.round(
         (lessons.filter((l) => l.completed).length / lessons.length) * 100
@@ -74,9 +108,9 @@ export default function ClassroomPage() {
     : 0;
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen">
-      <div className="w-full md:w-80 border-r p-4 bg-white dark:bg-gray-800">
-        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+    <div className="flex h-full w-full min-h-screen">
+      <aside className="w-80 min-w-64 bg-[#171717] p-6 flex flex-col border-r border-gray-800">
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-white">
           <AcademicCapIcon className="w-6 h-6" /> Classroom
         </h2>
         <div className="flex items-center mb-2">
@@ -105,6 +139,24 @@ export default function ClassroomPage() {
                 onChange={() => toggleCompleted(lesson.id)}
                 className="ml-2"
               />
+              {isAdmin && (
+                <>
+                  <PencilSquareIcon
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startEditLesson(lesson);
+                    }}
+                    className="w-5 h-5 ml-2 text-cyan-300 cursor-pointer"
+                  />
+                  <TrashIcon
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteLesson(lesson.id);
+                    }}
+                    className="w-5 h-5 ml-1 text-red-500 cursor-pointer"
+                  />
+                </>
+              )}
             </li>
           ))}
         </ul>
@@ -131,25 +183,41 @@ export default function ClassroomPage() {
               className="w-full border p-1 rounded"
             />
             <button
-              onClick={addLesson}
+              onClick={editingId !== null ? saveLesson : addLesson}
               className="w-full bg-brandCyan text-black py-1 rounded"
             >
-              Add Lesson
+              {editingId !== null ? 'Save Lesson' : 'Add Lesson'}
             </button>
+            {editingId !== null && (
+              <button
+                onClick={() => {
+                  setEditingId(null);
+                  setNewTitle('');
+                  setNewUrl('');
+                  setNewDesc('');
+                }}
+                className="w-full bg-gray-200 dark:bg-gray-700 text-black py-1 rounded"
+              >
+                Cancel
+              </button>
+            )}
           </div>
         )}
-      </div>
-      <div className="flex-1 p-8 bg-gray-50 dark:bg-gray-900">
+      </aside>
+      <main className="flex-1 bg-white dark:bg-gray-900 p-10 flex flex-col">
         {selected ? (
           <>
             <h1 className="text-2xl font-bold mb-3">{selected.title}</h1>
-            <iframe
-              width="100%"
-              height="400"
-              src={`https://www.youtube.com/embed/${extractVideoId(selected.url)}`}
-              allowFullScreen
-              className="rounded-xl border mb-4"
-            />
+            <div className="w-full max-w-4xl">
+              <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                <iframe
+                  src={`https://www.youtube.com/embed/${extractVideoId(selected.url)}`}
+                  className="absolute top-0 left-0 w-full h-full rounded-xl shadow"
+                  allowFullScreen
+                  frameBorder="0"
+                />
+              </div>
+            </div>
             {selected.description && (
               <p className="text-lg text-gray-700 dark:text-gray-300">
                 {selected.description}
@@ -162,9 +230,9 @@ export default function ClassroomPage() {
             )}
           </>
         ) : (
-          <p className="text-center text-gray-500">Select a lesson</p>
+          <p className="flex items-center justify-center h-full text-gray-400 text-2xl">Select a lesson to get started</p>
         )}
-      </div>
+      </main>
     </div>
   );
 }
