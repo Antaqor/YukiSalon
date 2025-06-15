@@ -109,8 +109,8 @@ export default function ClassroomPage() {
 
   return (
     <div className="flex h-full w-full min-h-screen">
-      <aside className="w-80 min-w-64 bg-[#171717] p-6 flex flex-col border-r border-gray-800">
-        <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+      <aside className="w-80 min-w-64 bg-white p-6 flex flex-col border-r border-gray-200 text-black">
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
           <AcademicCapIcon className="w-6 h-6" /> Classroom
         </h2>
         <div className="flex items-center mb-2">
@@ -196,7 +196,7 @@ export default function ClassroomPage() {
                   setNewUrl('');
                   setNewDesc('');
                 }}
-                className="w-full bg-gray-200 dark:bg-gray-700 text-black py-1 rounded"
+                className="w-full bg-gray-200 text-black py-1 rounded"
               >
                 Cancel
               </button>
@@ -204,7 +204,7 @@ export default function ClassroomPage() {
           </div>
         )}
       </aside>
-      <main className="flex-1 bg-white dark:bg-gray-900 p-10 flex flex-col">
+      <main className="flex-1 bg-white p-10 flex flex-col text-black">
         {selected ? (
           <>
             <h1 className="text-2xl font-bold mb-3">{selected.title}</h1>
@@ -219,7 +219,7 @@ export default function ClassroomPage() {
               </div>
             </div>
             {selected.description && (
-              <p className="text-lg text-gray-700 dark:text-gray-300">
+              <p className="text-lg text-gray-700">
                 {selected.description}
               </p>
             )}
