@@ -16,22 +16,12 @@ import Link from "next/link";
 export default function LayoutClient({ children }: { children: React.ReactNode }) {
   const [mountLoading, setMountLoading] = useState(true);
   const pathname = usePathname();
-  const isGameRoute = pathname === "/game";
 
   useEffect(() => {
     const timer = setTimeout(() => setMountLoading(false), 500);
     return () => clearTimeout(timer);
   }, []);
 
-  if (isGameRoute) {
-    return (
-      <ThemeProvider>
-        <CartProvider>
-          <AuthProvider>{children}</AuthProvider>
-        </CartProvider>
-      </ThemeProvider>
-    );
-  }
 
   return (
     <ThemeProvider>
