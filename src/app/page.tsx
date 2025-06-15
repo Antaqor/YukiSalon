@@ -3,7 +3,6 @@ import React, {
   useState,
   useEffect,
   useCallback,
-  ChangeEvent,
   useRef,
 } from "react";
 import axios from "axios";
@@ -20,8 +19,8 @@ import {
   ShareIcon,
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
-import { FiCamera, FiSmile } from "react-icons/fi";
 import LoadingSpinner from "./components/LoadingSpinner";
+import PostInput from "./components/PostInput";
 import { motion } from "framer-motion";
 import { formatPostDate } from "./lib/formatDate";
 
@@ -74,10 +73,7 @@ export default function HomePage() {
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [allPosts, setAllPosts] = useState<Post[]>([]);
-  const [content, setContent] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [error, setError] = useState("");
-  const [showEmojis, setShowEmojis] = useState(false);
+  // post input handled in component
   const [commentTexts, setCommentTexts] = useState<Record<string, string>>({});
   const [replyTexts, setReplyTexts] = useState<Record<string, string>>({});
   const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
@@ -89,7 +85,6 @@ export default function HomePage() {
   const loadingPostsRef = useRef(false);
   const [refreshing, setRefreshing] = useState(false);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
-  const emojis = ["😀","😂","😍","😢","👍","🙏","🔥","🎉","🤔","🤩"];
 
   const isPro =
     user?.subscriptionExpiresAt &&
@@ -97,7 +92,6 @@ export default function HomePage() {
 
   const BASE_URL = "https://www.vone.mn";
   const UPLOADS_URL = `${BASE_URL}/api/uploads`;
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // redirect guest
   useEffect(() => {
@@ -171,10 +165,6 @@ export default function HomePage() {
   // ────────────────────────────────────────────────────────────
 
 
-  const triggerFileInput = () => fileInputRef.current?.click();
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) setImageFile(e.target.files[0]);
-  };
 
   const refreshPosts = async () => {
     setRefreshing(true);
@@ -184,35 +174,8 @@ export default function HomePage() {
   };
 
   // ────────────────────────────────────────────────────────────
-  // CRUD (create, like, comment, reply, share, follow)
+  // CRUD (like, comment, reply, share, follow)
   // ────────────────────────────────────────────────────────────
-  const createPost = async () => {
-    setError("");
-    if (!content.trim()) return setError("Контентыг бөглөнө үү");
-    if (content.length > 500) return setError("Хэт урт контент");
-    if (!user?.accessToken) return setError("Нэвтэрч ороогүй байна.");
-
-    try {
-      const formData = new FormData();
-      formData.append("content", content);
-      if (imageFile) formData.append("image", imageFile);
-
-      const { data } = await axios.post(`${BASE_URL}/api/posts`, formData, {
-        headers: {
-          Authorization: `Bearer ${user.accessToken}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      setPosts((prev) => [data.post, ...prev]);
-      setAllPosts((prev) => [data.post, ...prev]);
-      setContent("");
-      setImageFile(null);
-    } catch (err) {
-      console.error("Create post error:", err);
-      setError("Алдаа гарлаа");
-    }
-  };
 
   const handleLike = async (postId: string) => {
     if (!user?.accessToken) return;
@@ -385,64 +348,7 @@ export default function HomePage() {
           )}
 
           {/* Create post */}
-          {loggedIn && (
-            <div className="bg-white grid gap-4 p-6">
-              {/* Upload */}
-              <div className="grid grid-cols-[auto,auto,1fr] items-center gap-2 relative">
-                <input
-                  type="file"
-                  accept="image/*"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-                <button
-                  onClick={triggerFileInput}
-                  className="p-2 border border-gray-200 rounded-full hover:bg-gray-200"
-                >
-                  <FiCamera className="w-5 h-5 text-brandCyan" />
-                </button>
-                <button
-                  onClick={() => setShowEmojis((p) => !p)}
-                  className="p-2 border border-gray-200 rounded-full hover:bg-gray-200"
-                >
-                  <FiSmile className="w-5 h-5 text-brandCyan" />
-                </button>
-                {showEmojis && (
-                  <div className="absolute left-0 top-full mt-2 bg-white border rounded shadow grid grid-cols-5 gap-1 p-2 z-10">
-                    {emojis.map((e) => (
-                      <button key={e} onClick={() => setContent((c) => c + e)} className="text-xl">
-                        {e}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {imageFile && (
-                  <span className="text-xs text-gray-700 truncate">
-                    {imageFile.name}
-                  </span>
-                )}
-              </div>
-
-
-              <textarea maxLength={500}
-                placeholder="What's on your mind?"
-                className="w-full text-sm text-gray-900 border border-gray-200 rounded p-2 focus:outline-none"
-                rows={3}
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-              />
-
-              {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
-
-              <button
-                onClick={createPost}
-                className="mt-3 bg-brandCyan text-black text-xs px-4 py-2 rounded hover:bg-[#00d4d4]"
-              >
-                Post
-              </button>
-            </div>
-          )}
+          {loggedIn && <PostInput onPost={refreshPosts} />}
 
           <div className="flex justify-end p-4">
             <button
