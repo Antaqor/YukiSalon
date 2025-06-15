@@ -6,6 +6,7 @@ import {
     HomeIcon,
     PlusCircleIcon,
     BellIcon,
+    AcademicCapIcon,
 } from "@heroicons/react/24/outline";
 import AddPostModal from "./AddPostModal";
 
@@ -65,6 +66,15 @@ const BottomNav: React.FC = () => {
                     className="p-1 text-black"
                 >
                     <BellIcon className="h-7 w-7" />
+                </button>
+
+                {/* CLASSROOM */}
+                <button
+                    onClick={() => router.push("/classroom")}
+                    aria-label="Classroom"
+                    className="p-1 text-black"
+                >
+                    <AcademicCapIcon className="h-7 w-7" />
                 </button>
 
             </div>

@@ -64,23 +64,40 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                         <span>Нүүр</span>
                       </Link>
                     </li>
-                    <li>
-                      <Link
-                        href="/users"
-                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 transition-smooth focus:outline-none hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
+                  <li>
+                    <Link
+                      href="/users"
+                      className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 transition-smooth focus:outline-none hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-6 h-6 group-hover:text-brandCyan"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="w-6 h-6 group-hover:text-brandCyan"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                        <span>Гишүүд</span>
-                      </Link>
-                    </li>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <span>Гишүүд</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/classroom"
+                      className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 transition-smooth focus:outline-none hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-6 h-6 group-hover:text-brandCyan"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0v6" />
+                      </svg>
+                      <span>Classroom</span>
+                    </Link>
+                  </li>
                   </ul>
                 </nav>
               </aside>

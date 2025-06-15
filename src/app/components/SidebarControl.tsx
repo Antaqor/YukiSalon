@@ -8,7 +8,7 @@ export default function SidebarControl() {
     const left = document.getElementById('left-sidebar');
     const right = document.getElementById('right-sidebar');
     if (!left || !right) return;
-    if (pathname.startsWith('/dashboard')) {
+    if (pathname.startsWith('/dashboard') || pathname.startsWith('/classroom')) {
       left.style.display = 'none';
       right.style.display = 'none';
     } else {
