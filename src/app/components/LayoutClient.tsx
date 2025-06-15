@@ -16,6 +16,7 @@ import Link from "next/link";
 export default function LayoutClient({ children }: { children: React.ReactNode }) {
   const [mountLoading, setMountLoading] = useState(true);
   const pathname = usePathname();
+  const isWidePage = pathname.startsWith("/dashboard") || pathname.startsWith("/classroom");
 
   useEffect(() => {
     const timer = setTimeout(() => setMountLoading(false), 500);
@@ -101,7 +102,9 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                   </ul>
                 </nav>
               </aside>
-              <div className="w-full md:w-1/2 md:border-r md:border-supportBorder">
+              <div
+                className={`w-full ${isWidePage ? "md:w-full" : "md:w-1/2 md:border-r md:border-supportBorder"}`}
+              >
                 <div className="space-y-6">{children}</div>
               </div>
               <aside
