@@ -6,6 +6,8 @@ export interface Book {
     author: string;
     description?: string;
     price?: number;
+    saleActive?: boolean;
+    salePrice?: number;
     pdfUrl: string;
     coverImageUrl?: string;
     createdAt?: string;
