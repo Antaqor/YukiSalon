@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const authenticateToken = require("../middleware/authMiddleware");
+const Post = require("../models/Post");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
@@ -222,5 +223,21 @@ router.put(
         }
     }
 );
+
+// Delete user and their posts (admin only)
+router.delete("/:id", authenticateToken, async (req, res) => {
+    try {
+        if (req.user.username !== "Antaqor") {
+            return res.status(403).json({ error: "Forbidden" });
+        }
+        const userId = req.params.id;
+        await Post.deleteMany({ user: userId });
+        await User.findByIdAndDelete(userId);
+        res.json({ message: "User and posts deleted" });
+    } catch (err) {
+        console.error("Delete user error:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
 
 module.exports = router;

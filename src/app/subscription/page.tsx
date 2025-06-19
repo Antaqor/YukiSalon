@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
 
 // ── Types ───────────────────────────────────────────────
@@ -15,6 +16,10 @@ export default function SubscriptionPage() {
   const [memberCount, setMemberCount] = useState(0);
   const [showPaymentInfo, setShowPaymentInfo] = useState(false);
   const [countdown, setCountdown] = useState(0);
+
+  const isPro =
+    user?.subscriptionExpiresAt &&
+    new Date(user.subscriptionExpiresAt) > new Date();
 
   const BASE_URL = "https://www.vone.mn";
   const price =
@@ -130,6 +135,22 @@ export default function SubscriptionPage() {
               Шилжүүлсэн
             </button>
           )}
+        </div>
+      )}
+
+      {(isPro || paid) && (
+        <div className="mt-10 space-y-4 text-center">
+          <p className="text-green-700 font-semibold">
+            Таны гишүүнчлэл идэвхтэй!
+          </p>
+          <div className="flex justify-center gap-4">
+            <Link href="/books" className="px-4 py-2 bg-blue-600 text-white rounded">
+              Data
+            </Link>
+            <Link href="/" className="px-4 py-2 bg-blue-600 text-white rounded">
+              Feed
+            </Link>
+          </div>
         </div>
       )}
 
