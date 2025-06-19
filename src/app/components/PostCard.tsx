@@ -27,7 +27,7 @@ interface Post {
   likes?: string[];
   comments?: any[];
   shares?: number;
-  user?: { _id: string };
+  user?: User & { _id: string };
 }
 
 interface Props {
