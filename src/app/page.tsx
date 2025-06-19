@@ -16,7 +16,7 @@ import {
 import {
   HeartIcon as HeartOutline,
   ChatBubbleOvalLeftIcon,
-  ShareIcon,
+  ArrowUpTrayIcon,
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import LoadingSpinner from "./components/LoadingSpinner";
@@ -263,6 +263,18 @@ export default function HomePage() {
     }
   };
 
+  const handleDelete = async (postId: string) => {
+    if (!user?.accessToken) return;
+    try {
+      await axios.delete(`${BASE_URL}/api/posts/${postId}`, {
+        headers: { Authorization: `Bearer ${user.accessToken}` },
+      });
+      setPosts((prev) => prev.filter((p) => p._id !== postId));
+    } catch (err) {
+      console.error("Delete error:", err);
+    }
+  };
+
 
   const handleFollow = async (targetId: string) => {
     if (!user?.accessToken) return;
@@ -347,25 +359,35 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* Create post */}
-          {loggedIn && <PostInput onPost={refreshPosts} />}
+          {/* Subscription gate */}
+          {loggedIn && !isPro ? (
+            <div className="bg-white p-6 text-center space-y-3">
+              <p>Feed үзэхийн тулд гишүүнчлэл идэвхжүүлнэ үү.</p>
+              <Link href="/subscription" className="text-blue-600 underline">
+                Subscribe
+              </Link>
+            </div>
+          ) : (
+            <>
+              {/* Create post */}
+              {loggedIn && <PostInput onPost={refreshPosts} />}
 
-          <div className="flex justify-end p-4">
-            <button
-              onClick={refreshPosts}
-              aria-label="Refresh feed"
-              className={`p-2 rounded-full hover:bg-gray-200 ${refreshing ? "animate-spin" : ""}`}
-            >
-              <ArrowPathIcon className="w-5 h-5" />
-            </button>
-          </div>
+              <div className="flex justify-end p-4">
+                <button
+                  onClick={refreshPosts}
+                  aria-label="Refresh feed"
+                  className={`p-2 rounded-full hover:bg-gray-200 ${refreshing ? "animate-spin" : ""}`}
+                >
+                  <ArrowPathIcon className="w-5 h-5" />
+                </button>
+              </div>
 
-          {/* Posts list */}
-          <div className="m-0 p-0">
-          {loadingPosts && pageNum === 1 ? (
-              <LoadingSpinner />
-            ) : (
-              posts.map((post, idx) => {
+              {/* Posts list */}
+              <div className="m-0 p-0">
+              {loadingPosts && pageNum === 1 ? (
+                  <LoadingSpinner />
+                ) : (
+                  posts.map((post, idx) => {
                 const postUser = post.user;
 
                 return (
@@ -420,6 +442,14 @@ export default function HomePage() {
                               )}
                             </div>
                           )}
+                          {postUser && user && user._id === postUser._id && (
+                            <button
+                              onClick={() => handleDelete(post._id)}
+                              className="text-red-500 text-xs ml-auto"
+                            >
+                              Delete
+                            </button>
+                          )}
                         </div>
 
                         <span className="text-xs text-gray-500">
@@ -449,7 +479,8 @@ export default function HomePage() {
                     {/* Actions */}
                     <div className="grid grid-cols-3 items-center text-xs text-gray-600 w-full mt-2">
                       {/* Like */}
-                      <button
+                      <motion.button
+                        whileTap={{ scale: 0.8 }}
                         onClick={() => handleLike(post._id)}
                         disabled={!loggedIn}
                         className="flex items-center justify-center gap-1 hover:text-gray-800"
@@ -461,7 +492,7 @@ export default function HomePage() {
                           <HeartOutline className="w-4 h-4" />
                         )}
                         <span>{post.likes.length}</span>
-                      </button>
+                      </motion.button>
 
                       {/* Comment */}
                       <button
@@ -475,19 +506,20 @@ export default function HomePage() {
                       </button>
 
                       {/* Share */}
-                      <button
+                      <motion.button
+                        whileTap={{ scale: 0.8 }}
                         onClick={() => handleShare(post._id)}
                         disabled={!loggedIn}
                         className="flex items-center justify-center gap-1 hover:text-gray-800"
                         aria-label={`Share (${post.shares || 0})`}
                       >
-                        <ShareIcon
+                        <ArrowUpTrayIcon
                           className={`w-4 h-4 ${
                             sharedPosts.includes(post._id) ? "text-green-500" : ""
                           }`}
                         />
                         <span>{post.shares || 0}</span>
-                      </button>
+                      </motion.button>
                     </div>
 
                     {/* Comment section */}
@@ -587,6 +619,8 @@ export default function HomePage() {
             {loadingPosts && pageNum > 1 && <LoadingSpinner />}
             <div ref={loadMoreRef} />
           </div>
+            </>
+        )}
         </main>
       </div>
     </div>

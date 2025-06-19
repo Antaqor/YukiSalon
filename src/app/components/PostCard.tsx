@@ -1,8 +1,12 @@
 "use client";
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { FaCheckCircle } from "react-icons/fa";
 import { BoltIcon, HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
-import { HeartIcon as HeartOutline, ShareIcon } from "@heroicons/react/24/outline";
+import {
+  HeartIcon as HeartOutline,
+  ArrowUpTrayIcon,
+} from "@heroicons/react/24/outline";
 import { formatPostDate } from "../lib/formatDate";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
@@ -28,12 +32,13 @@ interface Post {
 interface Props {
   post: Post;
   user: User;
+  onDelete?: (id: string) => void;
 }
 
 const BASE_URL = "https://www.vone.mn";
 const UPLOADS_URL = `${BASE_URL}/api/uploads`;
 
-export default function PostCard({ post, user }: Props) {
+export default function PostCard({ post, user, onDelete }: Props) {
   const { user: viewer, login } = useAuth();
   const isPro = user.subscriptionExpiresAt
     ? new Date(user.subscriptionExpiresAt) > new Date()
@@ -77,6 +82,18 @@ export default function PostCard({ post, user }: Props) {
       console.error("Share error:", err);
     }
   };
+
+  const handleDelete = async () => {
+    if (!viewer?.accessToken) return;
+    try {
+      await axios.delete(`${BASE_URL}/api/posts/${post._id}`, {
+        headers: { Authorization: `Bearer ${viewer.accessToken}` },
+      });
+      onDelete?.(post._id);
+    } catch (err) {
+      console.error("Delete error:", err);
+    }
+  };
   return (
     <div className="bg-white p-6 grid gap-4 border-b border-gray-200">
       <div className="flex gap-3 group">
@@ -97,6 +114,14 @@ export default function PostCard({ post, user }: Props) {
               {formatPostDate(post.createdAt)}
             </span>
             <BoltIcon className="w-3 h-3 text-green-400 ml-1" />
+            {viewerId === post.user?._id && (
+              <button
+                onClick={handleDelete}
+                className="ml-auto text-red-500 text-xs"
+              >
+                Delete
+              </button>
+            )}
           </div>
           <div className="relative">
             {post.content && (
@@ -113,7 +138,8 @@ export default function PostCard({ post, user }: Props) {
             )}
           </div>
           <div className="grid grid-cols-3 items-center text-gray-500 text-xs mt-3">
-            <button
+            <motion.button
+              whileTap={{ scale: 0.8 }}
               onClick={handleLike}
               className="flex items-center justify-center gap-1 hover:text-gray-700"
               aria-label="Like"
@@ -124,16 +150,17 @@ export default function PostCard({ post, user }: Props) {
                 <HeartOutline className="w-4 h-4" />
               )}
               <span>{likes}</span>
-            </button>
+            </motion.button>
             <span className="text-center">{post.comments?.length || 0} Comments</span>
-            <button
+            <motion.button
+              whileTap={{ scale: 0.8 }}
               onClick={handleShare}
               className="flex items-center justify-center gap-1 hover:text-gray-700"
               aria-label="Share"
             >
-              <ShareIcon className={shared ? "w-4 h-4 text-green-500" : "w-4 h-4"} />
+              <ArrowUpTrayIcon className={shared ? "w-4 h-4 text-green-500" : "w-4 h-4"} />
               <span>{shares}</span>
-            </button>
+            </motion.button>
           </div>
         </div>
       </div>

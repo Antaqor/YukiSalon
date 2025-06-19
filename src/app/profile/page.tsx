@@ -37,6 +37,19 @@ export default function MyOwnProfilePage() {
     const [loadingPosts, setLoadingPosts] = useState(false);
     const [error, setError] = useState("");
 
+    const handleDelete = async (postId: string) => {
+        const token = getToken();
+        if (!token) return;
+        try {
+            await axios.delete(`${BASE_URL}/api/posts/${postId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setUserPosts((prev) => prev.filter((p) => p._id !== postId));
+        } catch (err) {
+            console.error("Delete post error:", err);
+        }
+    };
+
     const BASE_URL = "https://www.vone.mn";
     const UPLOADS_URL = `${BASE_URL}/api/uploads`;
 
@@ -180,7 +193,12 @@ export default function MyOwnProfilePage() {
                 ) : userPosts.length > 0 ? (
                     <div className="space-y-4">
                         {userPosts.map((post) => (
-                            <PostCard key={post._id} post={post} user={userData} />
+                            <PostCard
+                                key={post._id}
+                                post={post}
+                                user={userData}
+                                onDelete={handleDelete}
+                            />
                         ))}
                     </div>
                 ) : (

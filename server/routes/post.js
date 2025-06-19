@@ -162,6 +162,8 @@ router.post("/", authenticateToken, upload.single("image"), async (req, res) => 
   try {
     const { content } = req.body;
     if (!content) return res.status(400).json({ error: "Content required" });
+    if (content.length > 500)
+      return res.status(400).json({ error: "Content exceeds 500 characters" });
 
     const imageFilename = req.file ? req.file.filename : null;
 
@@ -285,6 +287,31 @@ router.post("/:id/share", authenticateToken, async (req, res) => {
     res.json({ shares: post.shares });
   } catch (err) {
     console.error("Share error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ---------------------------------------------------------------------------
+//  DELETE /api/posts/:id – delete a post
+// ---------------------------------------------------------------------------
+router.delete("/:id", authenticateToken, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ error: "Post not found" });
+
+    if (post.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    if (post.image) {
+      const filePath = path.join(uploadDir, post.image);
+      fs.unlink(filePath, () => {});
+    }
+
+    await post.deleteOne();
+    res.json({ message: "Post deleted" });
+  } catch (err) {
+    console.error("Delete post error:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
