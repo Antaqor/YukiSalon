@@ -108,8 +108,8 @@ export default function ClassroomPage() {
     : 0;
 
   return (
-    <div className="flex h-full w-full min-h-screen">
-      <aside className="w-80 min-w-64 bg-white p-6 flex flex-col border-r border-gray-200 text-black">
+    <div className="flex flex-col md:flex-row h-full w-full min-h-screen">
+      <aside className="w-full md:w-80 md:min-w-64 bg-white p-6 flex flex-col border-b md:border-b-0 md:border-r border-gray-200 text-black">
         <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
           <AcademicCapIcon className="w-6 h-6" /> Classroom
         </h2>
@@ -204,7 +204,7 @@ export default function ClassroomPage() {
           </div>
         )}
       </aside>
-      <main className="flex-1 bg-white p-10 flex flex-col text-black">
+      <main className="flex-1 bg-white p-4 md:p-10 flex flex-col text-black">
         {selected ? (
           <>
             <h1 className="text-2xl font-bold mb-3">{selected.title}</h1>
