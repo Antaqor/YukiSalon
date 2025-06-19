@@ -88,6 +88,10 @@ router.get("/", async (req, res) => {
         path: "comments.replies.user",
         select: "username profilePicture",
       });
+      await Post.populate(posts, {
+        path: "sharedFrom",
+        populate: { path: "user", select: "username profilePicture" },
+      });
 
       return res.json(posts);
     }
@@ -98,6 +102,10 @@ router.get("/", async (req, res) => {
         .populate("user", "username profilePicture location rating")
         .populate("comments.user", "username profilePicture")
         .populate("comments.replies.user", "username profilePicture")
+        .populate({
+          path: "sharedFrom",
+          populate: { path: "user", select: "username profilePicture" },
+        })
         .sort({ createdAt: -1 });
 
       const viewerCoords = parseCoords(currentLocation);
@@ -144,6 +152,10 @@ router.get("/", async (req, res) => {
       .populate("user", "username profilePicture")
       .populate("comments.user", "username profilePicture")
       .populate("comments.replies.user", "username profilePicture")
+      .populate({
+        path: "sharedFrom",
+        populate: { path: "user", select: "username profilePicture" },
+      })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limitNum);
@@ -280,13 +292,58 @@ router.post("/:id/share", authenticateToken, async (req, res) => {
     post.shares = (post.shares || 0) + 1;
     await post.save();
 
+    const sharedPost = await Post.create({
+      user: req.user._id,
+      sharedFrom: post._id,
+      content: post.content,
+      image: post.image,
+    });
+
+    await sharedPost.populate("user", "username profilePicture");
+    await sharedPost.populate({
+      path: "sharedFrom",
+      populate: { path: "user", select: "username profilePicture" },
+    });
+
     await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
     if (post.user && post.user.toString() !== req.user._id.toString()) {
       await User.findByIdAndUpdate(post.user, { $inc: { rating: 1 } });
     }
-    res.json({ shares: post.shares });
+    res.json({ shares: post.shares, newPost: sharedPost });
   } catch (err) {
     console.error("Share error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ---------------------------------------------------------------------------
+//  PUT /api/posts/:id – edit a post
+// ---------------------------------------------------------------------------
+router.put("/:id", authenticateToken, upload.single("image"), async (req, res) => {
+  try {
+    const { content } = req.body;
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ error: "Post not found" });
+
+    if (post.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    if (typeof content === "string") post.content = content;
+
+    if (req.file) {
+      if (post.image) {
+        const filePath = path.join(uploadDir, post.image);
+        fs.unlink(filePath, () => {});
+      }
+      post.image = req.file.filename;
+    }
+
+    await post.save();
+    await post.populate("user", "username profilePicture");
+    res.json({ post });
+  } catch (err) {
+    console.error("Update post error:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
