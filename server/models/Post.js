@@ -17,6 +17,8 @@ const CommentSchema = new Schema({
 const PostSchema = new Schema(
     {
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        // If this is a shared post, reference the original post
+        sharedFrom: { type: mongoose.Schema.Types.ObjectId, ref: "Post" },
         content: { type: String, required: true },
         image: { type: String }, // stores just the filename, e.g., "123456789-image.png"
         likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
