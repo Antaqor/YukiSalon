@@ -4,6 +4,7 @@ import { useRouter, useParams } from "next/navigation";
 import { FaCheckCircle } from "react-icons/fa";
 import PostCard from "../../components/PostCard";
 import axios from "axios";
+import type { Post } from "@/types/Post";
 
 /**
  * Matches your new user schema (no "name" field).
@@ -25,17 +26,6 @@ interface UserData {
  * If your posts actually have "title" + "content", keep them.
  * Otherwise remove "title" references.
  */
-interface PostData {
-    _id: string;
-    title: string;
-    content: string;
-    createdAt: string;
-    sharedFrom?: PostData;
-    image?: string;
-    likes?: string[];
-    comments?: any[];
-    shares?: number;
-}
 
 export default function PublicProfilePage() {
     const router = useRouter();
@@ -43,7 +33,7 @@ export default function PublicProfilePage() {
     const userId = params.id as string;
 
     const [userData, setUserData] = useState<UserData | null>(null);
-    const [userPosts, setUserPosts] = useState<PostData[]>([]);
+    const [userPosts, setUserPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
     const [postLoading, setPostLoading] = useState(false);
     const [error, setError] = useState("");
@@ -51,7 +41,7 @@ export default function PublicProfilePage() {
     const BASE_URL = "https://www.vone.mn";
     const UPLOADS_URL = `${BASE_URL}/api/uploads`;
 
-    const handleShareAdd = (newPost: PostData) => {
+    const handleShareAdd = (newPost: Post) => {
         setUserPosts((prev) => [newPost, ...prev]);
     };
 
