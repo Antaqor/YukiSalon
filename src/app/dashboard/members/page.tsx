@@ -110,7 +110,7 @@ export default function MembersDashboard() {
               <th className="p-2">Expires</th>
               <th className="p-2">VNT</th>
               <th className="p-2">Transferred</th>
-              <th className="p-2"></th>
+              <th className="p-2">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -136,6 +136,7 @@ function MemberRow({
   const { user } = useAuth();
   const [vnt, setVnt] = useState(member.vntBalance ?? 0);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState("");
 
   const saveVnt = async () => {
@@ -160,6 +161,26 @@ function MemberRow({
       setError(err.message);
     } finally {
       setSaving(false);
+    }
+  };
+  const deleteUser = async () => {
+    if (!user?.accessToken) return;
+    if (!confirm("Delete this user?")) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/users/${member._id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${user.accessToken}` },
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to delete");
+      }
+      window.location.reload();
+    } catch (err) {
+      alert((err as any).message);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -192,12 +213,19 @@ function MemberRow({
         {error && <span className="text-red-400 ml-2">{error}</span>}
       </td>
       <td className="p-2">{member.hasTransferred ? "✅" : ""}</td>
-      <td className="p-2">
+      <td className="p-2 space-x-2">
         <button
           onClick={() => onExtend(member._id)}
           className="px-2 py-1 bg-blue-600 rounded text-white"
         >
           Extend 30d
+        </button>
+        <button
+          onClick={deleteUser}
+          disabled={deleting}
+          className="px-2 py-1 bg-red-600 rounded text-white"
+        >
+          {deleting ? "..." : "Delete"}
         </button>
       </td>
     </tr>
