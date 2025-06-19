@@ -4,6 +4,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { FaCheckCircle } from "react-icons/fa";
 import PostCard from "../components/PostCard";
+import type { Post } from "@/types/Post";
 
 /** Match your user schema. No "name" field. */
 interface UserData {
@@ -18,22 +19,11 @@ interface UserData {
     location?: string;
 }
 
-interface PostData {
-    _id: string;
-    title: string;
-    content: string;
-    createdAt: string;
-    sharedFrom?: PostData;
-    image?: string;
-    likes?: string[];
-    comments?: any[];
-    shares?: number;
-}
 
 export default function MyOwnProfilePage() {
     const router = useRouter();
     const [userData, setUserData] = useState<UserData | null>(null);
-    const [userPosts, setUserPosts] = useState<PostData[]>([]);
+    const [userPosts, setUserPosts] = useState<Post[]>([]);
     const [loadingProfile, setLoadingProfile] = useState(true);
     const [loadingPosts, setLoadingPosts] = useState(false);
     const [error, setError] = useState("");
@@ -51,7 +41,7 @@ export default function MyOwnProfilePage() {
         }
     };
 
-    const handleShareAdd = (newPost: PostData) => {
+    const handleShareAdd = (newPost: Post) => {
         setUserPosts((prev) => [newPost, ...prev]);
     };
 

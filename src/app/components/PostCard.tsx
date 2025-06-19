@@ -10,24 +10,13 @@ import {
 import { formatPostDate } from "../lib/formatDate";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import type { Post } from "@/types/Post";
 
 interface User {
   _id?: string;
   username: string;
   profilePicture?: string;
   subscriptionExpiresAt?: string;
-}
-
-interface Post {
-  _id: string;
-  sharedFrom?: Post;
-  content: string;
-  image?: string;
-  createdAt: string;
-  likes?: string[];
-  comments?: any[];
-  shares?: number;
-  user?: User & { _id: string };
 }
 
 interface Props {
