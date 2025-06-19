@@ -51,6 +51,10 @@ export default function PublicProfilePage() {
     const BASE_URL = "https://www.vone.mn";
     const UPLOADS_URL = `${BASE_URL}/api/uploads`;
 
+    const handleShareAdd = (newPost: PostData) => {
+        setUserPosts((prev) => [newPost, ...prev]);
+    };
+
     useEffect(() => {
         if (!userId) return;
         setLoading(true);
@@ -156,7 +160,12 @@ export default function PublicProfilePage() {
                 )}
                 <div className="space-y-4">
                     {userPosts.map((post) => (
-                        <PostCard key={post._id} post={post} user={userData} />
+                        <PostCard
+                            key={post._id}
+                            post={post}
+                            user={userData}
+                            onShare={handleShareAdd}
+                        />
                     ))}
                 </div>
             </div>

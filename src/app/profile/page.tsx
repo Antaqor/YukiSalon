@@ -51,6 +51,10 @@ export default function MyOwnProfilePage() {
         }
     };
 
+    const handleShareAdd = (newPost: PostData) => {
+        setUserPosts((prev) => [newPost, ...prev]);
+    };
+
     const BASE_URL = "https://www.vone.mn";
     const UPLOADS_URL = `${BASE_URL}/api/uploads`;
 
@@ -199,6 +203,7 @@ export default function MyOwnProfilePage() {
                                 post={post}
                                 user={userData}
                                 onDelete={handleDelete}
+                                onShare={handleShareAdd}
                             />
                         ))}
                     </div>
