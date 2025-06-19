@@ -20,6 +20,7 @@ interface User {
 
 interface Post {
   _id: string;
+  sharedFrom?: Post;
   content: string;
   image?: string;
   createdAt: string;
@@ -50,6 +51,8 @@ export default function PostCard({ post, user, onDelete }: Props) {
   const [likes, setLikes] = useState(post.likes?.length || 0);
   const [shared, setShared] = useState(false);
   const [shares, setShares] = useState(post.shares || 0);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const displayPost = post.sharedFrom || post;
 
   const handleLike = async () => {
     if (!viewer?.accessToken) return;
@@ -80,6 +83,25 @@ export default function PostCard({ post, user, onDelete }: Props) {
       login({ ...viewer, rating: (viewer.rating || 0) + 1 }, viewer.accessToken);
     } catch (err) {
       console.error("Share error:", err);
+    }
+  };
+
+  const handleEdit = async () => {
+    if (!viewer?.accessToken) return;
+    const newContent = window.prompt("Edit post", post.content);
+    if (newContent === null) return;
+    try {
+      const { data } = await axios.put(
+        `${BASE_URL}/api/posts/${post._id}`,
+        { content: newContent },
+        { headers: { Authorization: `Bearer ${viewer.accessToken}` } }
+      );
+      if (data.post) {
+        post.content = data.post.content;
+        setMenuOpen(false);
+      }
+    } catch (err) {
+      console.error("Edit post error:", err);
     }
   };
 
@@ -115,23 +137,58 @@ export default function PostCard({ post, user, onDelete }: Props) {
             </span>
             <BoltIcon className="w-3 h-3 text-green-400 ml-1" />
             {viewerId === post.user?._id && (
-              <button
-                onClick={handleDelete}
-                className="ml-auto text-red-500 text-xs"
-              >
-                Delete
-              </button>
+              <div className="ml-auto relative">
+                <button
+                  onClick={() => setMenuOpen((o) => !o)}
+                  aria-label="Post options"
+                  className="p-1"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M5 12h.01M12 12h.01M19 12h.01"
+                    />
+                  </svg>
+                </button>
+                {menuOpen && (
+                  <div className="absolute right-0 mt-1 bg-white border rounded shadow">
+                    <button
+                      onClick={handleEdit}
+                      className="block px-3 py-1 text-sm hover:bg-gray-100 w-full text-left"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={handleDelete}
+                      className="block px-3 py-1 text-sm hover:bg-gray-100 w-full text-left text-red-500"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
           </div>
+          {post.sharedFrom && (
+            <p className="text-xs text-gray-500">Shared from {post.sharedFrom.user?.username}</p>
+          )}
           <div className="relative">
-            {post.content && (
+            {displayPost.content && (
               <p className="text-gray-800 text-sm mt-1 whitespace-pre-wrap">
-                {post.content}
+                {displayPost.content}
               </p>
             )}
-            {post.image && (
+            {displayPost.image && (
               <img
-                src={`${UPLOADS_URL}/${post.image}`}
+                src={`${UPLOADS_URL}/${displayPost.image}`}
                 alt="Post"
                 className="w-full rounded-lg mt-2 object-cover"
               />

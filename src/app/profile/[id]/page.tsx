@@ -30,6 +30,7 @@ interface PostData {
     title: string;
     content: string;
     createdAt: string;
+    sharedFrom?: PostData;
     image?: string;
     likes?: string[];
     comments?: any[];

@@ -53,6 +53,7 @@ interface Comment {
 
 interface Post {
   _id: string;
+  sharedFrom?: Post;
   content: string;
   image?: string;
   images?: string[];
@@ -77,6 +78,7 @@ export default function HomePage() {
   const [commentTexts, setCommentTexts] = useState<Record<string, string>>({});
   const [replyTexts, setReplyTexts] = useState<Record<string, string>>({});
   const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
+  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
   const [likedPosts, setLikedPosts] = useState<string[]>([]);
   const [sharedPosts, setSharedPosts] = useState<string[]>([]);
   const [pageNum, setPageNum] = useState(1);
@@ -250,6 +252,9 @@ export default function HomePage() {
         prev.map((p) => (p._id === postId ? { ...p, shares: data.shares } : p))
       );
       setSharedPosts((prev) => [...prev, postId]);
+      if (data.newPost) {
+        setPosts((prev) => [data.newPost, ...prev]);
+      }
       const postToShare = posts.find((p) => p._id === postId);
       const shareLink = `${window.location.origin}/profile/${postToShare?.user?._id || ""}?post=${postId}`;
       try {
@@ -272,6 +277,26 @@ export default function HomePage() {
       setPosts((prev) => prev.filter((p) => p._id !== postId));
     } catch (err) {
       console.error("Delete error:", err);
+    }
+  };
+
+  const handleEdit = async (post: Post) => {
+    if (!user?.accessToken) return;
+    const newContent = window.prompt("Edit post", post.content);
+    if (newContent === null) return;
+    try {
+      const { data } = await axios.put(
+        `${BASE_URL}/api/posts/${post._id}`,
+        { content: newContent },
+        { headers: { Authorization: `Bearer ${user.accessToken}` } }
+      );
+      if (data.post) {
+        setPosts((prev) =>
+          prev.map((p) => (p._id === post._id ? { ...p, content: data.post.content } : p))
+        );
+      }
+    } catch (err) {
+      console.error("Edit error:", err);
     }
   };
 
@@ -315,6 +340,9 @@ export default function HomePage() {
 
   const toggleComments = (postId: string) =>
     setOpenComments((prev) => ({ ...prev, [postId]: !prev[postId] }));
+
+  const toggleMenu = (postId: string) =>
+    setOpenMenus((prev) => ({ ...prev, [postId]: !prev[postId] }));
 
   // ────────────────────────────────────────────────────────────
   // UI
@@ -443,12 +471,44 @@ export default function HomePage() {
                             </div>
                           )}
                           {postUser && user && user._id === postUser._id && (
-                            <button
-                              onClick={() => handleDelete(post._id)}
-                              className="text-red-500 text-xs ml-auto"
-                            >
-                              Delete
-                            </button>
+                            <div className="ml-auto relative">
+                              <button
+                                onClick={() => toggleMenu(post._id)}
+                                aria-label="Post options"
+                                className="p-1"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="w-4 h-4"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M5 12h.01M12 12h.01M19 12h.01"
+                                  />
+                                </svg>
+                              </button>
+                              {openMenus[post._id] && (
+                                <div className="absolute right-0 mt-1 bg-white border rounded shadow">
+                                  <button
+                                    onClick={() => handleEdit(post)}
+                                    className="block px-3 py-1 text-sm hover:bg-gray-100 w-full text-left"
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    onClick={() => handleDelete(post._id)}
+                                    className="block px-3 py-1 text-sm hover:bg-gray-100 w-full text-left text-red-500"
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              )}
+                            </div>
                           )}
                         </div>
 
@@ -458,14 +518,17 @@ export default function HomePage() {
                         <BoltIcon className="w-3 h-3 text-green-400 ml-1 inline" />
 
                         {/* Content */}
+                        {post.sharedFrom && (
+                          <p className="text-xs text-gray-500">Shared from {post.sharedFrom.user?.username}</p>
+                        )}
                         <div className="relative">
-                          {post.content && (
-                            <p className="text-base whitespace-pre-wrap">{post.content}</p>
+                          { (post.sharedFrom ? post.sharedFrom.content : post.content) && (
+                            <p className="text-base whitespace-pre-wrap">{post.sharedFrom ? post.sharedFrom.content : post.content}</p>
                           )}
-                          {post.image && (
+                          { (post.sharedFrom ? post.sharedFrom.image : post.image) && (
                             <div className="relative w-full overflow-hidden rounded-lg mt-2">
                               <img
-                                src={`${UPLOADS_URL}/${post.image}`}
+                                src={`${UPLOADS_URL}/${post.sharedFrom ? post.sharedFrom.image : post.image}`}
                                 alt="Post"
                                 className="w-full h-auto object-cover rounded-lg"
                                 onError={(e) => (e.currentTarget.style.display = "none")}
