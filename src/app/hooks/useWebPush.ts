@@ -15,7 +15,7 @@ async function askPermission(): Promise<boolean> {
   if (Notification.permission === "granted") return true;
 
   // We already asked this session – don’t nag again.
-  if (sessionStorage.getItem(FLAG)) return Notification.permission === "granted";
+  if (sessionStorage.getItem(FLAG)) return false;
 
   // Ask now, record that we’ve asked.
   sessionStorage.setItem(FLAG, "1");
