@@ -23,7 +23,7 @@ export default function BooksPage() {
       .then((res) => res.json())
       .then(setBooks)
       .catch(() => {});
-  }, []);
+  }, [BACKEND_URL]);
 
   if (!loggedIn && !loading) {
     return (

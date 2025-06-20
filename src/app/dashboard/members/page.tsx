@@ -42,7 +42,7 @@ export default function MembersDashboard() {
       }
     };
     fetchMembers();
-  }, []);
+  }, [BACKEND_URL]);
 
   const extendMembership = async (memberId: string) => {
     try {

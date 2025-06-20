@@ -78,7 +78,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     };
 
     loadCart();
-  }, [loggedIn]); // fires on mount + login/logout flip
+  }, [loggedIn, user?.accessToken, BACKEND_URL]); // fires on mount + login/logout flip
 
   /* ── persist guest cart ──────────────────────────── */
   useEffect(() => {

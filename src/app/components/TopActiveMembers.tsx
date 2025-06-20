@@ -29,7 +29,7 @@ export default function TopActiveMembers() {
       }
     };
     fetchMembers();
-  }, []);
+  }, [BASE_URL]);
 
   return (
     <div className="p-4 transition-shadow duration-200 hover:shadow-md">

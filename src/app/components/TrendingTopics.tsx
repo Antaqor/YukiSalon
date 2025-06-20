@@ -41,7 +41,7 @@ const TrendingTopics: React.FC = () => {
       }
     };
     fetchTrending();
-  }, []);
+  }, [BASE_URL]);
 
   return (
     <div className="p-4 transition-shadow duration-200 hover:shadow-md">

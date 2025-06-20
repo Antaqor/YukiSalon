@@ -56,7 +56,7 @@ export default function BooksDashboardPage() {
       }
     };
     fetchBooks();
-  }, []);
+  }, [BACKEND_URL]);
 
   const handleCreateBook = async (e: FormEvent) => {
     e.preventDefault();
