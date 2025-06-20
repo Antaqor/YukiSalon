@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { AuthProvider } from "../context/AuthContext";
 import { CartProvider } from "../context/CartContext";
 import { ThemeProvider } from "../context/ThemeContext";
+import { NotificationProvider, useNotifications } from "../context/NotificationContext";
+import { BellIcon } from "@heroicons/react/24/outline";
 import Header from "./Header";
 import TopActiveMembers from "./TopActiveMembers";
 import BottomNav from "./BottomNav";
@@ -12,6 +14,28 @@ import SidebarControl from "./SidebarControl";
 import NavigationLoader from "./NavigationLoader";
 import LoadingOverlay from "./LoadingOverlay";
 import Link from "next/link";
+
+function NotificationNavItem() {
+  const { unreadCount } = useNotifications();
+  return (
+    <li>
+      <Link
+        href="/notifications"
+        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 transition-smooth focus:outline-none hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
+      >
+        <BellIcon className="w-6 h-6 group-hover:text-brandCyan" />
+        <span className="flex items-center">
+          Notifications
+          {unreadCount > 0 && (
+            <span className="ml-1 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+              {unreadCount}
+            </span>
+          )}
+        </span>
+      </Link>
+    </li>
+  );
+}
 
 export default function LayoutClient({ children }: { children: React.ReactNode }) {
   const [mountLoading, setMountLoading] = useState(true);
@@ -28,6 +52,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
     <ThemeProvider>
       <CartProvider>
         <AuthProvider>
+          <NotificationProvider>
           {mountLoading &&
             (pathname === "/" ||
               pathname.startsWith("/users") ||
@@ -96,9 +121,10 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0v6" />
                       </svg>
-                      <span>Classroom</span>
+                  <span>Classroom</span>
                     </Link>
                   </li>
+                  <NotificationNavItem />
                   </ul>
                 </nav>
               </aside>
@@ -117,10 +143,8 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
               </aside>
             </main>
           </div>
-          <footer className="w-full text-sm text-center py-4 border-t border-supportBorder">
-            <p className="text-gray-600">© 2025 THE VONE CLAN. Бүх эрх хуулиар хамгаалагдсан.</p>
-          </footer>
           <BottomNav />
+          </NotificationProvider>
         </AuthProvider>
       </CartProvider>
     </ThemeProvider>

@@ -9,11 +9,13 @@ import {
     AcademicCapIcon,
 } from "@heroicons/react/24/outline";
 import AddPostModal from "./AddPostModal";
+import { useNotifications } from "../context/NotificationContext";
 
 const BottomNav: React.FC = () => {
     const router = useRouter();
     const [scrolledDown, setScrolledDown] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const { unreadCount } = useNotifications();
 
     useEffect(() => {
         let lastY = window.scrollY;
@@ -63,9 +65,14 @@ const BottomNav: React.FC = () => {
                 <button
                     onClick={() => router.push("/notifications")}
                     aria-label="Notifications"
-                    className="p-1 text-black"
+                    className="relative p-1 text-black"
                 >
                     <BellIcon className="h-7 w-7" />
+                    {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                            {unreadCount}
+                        </span>
+                    )}
                 </button>
 
                 {/* CLASSROOM */}
