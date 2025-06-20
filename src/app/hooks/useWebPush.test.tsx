@@ -1,6 +1,12 @@
 import React from 'react';
 import { render, act } from '@testing-library/react';
+import axios from 'axios';
 import useWebPush from './useWebPush';
+
+jest.mock('axios');
+jest.mock('../context/AuthContext', () => ({
+  useAuth: () => ({ user: { accessToken: 'token' } }),
+}));
 
 test('subscribe requests permission', async () => {
   const requestPermission = jest.fn().mockResolvedValue('granted');
@@ -11,7 +17,9 @@ test('subscribe requests permission', async () => {
     }),
     getRegistration: jest.fn().mockResolvedValue({ pushManager: { getSubscription: jest.fn().mockResolvedValue(null) } })
   };
-  (global as any).fetch = jest.fn().mockResolvedValue({ json: async () => ({ publicKey: 'test' }) });
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
+  mockedAxios.get.mockResolvedValue({ data: { publicKey: 'test' } });
+  mockedAxios.post.mockResolvedValue({});
   (global as any).Buffer = Buffer;
 
   let hook: any;
@@ -26,4 +34,6 @@ test('subscribe requests permission', async () => {
   });
 
   expect(requestPermission).toHaveBeenCalled();
+  expect((axios as jest.Mocked<typeof axios>).get).toHaveBeenCalled();
+  expect((axios as jest.Mocked<typeof axios>).post).toHaveBeenCalled();
 });
