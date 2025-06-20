@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require("../models/User");
 const authenticateToken = require("../middleware/authMiddleware");
 const Post = require("../models/Post");
+const Notification = require("../models/Notification");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
@@ -66,6 +67,12 @@ router.post("/:id/follow", authenticateToken, async (req, res) => {
 
         await currentUser.save();
         await targetUser.save();
+
+        await Notification.create({
+            recipient: targetUserId,
+            sender: currentUserId,
+            type: "follow",
+        });
 
         return res.json({ message: "User followed successfully" });
     } catch (err) {

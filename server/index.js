@@ -15,6 +15,7 @@ const paymentRoutes = require("./routes/payment");
 const bookRoutes    = require("./routes/bookRoutes");
 const productRoutes = require("./routes/productRoutes");
 const cartRoutes    = require("./routes/cartRoutes"); // ← feature branch win
+const notificationRoutes = require("./routes/notification");
 
 const app  = express();
 const PORT = process.env.PORT || 5001;
@@ -58,6 +59,7 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/books",    bookRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart",     cartRoutes); // ← now live
+app.use("/api/notifications", notificationRoutes);
 
 // ── heartbeat ─────────────────────────────────────────
 app.get("/", (_, res) => res.send("Server is working!"));

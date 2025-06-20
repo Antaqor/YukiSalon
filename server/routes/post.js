@@ -7,6 +7,7 @@ const path = require("path");
 const Post = require("../models/Post");
 const authenticateToken = require("../middleware/authMiddleware");
 const User = require("../models/User");
+const Notification = require("../models/Notification");
 
 // ---------------------------------------------------------------------------
 //  Upload setup
@@ -213,6 +214,12 @@ router.post("/:id/like", authenticateToken, async (req, res) => {
     await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
     if (post.user && post.user.toString() !== req.user._id.toString()) {
       await User.findByIdAndUpdate(post.user, { $inc: { rating: 1 } });
+      await Notification.create({
+        recipient: post.user,
+        sender: req.user._id,
+        type: "like",
+        post: post._id,
+      });
     }
     await post.populate("likes", "username");
 
@@ -239,6 +246,14 @@ router.post("/:id/comment", authenticateToken, async (req, res) => {
     await post.populate("comments.user", "username profilePicture");
 
     await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
+    if (post.user && post.user.toString() !== req.user._id.toString()) {
+      await Notification.create({
+        recipient: post.user,
+        sender: req.user._id,
+        type: "comment",
+        post: post._id,
+      });
+    }
 
     res.json({ comments: post.comments });
   } catch (err) {
@@ -272,6 +287,26 @@ router.post(
       await post.populate("comments.replies.user", "username profilePicture");
 
       await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
+      if (comment.user && comment.user.toString() !== req.user._id.toString()) {
+        await Notification.create({
+          recipient: comment.user,
+          sender: req.user._id,
+          type: "reply",
+          post: post._id,
+        });
+      }
+      if (
+        post.user &&
+        post.user.toString() !== req.user._id.toString() &&
+        post.user.toString() !== comment.user.toString()
+      ) {
+        await Notification.create({
+          recipient: post.user,
+          sender: req.user._id,
+          type: "reply",
+          post: post._id,
+        });
+      }
 
       res.json({ comments: post.comments });
     } catch (err) {
