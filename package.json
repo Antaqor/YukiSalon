@@ -65,7 +65,8 @@
     "nodemon": "^2.0.22",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@testing-library/react": "^14.1.0"
   },
   "description": "This project is a Next.js application, bootstrapped with create-next-app. It also includes a Node.js backend server for handling API requests and managing user authentication.",
   "main": "server/index.js",
