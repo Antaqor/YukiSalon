@@ -31,7 +31,7 @@ export default function SubscriptionPage() {
       .get(`${BASE_URL}/api/users/active-subscribers`)
       .then((res) => setMemberCount(res.data.count))
       .catch(() => {});
-  }, []);
+  }, [BASE_URL]);
 
   useEffect(() => {
     if (!showPaymentInfo || countdown <= 0) return;

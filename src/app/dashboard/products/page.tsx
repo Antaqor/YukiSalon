@@ -58,7 +58,7 @@ export default function ProductDashboardPage() {
       }
     };
     fetchProducts();
-  }, []);
+  }, [BACKEND_URL]);
 
   /* ── create product ──────────────────────────────── */
   const handleCreateProduct = async (e: FormEvent) => {
