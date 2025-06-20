@@ -32,7 +32,7 @@ export default function UsersPage() {
             }
         };
         fetchUsers();
-    }, [BASE_URL]);
+    }, []);
 
     if (loading) {
         return (
