@@ -13,7 +13,10 @@ async function getQpayToken() {
     }
 
     const clientId = process.env.QPAY_CLIENT_ID || "FORU";
-    const clientSecret = process.env.QPAY_CLIENT_SECRET || "fMZxsPLj";
+    const clientSecret = process.env.QPAY_CLIENT_SECRET;
+    if (!clientSecret) {
+        throw new Error("QPAY_CLIENT_SECRET is not configured");
+    }
     const base64 = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
 
     const resp = await axios.post(
