@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useRef, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useAuth } from "../../context/AuthContext";
 
 /* ── types ─────────────────────────────────────────── */
@@ -57,7 +58,7 @@ export default function ProductDashboardPage() {
       }
     };
     fetchProducts();
-  }, []);
+  }, [BACKEND_URL]);
 
   /* ── create product ──────────────────────────────── */
   const handleCreateProduct = async (e: FormEvent) => {
@@ -274,9 +275,11 @@ function ProductRow({
       {/* thumbnail */}
       <div className="w-24 h-24 bg-gray-100 flex-shrink-0 overflow-hidden">
         {product.imageUrl ? (
-          <img
+          <Image
             src={`https://www.vone.mn/${product.imageUrl}`}
             alt={product.name}
+            width={96}
+            height={96}
             className="w-full h-full object-cover"
           />
         ) : (

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Image from "next/image";
 import { UserIcon } from "@heroicons/react/24/solid";
 import { BASE_URL } from "../lib/config";
 
@@ -28,7 +29,7 @@ export default function TopActiveMembers() {
       }
     };
     fetchMembers();
-  }, []);
+  }, [BASE_URL]);
 
   return (
     <div className="p-4 transition-shadow duration-200 hover:shadow-md">
@@ -40,9 +41,11 @@ export default function TopActiveMembers() {
         {members.map((m) => (
           <li key={m._id} className="flex items-center gap-2">
             {m.profilePicture ? (
-              <img
+              <Image
                 src={`${BASE_URL}${m.profilePicture}`}
                 alt={m.username}
+                width={32}
+                height={32}
                 className="w-8 h-8 rounded-full object-cover border border-brandCyan"
               />
             ) : (

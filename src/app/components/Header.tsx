@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { useAuth } from "../context/AuthContext";
 import { BASE_URL } from "../lib/config";
@@ -36,9 +37,11 @@ export default function Header() {
                         {loggedIn ? (
                             <Link href="/profile" aria-label="Profile">
                                 {user?.profilePicture ? (
-                                    <img
+                                    <Image
                                         src={`${BASE_URL}${user.profilePicture}`}
                                         alt="Profile"
+                                        width={32}
+                                        height={32}
                                         className="w-8 h-8 rounded-full object-cover"
                                     />
                                 ) : (

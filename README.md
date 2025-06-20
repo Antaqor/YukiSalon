@@ -25,6 +25,15 @@ bun dev
 1. `server/.env.example` файлыг `server/.env` болгон хуулж, `MONGODB_URI`-д өгөгдлийн сангийн холбоосоо бичнэ.
 2. API серверийг `npm run server` (эсвэл `npm run server-dev` автоматаар дахин ачаалуулах) командаар эхлүүлнэ.
 
+Дараах орчны хувьсагчуудыг `server/.env` файлд тохируулна:
+
+- `MONGODB_URI` – MongoDB-ийн холбоос
+- `PORT` – (сонголттой) серверийн порт
+- `UPLOAD_DIR` – файлууд хадгалагдах санд
+- `QPAY_CLIENT_ID` – QPay-ийн Client ID
+- `QPAY_CLIENT_SECRET` – QPay-ийн Client Secret (заавал)
+- `QPAY_INVOICE_CODE` – QPay-д бүртгэгдсэн invoice code
+
 Хуулсан файлууд `UPLOAD_DIR`-ээр заасан санд хадгалагдана.
 
 ## Бүтээгдэхүүний удирдлага

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { FaCheckCircle } from "react-icons/fa";
 import { BoltIcon, HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 import {
@@ -11,6 +12,7 @@ import { formatPostDate } from "../lib/formatDate";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { BASE_URL, UPLOADS_URL } from "../lib/config";
+import type { Post } from "@/types/Post";
 
 interface User {
   _id?: string;
@@ -19,25 +21,12 @@ interface User {
   subscriptionExpiresAt?: string;
 }
 
-interface Post {
-  _id: string;
-  sharedFrom?: Post;
-  content: string;
-  image?: string;
-  createdAt: string;
-  likes?: string[];
-  comments?: any[];
-  shares?: number;
-  user?: User & { _id: string };
-}
-
 interface Props {
   post: Post;
   user: User;
   onDelete?: (id: string) => void;
   onShare?: (newPost: Post) => void;
 }
-
 
 export default function PostCard({ post, user, onDelete, onShare }: Props) {
   const { user: viewer, login } = useAuth();
@@ -119,13 +108,16 @@ export default function PostCard({ post, user, onDelete, onShare }: Props) {
       console.error("Delete error:", err);
     }
   };
+
   return (
     <div className="bg-white p-6 grid gap-4 border-b border-gray-200">
       <div className="flex gap-3 group">
         {user.profilePicture ? (
-          <img
+          <Image
             src={`${BASE_URL}${user.profilePicture}`}
             alt="avatar"
+            width={40}
+            height={40}
             className="w-10 h-10 rounded-full object-cover"
           />
         ) : (
@@ -181,7 +173,9 @@ export default function PostCard({ post, user, onDelete, onShare }: Props) {
             )}
           </div>
           {post.sharedFrom && (
-            <p className="text-xs text-gray-500">Shared from {post.sharedFrom.user?.username}</p>
+            <p className="text-xs text-gray-500">
+              Shared from {post.sharedFrom.user?.username}
+            </p>
           )}
           <div className="relative">
             {displayPost.content && (
@@ -190,9 +184,11 @@ export default function PostCard({ post, user, onDelete, onShare }: Props) {
               </p>
             )}
             {displayPost.image && (
-              <img
+              <Image
                 src={`${UPLOADS_URL}/${displayPost.image}`}
                 alt="Post"
+                width={800}
+                height={600}
                 className="w-full rounded-lg mt-2 object-cover"
               />
             )}
@@ -211,14 +207,18 @@ export default function PostCard({ post, user, onDelete, onShare }: Props) {
               )}
               <span>{likes}</span>
             </motion.button>
-            <span className="text-center">{post.comments?.length || 0} Comments</span>
+            <span className="text-center">
+              {post.comments?.length || 0} Comments
+            </span>
             <motion.button
               whileTap={{ scale: 0.8 }}
               onClick={handleShare}
               className="flex items-center justify-center gap-1 hover:text-gray-700"
               aria-label="Share"
             >
-              <ArrowUpTrayIcon className={shared ? "w-4 h-4 text-green-500" : "w-4 h-4"} />
+              <ArrowUpTrayIcon
+                className={shared ? "w-4 h-4 text-green-500" : "w-4 h-4"}
+              />
               <span>{shares}</span>
             </motion.button>
           </div>

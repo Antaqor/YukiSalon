@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import axios from "axios";
 import { BASE_URL } from "../lib/config";
 
@@ -61,9 +62,11 @@ export default function UsersPage() {
                             transition={{ type: "spring", stiffness: 300 }}
                         >
                         {user.profilePicture ? (
-                            <img
+                            <Image
                                 src={`${BASE_URL}${user.profilePicture}`}
                                 alt={user.username}
+                                width={80}
+                                height={80}
                                 className="w-20 h-20 rounded-full object-cover mb-3"
                             />
                         ) : (
