@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { FaCheckCircle } from "react-icons/fa";
 import PostCard from "../components/PostCard";
 import type { Post } from "@/types/Post";
@@ -138,7 +139,7 @@ export default function MyOwnProfilePage() {
                     &#8592;
                 </button>
                 <h1 className="font-bold flex-1 text-center">{userData.username}</h1>
-                <a href="/profile/edit" className="text-sm text-blue-400">Edit</a>
+                <Link href="/profile/edit" className="text-sm text-blue-400">Edit</Link>
             </div>
 
             {/* Banner */}
