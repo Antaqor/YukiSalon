@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
+import Image from "next/image";
 import {
   PhotoIcon,
   FaceSmileIcon,
@@ -70,9 +71,11 @@ export default function PostInput({ onPost }: Props) {
   return (
     <div className="flex bg-white rounded-2xl border border-gray-100 shadow-sm p-4 md:p-6 max-w-xl mx-auto">
       {user?.profilePicture ? (
-        <img
+        <Image
           src={`${BASE_URL}${user.profilePicture}`}
           alt="Avatar"
+          width={48}
+          height={48}
           className="w-12 h-12 rounded-full mr-4 object-cover ring-2 ring-brandCyan"
         />
       ) : (

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { FaCheckCircle } from "react-icons/fa";
 import { BoltIcon, HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 import {
@@ -113,9 +114,11 @@ export default function PostCard({ post, user, onDelete, onShare }: Props) {
     <div className="bg-white p-6 grid gap-4 border-b border-gray-200">
       <div className="flex gap-3 group">
         {user.profilePicture ? (
-          <img
+          <Image
             src={`${BASE_URL}${user.profilePicture}`}
             alt="avatar"
+            width={40}
+            height={40}
             className="w-10 h-10 rounded-full object-cover"
           />
         ) : (
@@ -180,9 +183,11 @@ export default function PostCard({ post, user, onDelete, onShare }: Props) {
               </p>
             )}
             {displayPost.image && (
-              <img
+              <Image
                 src={`${UPLOADS_URL}/${displayPost.image}`}
                 alt="Post"
+                width={800}
+                height={600}
                 className="w-full rounded-lg mt-2 object-cover"
               />
             )}

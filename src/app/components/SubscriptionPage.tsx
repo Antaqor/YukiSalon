@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Image from "next/image";
 import { useAuth } from "../context/AuthContext";
 
 interface PaymentOption {
@@ -122,9 +123,11 @@ export default function SubscriptionPage() {
                     {qrUrl && (
                         <div className="text-center">
                             <p className="mb-2 text-gray-400">QR уншуулна уу:</p>
-                            <img
+                            <Image
                                 src={qrUrl}
                                 alt="QPay Subscription"
+                                width={192}
+                                height={192}
                                 className="mx-auto w-48 h-48 border rounded"
                             />
                         </div>
@@ -143,9 +146,11 @@ export default function SubscriptionPage() {
                                             rel="noopener noreferrer"
                                             className="flex flex-col items-center space-y-2"
                                         >
-                                            <img
+                                            <Image
                                                 src={option.logo}
                                                 alt={option.name}
+                                                width={48}
+                                                height={48}
                                                 className="w-12 h-12 object-contain"
                                             />
                                             <span className="text-sm text-blue-400 hover:underline">

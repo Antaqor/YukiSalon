@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useAuth } from "../../context/AuthContext";
 
 export default function EditProfilePage() {
@@ -54,7 +55,7 @@ export default function EditProfilePage() {
         <div>
           <label className="block mb-1">Profile Picture</label>
           {profilePreview && (
-            <img src={profilePreview} alt="Profile preview" className="w-24 h-24 object-cover rounded-full mb-2" />
+            <Image src={profilePreview} alt="Profile preview" width={96} height={96} className="w-24 h-24 object-cover rounded-full mb-2" />
           )}
           <input
             type="file"
@@ -71,7 +72,7 @@ export default function EditProfilePage() {
         <div>
           <label className="block mb-1">Cover Image</label>
           {coverPreview && (
-            <img src={coverPreview} alt="Cover preview" className="w-full h-40 object-cover rounded mb-2" />
+            <Image src={coverPreview} alt="Cover preview" width={600} height={160} className="w-full h-40 object-cover rounded mb-2" />
           )}
           <input
             type="file"

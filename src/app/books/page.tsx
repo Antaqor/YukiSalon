@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "../context/AuthContext";
 import type { Book } from "../lib/books";
 
@@ -45,9 +46,11 @@ export default function BooksPage() {
           >
             <div className="h-48 mb-3 overflow-hidden rounded">
               {book.coverImageUrl ? (
-                <img
+                <Image
                   src={`${BASE_URL}/${book.coverImageUrl}`}
                   alt={book.title}
+                  width={400}
+                  height={192}
                   className="w-full h-full object-cover"
                 />
               ) : (

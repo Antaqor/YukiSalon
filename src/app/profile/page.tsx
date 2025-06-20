@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { FaCheckCircle } from "react-icons/fa";
 import PostCard from "../components/PostCard";
 import type { Post } from "@/types/Post";
@@ -143,11 +144,11 @@ export default function MyOwnProfilePage() {
             {/* Banner */}
             <div className="h-40 bg-[#0d0d0d] relative mt-12">
                 {userData.coverImage && (
-                    <img src={`${BASE_URL}${userData.coverImage}`} alt="Cover" className="absolute inset-0 w-full h-full object-cover" />
+                    <Image src={`${BASE_URL}${userData.coverImage}`} alt="Cover" width={800} height={160} className="absolute inset-0 w-full h-full object-cover" />
                 )}
                 <div className="absolute -bottom-16 left-4 w-32 h-32 rounded-full border-4 border-[#0d0d0d] overflow-hidden bg-gray-200">
                     {userData.profilePicture ? (
-                        <img src={`${BASE_URL}${userData.profilePicture}`} alt="avatar" className="w-full h-full object-cover" />
+                        <Image src={`${BASE_URL}${userData.profilePicture}`} alt="avatar" width={128} height={128} className="w-full h-full object-cover" />
                     ) : null}
                 </div>
             </div>

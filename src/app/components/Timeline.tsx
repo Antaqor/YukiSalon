@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export interface StoryPost {
     title: string;
@@ -33,9 +34,11 @@ const Timeline: React.FC<TimelineProps> = ({ posts = [] }) => {
                         <div className="flex-shrink-0 relative z-10">
                             <div className="w-12 h-12 flex items-center justify-center bg-[#0055FF] text-white rounded-md shadow-lg">
                                 {post.imageUrl ? (
-                                    <img
+                                    <Image
                                         src={post.imageUrl}
                                         alt={post.title}
+                                        width={48}
+                                        height={48}
                                         className="w-full h-full object-cover rounded-md"
                                     />
                                 ) : (

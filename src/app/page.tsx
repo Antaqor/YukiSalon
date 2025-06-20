@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import axios from "axios";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "./context/AuthContext";
 import {
@@ -431,9 +432,11 @@ export default function HomePage() {
                       {/* Avatar */}
                       <div className="self-start">
                         {postUser?.profilePicture ? (
-                          <img
+                          <Image
                             src={`${BASE_URL}${postUser.profilePicture}`}
                             alt="Avatar"
+                            width={48}
+                            height={48}
                             className="w-12 h-12 object-cover rounded-md"
                             onError={(e) => (e.currentTarget.style.display = "none")}
                           />
@@ -527,9 +530,11 @@ export default function HomePage() {
                           )}
                           { (post.sharedFrom ? post.sharedFrom.image : post.image) && (
                             <div className="relative w-full overflow-hidden rounded-lg mt-2">
-                              <img
+                              <Image
                                 src={`${UPLOADS_URL}/${post.sharedFrom ? post.sharedFrom.image : post.image}`}
                                 alt="Post"
+                                width={800}
+                                height={600}
                                 className="w-full h-auto object-cover rounded-lg"
                                 onError={(e) => (e.currentTarget.style.display = "none")}
                               />
@@ -592,9 +597,11 @@ export default function HomePage() {
                           <div key={comment._id} className="ml-4">
                             <div className="flex items-start gap-2">
                               {comment.user?.profilePicture && (
-                                <img
+                                <Image
                                   src={`${BASE_URL}${comment.user.profilePicture}`}
                                   alt="avatar"
+                                  width={24}
+                                  height={24}
                                   className="w-6 h-6 rounded-full object-cover"
                                 />
                               )}
@@ -611,9 +618,11 @@ export default function HomePage() {
                                     className="ml-4 mt-2 flex gap-2 items-start"
                                   >
                                     {reply.user?.profilePicture && (
-                                      <img
+                                      <Image
                                         src={`${BASE_URL}${reply.user.profilePicture}`}
                                         alt="avatar"
+                                        width={20}
+                                        height={20}
                                         className="w-5 h-5 rounded-full object-cover"
                                       />
                                     )}

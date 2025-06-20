@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import Image from "next/image";
 import { FaCheckCircle } from "react-icons/fa";
 import PostCard from "../../components/PostCard";
 import axios from "axios";
@@ -116,11 +117,11 @@ export default function PublicProfilePage() {
             {/* Banner */}
             <div className="h-40 bg-[#0d0d0d] relative mt-12">
                 {userData.coverImage && (
-                    <img src={userData.coverImage} alt="Cover" className="absolute inset-0 w-full h-full object-cover" />
+                    <Image src={userData.coverImage} alt="Cover" width={800} height={160} className="absolute inset-0 w-full h-full object-cover" />
                 )}
                 <div className="absolute -bottom-16 left-4 w-32 h-32 rounded-full border-4 border-[#0d0d0d] overflow-hidden bg-gray-800">
                     {userData.profilePicture && (
-                        <img src={userData.profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                        <Image src={userData.profilePicture} alt="Profile" width={128} height={128} className="w-full h-full object-cover" />
                     )}
                 </div>
             </div>
