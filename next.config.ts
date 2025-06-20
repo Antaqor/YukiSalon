@@ -16,7 +16,14 @@ const nextConfig: NextConfig = {
         NEXT_PUBLIC_BACKEND_API_URL: process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:5001',
     },
     images: {
-        domains: ['localhost', '206.189.80.118', 'dsifg2gm0y83d.cloudfront.net'], // Add your backend domain(s) here
+        // Allow loading images from the backend and CDN domains
+        domains: [
+            'localhost',
+            '206.189.80.118',
+            'dsifg2gm0y83d.cloudfront.net',
+            'www.vone.mn',
+            'vone.mn',
+        ],
     },
 };
 
