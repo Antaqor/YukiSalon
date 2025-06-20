@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
+import { BASE_URL } from "../lib/config";
 
 // ── Types ───────────────────────────────────────────────
 // No QPay integration. Payment is handled manually via bank transfer.
@@ -21,7 +22,6 @@ export default function SubscriptionPage() {
     user?.subscriptionExpiresAt &&
     new Date(user.subscriptionExpiresAt) > new Date();
 
-  const BASE_URL = "https://www.vone.mn";
   const price =
     memberCount < 10 ? 10000 : memberCount < 30 ? 20000 : 20000; // 0-9 → 10 k, 10-29 → 20 k, 30+ → 20 k
 

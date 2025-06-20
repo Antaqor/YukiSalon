@@ -11,8 +11,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
-
-const BASE_URL = "https://www.vone.mn";
+import { BASE_URL } from "../lib/config";
 
 interface Props {
   onPost?: (post?: any) => void;

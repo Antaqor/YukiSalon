@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaCheckCircle } from "react-icons/fa";
 import PostCard from "../components/PostCard";
+import { BASE_URL, UPLOADS_URL } from "../lib/config";
 import type { Post } from "@/types/Post";
 
 /** Match your user schema. No "name" field. */
@@ -21,7 +22,6 @@ interface UserData {
     location?: string;
 }
 
-
 export default function MyOwnProfilePage() {
     const router = useRouter();
     const [userData, setUserData] = useState<UserData | null>(null);
@@ -29,6 +29,8 @@ export default function MyOwnProfilePage() {
     const [loadingProfile, setLoadingProfile] = useState(true);
     const [loadingPosts, setLoadingPosts] = useState(false);
     const [error, setError] = useState("");
+
+    const getToken = () => typeof window !== "undefined" ? localStorage.getItem("token") || "" : "";
 
     const handleDelete = async (postId: string) => {
         const token = getToken();
@@ -47,30 +49,19 @@ export default function MyOwnProfilePage() {
         setUserPosts((prev) => [newPost, ...prev]);
     };
 
-    const BASE_URL = "https://www.vone.mn";
-    const UPLOADS_URL = `${BASE_URL}/api/uploads`;
-
-    // Grab token from localStorage or redirect if missing
-    function getToken() {
-        return localStorage.getItem("token") || "";
-    }
-
-    // 1) Fetch the logged-in user's profile
+    // Fetch the logged-in user's profile
     useEffect(() => {
         const token = getToken();
         if (!token) {
             router.push("/login");
             return;
         }
-
         setLoadingProfile(true);
         axios
             .get(`${BASE_URL}/api/auth/profile`, {
                 headers: { Authorization: `Bearer ${token}` },
             })
-            .then((res) => {
-                setUserData(res.data);
-            })
+            .then((res) => setUserData(res.data))
             .catch((err) => {
                 console.error("My profile fetch error:", err.response?.data || err.message);
                 setError(
@@ -79,21 +70,18 @@ export default function MyOwnProfilePage() {
                 );
             })
             .finally(() => setLoadingProfile(false));
-    }, [router, BASE_URL]);
+    }, [router]);
 
-    // 2) After we have the user’s data, fetch that user’s posts
+    // After we have the user’s data, fetch that user’s posts
     useEffect(() => {
         if (!userData?._id) return;
-
         setLoadingPosts(true);
         const token = getToken();
         axios
             .get(`${BASE_URL}/api/posts?user=${userData._id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             })
-            .then((res) => {
-                setUserPosts(res.data);
-            })
+            .then((res) => setUserPosts(res.data))
             .catch((err) => {
                 console.error("User posts fetch error:", err.response?.data || err.message);
                 setError(
@@ -102,9 +90,9 @@ export default function MyOwnProfilePage() {
                 );
             })
             .finally(() => setLoadingPosts(false));
-    }, [userData, BASE_URL]);
+    }, [userData]);
 
-    // ---------------- RENDER LOGIC ----------------
+    // Render logic
     if (loadingProfile) {
         return (
             <div className="p-4 space-y-4">
@@ -130,7 +118,6 @@ export default function MyOwnProfilePage() {
         ? new Date(userData.subscriptionExpiresAt) > new Date()
         : false;
 
-    // ---------------- UI ----------------
     return (
         <div className="min-h-screen bg-white text-black font-sans">
             {/* Top Navigation */}
@@ -145,11 +132,29 @@ export default function MyOwnProfilePage() {
             {/* Banner */}
             <div className="h-40 bg-[#0d0d0d] relative mt-12">
                 {userData.coverImage && (
-                    <Image src={`${BASE_URL}${userData.coverImage}`} alt="Cover" width={800} height={160} className="absolute inset-0 w-full h-full object-cover" />
+                    <Image
+                        src={userData.coverImage.startsWith("http")
+                            ? userData.coverImage
+                            : `${UPLOADS_URL}/${userData.coverImage}`
+                        }
+                        alt="Cover"
+                        width={800}
+                        height={160}
+                        className="absolute inset-0 w-full h-full object-cover"
+                    />
                 )}
                 <div className="absolute -bottom-16 left-4 w-32 h-32 rounded-full border-4 border-[#0d0d0d] overflow-hidden bg-gray-200">
                     {userData.profilePicture ? (
-                        <Image src={`${BASE_URL}${userData.profilePicture}`} alt="avatar" width={128} height={128} className="w-full h-full object-cover" />
+                        <Image
+                            src={userData.profilePicture.startsWith("http")
+                                ? userData.profilePicture
+                                : `${UPLOADS_URL}/${userData.profilePicture}`
+                            }
+                            alt="avatar"
+                            width={128}
+                            height={128}
+                            className="w-full h-full object-cover"
+                        />
                     ) : null}
                 </div>
             </div>
@@ -178,9 +183,7 @@ export default function MyOwnProfilePage() {
 
             {/* My posts */}
             <div className="max-w-xl mx-auto px-4 mt-4">
-                <h3 className="text-xl font-bold mb-3">
-                    Миний нийтлэлүүд
-                </h3>
+                <h3 className="text-xl font-bold mb-3">Миний нийтлэлүүд</h3>
                 {loadingPosts ? (
                     <div className="space-y-4">
                         {Array.from({ length: 2 }).map((_, i) => (

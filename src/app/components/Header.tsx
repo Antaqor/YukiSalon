@@ -4,11 +4,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { useAuth } from "../context/AuthContext";
+import { BASE_URL } from "../lib/config";
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { loggedIn, logout, user } = useAuth();
-    const BASE_URL = "https://www.vone.mn";
     const isPro =
         user?.subscriptionExpiresAt &&
         new Date(user.subscriptionExpiresAt) > new Date();

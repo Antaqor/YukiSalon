@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
 import { UserIcon } from "@heroicons/react/24/solid";
+import { BASE_URL } from "../lib/config";
 
 interface Member {
   _id: string;
@@ -11,7 +12,6 @@ interface Member {
   rating?: number;
 }
 
-const BASE_URL = "https://www.vone.mn";
 
 export default function TopActiveMembers() {
   const [members, setMembers] = useState<Member[]>([]);

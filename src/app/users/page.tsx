@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import axios from "axios";
+import { BASE_URL } from "../lib/config";
 
 interface User {
     _id: string;
@@ -17,7 +18,6 @@ export default function UsersPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const BASE_URL = "https://www.vone.mn";
 
     useEffect(() => {
         const fetchUsers = async () => {

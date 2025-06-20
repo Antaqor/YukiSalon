@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Image from "next/image";
 import { useAuth } from "../context/AuthContext";
+import { BASE_URL } from "../lib/config";
 
 interface PaymentOption {
     link: string;
@@ -19,7 +20,6 @@ export default function SubscriptionPage() {
     const [message, setMessage] = useState("");
     const [paid, setPaid] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
-    const BASE_URL = "https://www.vone.mn";
 
     useEffect(() => {
         const userAgent = navigator.userAgent || navigator.vendor;

@@ -6,6 +6,7 @@ import React, {
   useRef,
 } from "react";
 import axios from "axios";
+import { BASE_URL, UPLOADS_URL } from "./lib/config";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -93,8 +94,6 @@ export default function HomePage() {
     user?.subscriptionExpiresAt &&
     new Date(user.subscriptionExpiresAt) > new Date();
 
-  const BASE_URL = "https://www.vone.mn";
-  const UPLOADS_URL = `${BASE_URL}/api/uploads`;
 
   // redirect guest
   useEffect(() => {

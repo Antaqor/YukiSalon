@@ -5,12 +5,9 @@ import Image from "next/image";
 import { FaCheckCircle } from "react-icons/fa";
 import PostCard from "../../components/PostCard";
 import axios from "axios";
+import { BASE_URL, UPLOADS_URL } from "../../lib/config";
 import type { Post } from "@/types/Post";
 
-/**
- * Matches your new user schema (no "name" field).
- * We can optionally include other fields like phoneNumber or location.
- */
 interface UserData {
     _id: string;
     username: string;
@@ -23,11 +20,6 @@ interface UserData {
     location?: string;
 }
 
-/**
- * If your posts actually have "title" + "content", keep them.
- * Otherwise remove "title" references.
- */
-
 export default function PublicProfilePage() {
     const router = useRouter();
     const params = useParams();
@@ -39,47 +31,42 @@ export default function PublicProfilePage() {
     const [postLoading, setPostLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const BASE_URL = "https://www.vone.mn";
-    const UPLOADS_URL = `${BASE_URL}/api/uploads`;
-
+    // Share handler
     const handleShareAdd = (newPost: Post) => {
         setUserPosts((prev) => [newPost, ...prev]);
     };
 
+    // Fetch user data
     useEffect(() => {
         if (!userId) return;
         setLoading(true);
         axios
             .get(`${BASE_URL}/api/auth/user/${userId}`)
-            .then((res) => {
-                setUserData(res.data);
-            })
+            .then((res) => setUserData(res.data))
             .catch((err) => {
                 console.error("Fetch user error:", err.response?.data || err.message);
                 setError(
                     err.response?.data?.error ||
-                    "Хэрэглэгчийн профайл татаж авахад алдаа гарлаа."
+                        "Хэрэглэгчийн профайл татаж авахад алдаа гарлаа."
                 );
             })
             .finally(() => setLoading(false));
-    }, [userId, BASE_URL]);
+    }, [userId]);
 
-    // ---------------- FETCH USER POSTS ----------------
+    // Fetch user posts
     useEffect(() => {
         if (!userId) return;
         setPostLoading(true);
         axios
             .get(`${BASE_URL}/api/posts?user=${userId}`)
-            .then((res) => {
-                setUserPosts(res.data);
-            })
+            .then((res) => setUserPosts(res.data))
             .catch((err) => {
                 console.error("User posts error:", err.response?.data || err.message);
             })
             .finally(() => setPostLoading(false));
-    }, [userId, BASE_URL]);
+    }, [userId]);
 
-    // ---------------- RENDER LOGIC ----------------
+    // UI loading state
     if (loading) {
         return (
             <div className="p-4 space-y-4">
@@ -105,23 +92,50 @@ export default function PublicProfilePage() {
         ? new Date(userData.subscriptionExpiresAt) > new Date()
         : false;
 
-    // ---------------- UI ----------------
     return (
         <div className="min-h-screen bg-white text-black font-sans">
             {/* Top Navigation */}
             <div className="fixed top-0 left-0 w-full h-12 flex items-center px-4 backdrop-blur-md z-10 bg-black/60">
-                <button onClick={() => router.back()} aria-label="Back" className="mr-2 text-black">&#8592;</button>
-                <h1 className="font-bold flex-1 text-center">{userData.username}</h1>
+                <button
+                    onClick={() => router.back()}
+                    aria-label="Back"
+                    className="mr-2 text-black"
+                >
+                    &#8592;
+                </button>
+                <h1 className="font-bold flex-1 text-center">
+                    {userData.username}
+                </h1>
             </div>
 
             {/* Banner */}
             <div className="h-40 bg-[#0d0d0d] relative mt-12">
                 {userData.coverImage && (
-                    <Image src={userData.coverImage} alt="Cover" width={800} height={160} className="absolute inset-0 w-full h-full object-cover" />
+                    <Image
+                        src={
+                            userData.coverImage.startsWith("http")
+                                ? userData.coverImage
+                                : `${UPLOADS_URL}/${userData.coverImage}`
+                        }
+                        alt="Cover"
+                        width={800}
+                        height={160}
+                        className="absolute inset-0 w-full h-full object-cover"
+                    />
                 )}
                 <div className="absolute -bottom-16 left-4 w-32 h-32 rounded-full border-4 border-[#0d0d0d] overflow-hidden bg-gray-800">
                     {userData.profilePicture && (
-                        <Image src={userData.profilePicture} alt="Profile" width={128} height={128} className="w-full h-full object-cover" />
+                        <Image
+                            src={
+                                userData.profilePicture.startsWith("http")
+                                    ? userData.profilePicture
+                                    : `${UPLOADS_URL}/${userData.profilePicture}`
+                            }
+                            alt="Profile"
+                            width={128}
+                            height={128}
+                            className="w-full h-full object-cover"
+                        />
                     )}
                 </div>
             </div>
@@ -132,11 +146,23 @@ export default function PublicProfilePage() {
                     <h1 className="text-2xl font-bold">{userData.username}</h1>
                     {isPro && <FaCheckCircle className="text-yellow-400" />}
                 </div>
-                {userData.rating && <p className="text-sm text-gray-400">★ {userData.rating} үнэлгээ</p>}
-                {userData.location && <p className="text-sm text-gray-400">Байршил: {userData.location}</p>}
+                {userData.rating && (
+                    <p className="text-sm text-gray-400">
+                        ★ {userData.rating} үнэлгээ
+                    </p>
+                )}
+                {userData.location && (
+                    <p className="text-sm text-gray-400">
+                        Байршил: {userData.location}
+                    </p>
+                )}
                 <div className="flex gap-6 mt-2 text-sm">
-                    <span>{userData.followers ? userData.followers.length : 0} Followers</span>
-                    <span>{userData.following ? userData.following.length : 0} Following</span>
+                    <span>
+                        {userData.followers ? userData.followers.length : 0} Followers
+                    </span>
+                    <span>
+                        {userData.following ? userData.following.length : 0} Following
+                    </span>
                 </div>
             </div>
 
@@ -147,7 +173,9 @@ export default function PublicProfilePage() {
                     <p className="text-gray-400 mb-2">Ачааллаж байна...</p>
                 )}
                 {!postLoading && userPosts.length === 0 && (
-                    <p className="text-gray-400">Энэ хэрэглэгч нийтлэлгүй байна.</p>
+                    <p className="text-gray-400">
+                        Энэ хэрэглэгч нийтлэлгүй байна.
+                    </p>
                 )}
                 <div className="space-y-4">
                     {userPosts.map((post) => (

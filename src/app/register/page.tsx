@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { BASE_URL } from "../lib/config";
 
 /** Helper validations **/
 const isValidPhoneNumber = (phone: string) => {
@@ -56,7 +57,6 @@ export default function RegisterMultiStepPage() {
     });
 
     // Replace with your actual server endpoint
-    const BASE_URL = "https://www.vone.mn";
 
     // ------------------------------------------------------------------
     // STEP 1: Validate Basic Fields and proceed to next step
