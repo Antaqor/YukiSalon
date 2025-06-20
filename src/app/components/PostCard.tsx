@@ -10,6 +10,7 @@ import {
 import { formatPostDate } from "../lib/formatDate";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import { BASE_URL, UPLOADS_URL } from "../lib/config";
 
 interface User {
   _id?: string;
@@ -34,12 +35,11 @@ interface Props {
   post: Post;
   user: User;
   onDelete?: (id: string) => void;
+  onShare?: (newPost: Post) => void;
 }
 
-const BASE_URL = "https://www.vone.mn";
-const UPLOADS_URL = `${BASE_URL}/api/uploads`;
 
-export default function PostCard({ post, user, onDelete }: Props) {
+export default function PostCard({ post, user, onDelete, onShare }: Props) {
   const { user: viewer, login } = useAuth();
   const isPro = user.subscriptionExpiresAt
     ? new Date(user.subscriptionExpiresAt) > new Date()
@@ -80,6 +80,9 @@ export default function PostCard({ post, user, onDelete }: Props) {
       );
       setShares(data.shares);
       setShared(true);
+      if (data.newPost) {
+        onShare?.(data.newPost);
+      }
       login({ ...viewer, rating: (viewer.rating || 0) + 1 }, viewer.accessToken);
     } catch (err) {
       console.error("Share error:", err);

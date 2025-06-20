@@ -4,6 +4,7 @@ import { useRouter, useParams } from "next/navigation";
 import { FaCheckCircle } from "react-icons/fa";
 import PostCard from "../../components/PostCard";
 import axios from "axios";
+import { BASE_URL, UPLOADS_URL } from "../../lib/config";
 
 /**
  * Matches your new user schema (no "name" field).
@@ -48,8 +49,10 @@ export default function PublicProfilePage() {
     const [postLoading, setPostLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const BASE_URL = "https://www.vone.mn";
-    const UPLOADS_URL = `${BASE_URL}/api/uploads`;
+
+    const handleShareAdd = (newPost: PostData) => {
+        setUserPosts((prev) => [newPost, ...prev]);
+    };
 
     useEffect(() => {
         if (!userId) return;
@@ -156,7 +159,12 @@ export default function PublicProfilePage() {
                 )}
                 <div className="space-y-4">
                     {userPosts.map((post) => (
-                        <PostCard key={post._id} post={post} user={userData} />
+                        <PostCard
+                            key={post._id}
+                            post={post}
+                            user={userData}
+                            onShare={handleShareAdd}
+                        />
                     ))}
                 </div>
             </div>

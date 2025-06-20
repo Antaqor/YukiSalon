@@ -4,6 +4,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { FaCheckCircle } from "react-icons/fa";
 import PostCard from "../components/PostCard";
+import { BASE_URL, UPLOADS_URL } from "../lib/config";
 
 /** Match your user schema. No "name" field. */
 interface UserData {
@@ -51,8 +52,10 @@ export default function MyOwnProfilePage() {
         }
     };
 
-    const BASE_URL = "https://www.vone.mn";
-    const UPLOADS_URL = `${BASE_URL}/api/uploads`;
+    const handleShareAdd = (newPost: PostData) => {
+        setUserPosts((prev) => [newPost, ...prev]);
+    };
+
 
     // Grab token from localStorage or redirect if missing
     function getToken() {
@@ -199,6 +202,7 @@ export default function MyOwnProfilePage() {
                                 post={post}
                                 user={userData}
                                 onDelete={handleDelete}
+                                onShare={handleShareAdd}
                             />
                         ))}
                     </div>

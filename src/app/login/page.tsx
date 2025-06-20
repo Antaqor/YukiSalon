@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
+import { BASE_URL } from "../lib/config";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -12,7 +13,6 @@ export default function LoginPage() {
     const [remember, setRemember] = useState(false);
     const [error, setError] = useState("");
 
-    const BASE_URL = "https://www.vone.mn";
 
     useEffect(() => {
         const savedUser = localStorage.getItem("rememberUsername");

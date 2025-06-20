@@ -4,14 +4,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
 import type { Book } from "../lib/books";
+import { API_URL, BASE_URL } from "../lib/config";
 
 export default function BooksPage() {
   const { user, loggedIn, loading } = useAuth();
   const [books, setBooks] = useState<Book[]>([]);
 
-  const BACKEND_URL =
-    process.env.NEXT_PUBLIC_BACKEND_URL ?? "https://www.vone.mn/api";
-  const BASE_URL = "https://www.vone.mn";
+  const BACKEND_URL = API_URL;
 
   const isPro =
     user?.subscriptionExpiresAt &&

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FiTrendingUp } from "react-icons/fi";
+import { BASE_URL } from "../lib/config";
 
 interface Post {
   _id: string;
@@ -17,7 +18,6 @@ interface TrendingItem {
   score: number;
 }
 
-const BASE_URL = "https://www.vone.mn";
 
 const TrendingTopics: React.FC = () => {
   const [topics, setTopics] = useState<TrendingItem[]>([]);
