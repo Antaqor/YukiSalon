@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useRef, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useAuth } from "../../context/AuthContext";
 
 interface Book {
@@ -265,9 +266,11 @@ function BookRow({
     <div className="bg-white border border-gray-300 p-4 rounded flex flex-col md:flex-row gap-4 items-start">
       <div className="w-24 h-24 bg-gray-100 flex-shrink-0 overflow-hidden">
         {book.coverImageUrl ? (
-          <img
+          <Image
             src={`https://www.vone.mn/${book.coverImageUrl}`}
             alt={book.title}
+            width={96}
+            height={96}
             className="w-full h-full object-cover"
           />
         ) : (
