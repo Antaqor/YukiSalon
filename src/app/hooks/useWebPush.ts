@@ -1,36 +1,51 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-const FLAG = 'webpush_permission_requested';
+/**
+ * Custom hook for Web-Push notifications.
+ * Handles permission prompts (once per session) and service-worker registration.
+ */
+const FLAG = "webpush_permission_requested";
 
 async function askPermission(): Promise<boolean> {
-  if (typeof window === 'undefined' || !('Notification' in window)) return false;
-  if (Notification.permission === 'granted') return true;
-  if (sessionStorage.getItem(FLAG)) return Notification.permission === 'granted';
-  sessionStorage.setItem(FLAG, '1');
+  if (typeof window === "undefined" || !("Notification" in window)) return false;
+
+  // Permission already granted.
+  if (Notification.permission === "granted") return true;
+
+  // We already asked this session – don’t nag again.
+  if (sessionStorage.getItem(FLAG)) return Notification.permission === "granted";
+
+  // Ask now, record that we’ve asked.
+  sessionStorage.setItem(FLAG, "1");
   const res = await Notification.requestPermission();
-  return res === 'granted';
+  return res === "granted";
 }
 
 export default function useWebPush() {
   const [subscribed, setSubscribed] = useState(false);
 
   const subscribe = async () => {
-    if (!('serviceWorker' in navigator)) return;
+    if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
+
     const granted = await askPermission();
     if (!granted) return;
+
     try {
-      await navigator.serviceWorker.register('/sw.js');
-      setSubscribed(true);
+      const reg = await navigator.serviceWorker.register("/sw.js");
+      if (reg) setSubscribed(true);
     } catch (e) {
-      console.error('Service worker registration failed', e);
+      console.error("Service worker registration failed", e);
     }
   };
 
+  // On mount, auto-detect existing subscription/permission.
   useEffect(() => {
-    if (Notification.permission === 'granted') {
-      navigator.serviceWorker.getRegistration('/sw.js').then((reg) => {
+    if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
+
+    if (Notification.permission === "granted") {
+      navigator.serviceWorker.getRegistration("/sw.js").then((reg) => {
         if (reg) setSubscribed(true);
       });
     }
