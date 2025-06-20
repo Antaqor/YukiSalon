@@ -6,7 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaCheckCircle } from "react-icons/fa";
 import PostCard from "../components/PostCard";
-import { BASE_URL, UPLOADS_URL } from "../lib/config";
+import { BASE_URL } from "../lib/config";
+import { getImageUrl } from "../lib/getImageUrl";
 import type { Post } from "@/types/Post";
 
 /** Match your user schema. No "name" field. */
@@ -133,10 +134,7 @@ export default function MyOwnProfilePage() {
             <div className="h-40 bg-[#0d0d0d] relative mt-12">
                 {userData.coverImage && (
                     <Image
-                        src={userData.coverImage.startsWith("http")
-                            ? userData.coverImage
-                            : `${UPLOADS_URL}/${userData.coverImage}`
-                        }
+                        src={getImageUrl(userData.coverImage)}
                         alt="Cover"
                         width={800}
                         height={160}
@@ -145,16 +143,13 @@ export default function MyOwnProfilePage() {
                 )}
                 <div className="absolute -bottom-16 left-4 w-32 h-32 rounded-full border-4 border-[#0d0d0d] overflow-hidden bg-gray-200">
                     {userData.profilePicture ? (
-                        <Image
-                            src={userData.profilePicture.startsWith("http")
-                                ? userData.profilePicture
-                                : `${UPLOADS_URL}/${userData.profilePicture}`
-                            }
-                            alt="avatar"
-                            width={128}
-                            height={128}
-                            className="w-full h-full object-cover"
-                        />
+                    <Image
+                        src={getImageUrl(userData.profilePicture)}
+                        alt="avatar"
+                        width={128}
+                        height={128}
+                        className="w-full h-full object-cover"
+                    />
                     ) : null}
                 </div>
             </div>
