@@ -33,6 +33,9 @@ bun dev
 - `QPAY_CLIENT_ID` – QPay-ийн Client ID
 - `QPAY_CLIENT_SECRET` – QPay-ийн Client Secret (заавал)
 - `QPAY_INVOICE_CODE` – QPay-д бүртгэгдсэн invoice code
+- `VAPID_PUBLIC_KEY` – Web-Push олон нийтэд түгээх түлхүүр
+- `VAPID_PRIVATE_KEY` – Web-Push нууц түлхүүр
+- `VAPID_EMAIL` – Харицах имэйл хаяг
 
 Хуулсан файлууд `UPLOAD_DIR`-ээр заасан санд хадгалагдана.
 

@@ -16,9 +16,20 @@ const bookRoutes    = require("./routes/bookRoutes");
 const productRoutes = require("./routes/productRoutes");
 const cartRoutes    = require("./routes/cartRoutes"); // ← feature branch win
 const notificationRoutes = require("./routes/notification");
+const pushRoutes    = require("./routes/push");
+const webpush       = require("web-push");
 
 const app  = express();
 const PORT = process.env.PORT || 5001;
+
+// ── Web Push VAPID setup ───────────────────────────────
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  webpush.setVapidDetails(
+    `mailto:${process.env.VAPID_EMAIL || 'example@example.com'}`,
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+  );
+}
 
 app.set("trust proxy", 1);
 
@@ -60,6 +71,7 @@ app.use("/api/books",    bookRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart",     cartRoutes); // ← now live
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/push",     pushRoutes);
 
 // ── heartbeat ─────────────────────────────────────────
 app.get("/", (_, res) => res.send("Server is working!"));
