@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 /* No dark background; let Tailwind's default or overridden classes handle it */
 .square-card {
     border-radius: 0; /* Example custom override */
@@ -96,6 +95,3 @@ div {
 .animate-pulse div {
     animation: pulse 1.5s ease-in-out infinite;
 }
-
-
-
