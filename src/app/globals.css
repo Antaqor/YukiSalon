@@ -24,8 +24,35 @@ html {
 }
 
 html.dark {
-    background-color: #080808;
+    background-color: #181818;
     color-scheme: dark;
+    color: #ffffff;
+}
+
+html.dark body {
+    background-color: #181818;
+    color: #ffffff;
+}
+
+html.dark input,
+html.dark textarea,
+html.dark select {
+    background-color: #1E1E1E;
+    color: #AFAFAF;
+}
+
+html.dark .bg-white {
+    background-color: #212121 !important;
+}
+
+html.dark .text-black {
+    color: #ffffff !important;
+}
+
+html.dark .text-gray-700,
+html.dark .text-gray-800,
+html.dark .text-gray-900 {
+    color: #ffffff !important;
 }
 
 /* Minimal fade-in-up animation for sidebars */
