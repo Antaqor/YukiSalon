@@ -26,7 +26,7 @@ export default function Header() {
             )}
 
             <div
-                className="fixed top-0 left-0 w-full z-[999] bg-gradient-to-b from-white/40 via-white/20 to-transparent backdrop-blur-xl shadow-md"
+                className="fixed top-0 left-0 w-full z-[999] bg-primary text-white border-b border-supportBorder shadow-md"
             >
                 {/* NAV BAR */}
                 <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center">
@@ -110,7 +110,7 @@ export default function Header() {
                 <div
                     className={`
             fixed inset-0
-            bg-white
+            bg-secondary text-white
             transition-transform duration-300
             z-[9999]
             overflow-y-auto

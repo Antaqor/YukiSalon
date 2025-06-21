@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 /* No dark background; let Tailwind's default or overridden classes handle it */
 .square-card {
     border-radius: 0; /* Example custom override */
@@ -20,13 +19,14 @@ html {
     background-color: #ffffff;
     color-scheme: light;
     --brand-color: #00FFFC;
-    --support-border: #F6F3E1;
+    --support-border: #2D2D2D;
 }
 
 html.dark {
     background-color: #181818;
     color-scheme: dark;
     color: #ffffff;
+    --support-border: #2D2D2D;
 }
 
 html.dark body {
@@ -95,6 +95,3 @@ div {
 .animate-pulse div {
     animation: pulse 1.5s ease-in-out infinite;
 }
-
-
-
