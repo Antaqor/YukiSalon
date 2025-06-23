@@ -23,7 +23,9 @@ router.post('/transcribe', async (req, res) => {
     // Download YouTube audio to a temp file
     const tmpFile = path.join(os.tmpdir(), `yt-${Date.now()}.mp3`);
     await new Promise((resolve, reject) => {
-      const stream      = ytdl(url, { filter: 'audioonly', quality: 'highestaudio' });
+      // Whisper has a 25MB file size limit. Download the lowest quality audio
+      // to keep the file small enough for transcription.
+      const stream      = ytdl(url, { filter: 'audioonly', quality: 'lowestaudio' });
       const writeStream = fs.createWriteStream(tmpFile);
 
       stream.pipe(writeStream);
