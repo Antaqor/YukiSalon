@@ -36,6 +36,7 @@ bun dev
 - `VAPID_PUBLIC_KEY` – Web-Push олон нийтэд түгээх түлхүүр
 - `VAPID_PRIVATE_KEY` – Web-Push нууц түлхүүр
 - `VAPID_EMAIL` – Харицах имэйл хаяг
+- `OPENAI_API_KEY` – YouTube бичлэгийн транскрипци хийхэд ашиглах OpenAI ключ
 
 Хуулсан файлууд `UPLOAD_DIR`-ээр заасан санд хадгалагдана.
 
