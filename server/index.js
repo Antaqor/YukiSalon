@@ -17,6 +17,7 @@ const productRoutes = require("./routes/productRoutes");
 const cartRoutes    = require("./routes/cartRoutes"); // ← feature branch win
 const notificationRoutes = require("./routes/notification");
 const pushRoutes    = require("./routes/push");
+const youtubeRoutes = require("./routes/youtube");
 const webpush       = require("web-push");
 
 const app  = express();
@@ -72,6 +73,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/cart",     cartRoutes); // ← now live
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/push",     pushRoutes);
+app.use("/api/youtube",  youtubeRoutes);
 
 // ── heartbeat ─────────────────────────────────────────
 app.get("/", (_, res) => res.send("Server is working!"));
