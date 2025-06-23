@@ -6,10 +6,15 @@ const os = require('os');
 const ytdl = require('ytdl-core');
 const OpenAI = require('openai');
 
-const openai = new OpenAI();
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 router.post('/transcribe', async (req, res) => {
   try {
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({ error: 'OpenAI API key not configured' });
+    }
     const { url } = req.body;
     if (!url) return res.status(400).json({ error: 'url is required' });
 
