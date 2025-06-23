@@ -1,10 +1,15 @@
 const express = require('express');
-const router = express.Router();
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
-const ytdl = require('ytdl-core');
-const OpenAI = require('openai');
+const router  = express.Router();
+const fs      = require('fs');
+const path    = require('path');
+const os      = require('os');
+const ytdl    = require('ytdl-core');
+const OpenAI  = require('openai');
+
+// Make the dependency gripe if the key’s missing.
+if (!process.env.OPENAI_API_KEY) {
+  throw new Error('OPENAI_API_KEY environment variable is not set');
+}
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -12,29 +17,29 @@ const openai = new OpenAI({
 
 router.post('/transcribe', async (req, res) => {
   try {
-    if (!process.env.OPENAI_API_KEY) {
-      return res.status(500).json({ error: 'OpenAI API key not configured' });
-    }
     const { url } = req.body;
     if (!url) return res.status(400).json({ error: 'url is required' });
 
+    // Download YouTube audio to a temp file
     const tmpFile = path.join(os.tmpdir(), `yt-${Date.now()}.mp3`);
     await new Promise((resolve, reject) => {
-      const stream = ytdl(url, { filter: 'audioonly', quality: 'highestaudio' });
+      const stream      = ytdl(url, { filter: 'audioonly', quality: 'highestaudio' });
       const writeStream = fs.createWriteStream(tmpFile);
+
       stream.pipe(writeStream);
       writeStream.on('finish', resolve);
       stream.on('error', reject);
       writeStream.on('error', reject);
     });
 
-    const transcription = await openai.audio.transcriptions.create({
+    // Transcribe with Whisper
+    const { text } = await openai.audio.transcriptions.create({
       file: fs.createReadStream(tmpFile),
       model: 'whisper-1',
     });
 
-    fs.unlink(tmpFile, () => {});
-    res.json({ text: transcription.text });
+    fs.unlink(tmpFile, () => {}); // fire-and-forget cleanup
+    res.json({ text });
   } catch (err) {
     console.error('Transcription error:', err);
     res.status(500).json({ error: 'Failed to transcribe' });
