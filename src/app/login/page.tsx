@@ -66,7 +66,7 @@ export default function LoginPage() {
                         </label>
                         <input
                             type="text"
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-black bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-black bg-white focus:outline-none focus:ring-2 focus:ring-brand"
                             placeholder="Хэрэглэгчийн нэр"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
@@ -79,7 +79,7 @@ export default function LoginPage() {
                         </label>
                         <input
                             type="password"
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-black bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-black bg-white focus:outline-none focus:ring-2 focus:ring-brand"
                             placeholder="Нууц үг"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -99,21 +99,21 @@ export default function LoginPage() {
                         <button
                             type="button"
                             onClick={() => alert("Forgot Password?")}
-                            className="underline hover:text-blue-500"
+                            className="underline hover:text-brand"
                         >
                             Нууц үгээ мартсан?
                         </button>
                     </div>
                     <button
                         type="submit"
-                        className="w-full bg-blue-500 text-white py-3 rounded-md font-semibold hover:bg-blue-600 transition"
+                        className="w-full bg-brand text-white py-3 rounded-md font-semibold hover:opacity-90 transition"
                     >
                         Нэвтрэх
                     </button>
                 </form>
                 <button
                     onClick={() => router.push("/register")}
-                    className="mt-6 block text-sm text-gray-500 underline hover:text-blue-500"
+                    className="mt-6 block text-sm text-gray-500 underline hover:text-brand"
                 >
                     Бүртгүүлэх
                 </button>

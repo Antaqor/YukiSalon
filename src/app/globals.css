@@ -16,22 +16,27 @@ body {
 }
 
 html {
-    background-color: #ffffff;
+    background-color: #F5F6F8;
     color-scheme: light;
-    --brand-color: #00FFFC;
-    --support-border: #2D2D2D;
+    --brand-color: #119C99;
+    --support-border: #272F36;
+    --background-dark: #0F181E;
+    --text-primary: #272F36;
+    --accent: #FF2C55;
+    --premium: #F7B84B;
+    --link: #44B2DF;
 }
 
 html.dark {
-    background-color: #181818;
+    background-color: #0F181E;
     color-scheme: dark;
-    color: #ffffff;
-    --support-border: #2D2D2D;
+    color: #F5F6F8;
+    --support-border: #272F36;
 }
 
 html.dark body {
-    background-color: #181818;
-    color: #ffffff;
+    background-color: #0F181E;
+    color: #F5F6F8;
 }
 
 html.dark input,
