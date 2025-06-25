@@ -430,7 +430,7 @@ export default function HomePage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.02 }}
-                    className="bg-[#2a2a2a] text-white p-6 grid gap-4 border-b border-gray-700"
+                    className="bg-white p-6 grid gap-4 border-b border-gray-200 dark:bg-[#2a2a2a] dark:border-gray-700 dark:text-white"
                   >
                     {/* Header */}
                     <div className="grid grid-cols-[auto,1fr] gap-5 group">
@@ -487,7 +487,7 @@ export default function HomePage() {
                               >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
-                                  className="w-4 h-4"
+                                  className="w-5 h-5"
                                   fill="none"
                                   viewBox="0 0 24 24"
                                   stroke="currentColor"
@@ -560,9 +560,9 @@ export default function HomePage() {
                         aria-label={`Like (${post.likes.length})`}
                       >
                         {likedPosts.includes(post._id) ? (
-                          <HeartSolid className="w-4 h-4 text-brand icon-hover-brand" />
+                          <HeartSolid className="w-5 h-5 text-brand icon-hover-brand" />
                         ) : (
-                          <HeartOutline className="w-4 h-4 icon-hover-brand" />
+                          <HeartOutline className="w-5 h-5 icon-hover-brand" />
                         )}
                         <span>{post.likes.length}</span>
                       </motion.button>
@@ -574,7 +574,7 @@ export default function HomePage() {
                         className="flex items-center justify-center gap-1 hover:text-brand"
                         aria-label={`Comment (${post.comments?.length || 0})`}
                       >
-                        <ChatBubbleOvalLeftIcon className="w-4 h-4 icon-hover-brand" />
+                        <ChatBubbleOvalLeftIcon className="w-5 h-5 icon-hover-brand" />
                         <span>{post.comments?.length || 0}</span>
                       </button>
 
@@ -587,7 +587,7 @@ export default function HomePage() {
                         aria-label={`Share (${post.shares || 0})`}
                       >
                         <ArrowUpTrayIcon
-                          className={`w-4 h-4 ${
+                          className={`w-5 h-5 ${
                             sharedPosts.includes(post._id) ? "text-brand icon-hover-brand" : "icon-hover-brand"
                           }`}
                         />

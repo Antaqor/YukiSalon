@@ -140,7 +140,7 @@ export default function PostCard({ post, user, onDelete, onShare }: Props) {
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="w-4 h-4"
+                    className="w-5 h-5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -201,9 +201,9 @@ export default function PostCard({ post, user, onDelete, onShare }: Props) {
               aria-label="Like"
             >
               {liked ? (
-                <HeartSolid className="w-4 h-4 text-brand icon-hover-brand" />
+                <HeartSolid className="w-5 h-5 text-brand icon-hover-brand" />
               ) : (
-                <HeartOutline className="w-4 h-4 icon-hover-brand" />
+                <HeartOutline className="w-5 h-5 icon-hover-brand" />
               )}
               <span>{likes}</span>
             </motion.button>
@@ -217,7 +217,7 @@ export default function PostCard({ post, user, onDelete, onShare }: Props) {
               aria-label="Share"
             >
               <ArrowUpTrayIcon
-                className={shared ? "w-4 h-4 text-brand icon-hover-brand" : "w-4 h-4 icon-hover-brand"}
+                className={shared ? "w-5 h-5 text-brand icon-hover-brand" : "w-5 h-5 icon-hover-brand"}
               />
               <span>{shares}</span>
             </motion.button>
