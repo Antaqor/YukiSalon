@@ -25,6 +25,7 @@ import LoadingSpinner from "./components/LoadingSpinner";
 import PostInput from "./components/PostInput";
 import { motion } from "framer-motion";
 import { formatPostDate } from "./lib/formatDate";
+import useLiveFeed from "./hooks/useLiveFeed";
 
 // ────────────────────────────────────────────────────────────────
 // Types
@@ -144,6 +145,11 @@ export default function HomePage() {
   useEffect(() => {
     fetchPosts(1);
   }, [fetchPosts]);
+
+  useLiveFeed('feed', (post: Post) => {
+    setPosts((prev) => [post, ...prev]);
+    setAllPosts((prev) => [post, ...prev]);
+  });
 
   useEffect(() => {
     if (pageNum > 1) fetchPosts(pageNum, true);
