@@ -6,7 +6,13 @@ import { AuthProvider } from "../context/AuthContext";
 import { CartProvider } from "../context/CartContext";
 import { ThemeProvider } from "../context/ThemeContext";
 import { NotificationProvider, useNotifications } from "../context/NotificationContext";
-import { BellIcon } from "@heroicons/react/24/outline";
+import {
+  BellIcon,
+  HomeIcon,
+  UserGroupIcon,
+  AcademicCapIcon,
+  ChatBubbleLeftRightIcon,
+} from "@heroicons/react/24/outline";
 import Header from "./Header";
 import TopActiveMembers from "./TopActiveMembers";
 import BottomNav from "./BottomNav";
@@ -73,20 +79,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                         href="/"
                         className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 transition-smooth focus:outline-none hover:text-brand focus:ring-2 focus:ring-brand"
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="w-6 h-6 group-hover:text-brand"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                          />
-                        </svg>
+                        <HomeIcon className="w-6 h-6 group-hover:text-brand" />
                         <span>Нүүр</span>
                       </Link>
                     </li>
@@ -95,15 +88,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                       href="/users"
                       className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 transition-smooth focus:outline-none hover:text-brand focus:ring-2 focus:ring-brand"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-6 h-6 group-hover:text-brand"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
+                      <UserGroupIcon className="w-6 h-6 group-hover:text-brand" />
                       <span>Гишүүд</span>
                     </Link>
                   </li>
@@ -112,19 +97,20 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                       href="/classroom"
                       className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 transition-smooth focus:outline-none hover:text-brand focus:ring-2 focus:ring-brand"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-6 h-6 group-hover:text-brand"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0v6" />
-                      </svg>
-                  <span>Classroom</span>
+                      <AcademicCapIcon className="w-6 h-6 group-hover:text-brand" />
+                  <span>Хичээл</span>
                     </Link>
                   </li>
                   <NotificationNavItem />
+                  <li>
+                    <Link
+                      href="/chat"
+                      className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 transition-smooth focus:outline-none hover:text-brand focus:ring-2 focus:ring-brand"
+                    >
+                      <ChatBubbleLeftRightIcon className="w-6 h-6 group-hover:text-brand" />
+                      <span>Чат</span>
+                    </Link>
+                  </li>
                   </ul>
                 </nav>
               </aside>
