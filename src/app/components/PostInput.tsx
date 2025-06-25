@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import Image from "next/image";
-import { PhotoIcon } from "@heroicons/react/24/outline";
+import { PhotoIcon, ChartBarIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { BASE_URL } from "../lib/config";
@@ -62,7 +62,7 @@ export default function PostInput({ onPost }: Props) {
   };
 
   return (
-    <div className="flex bg-white rounded-2xl border border-gray-100 shadow-sm p-4 md:p-6 max-w-xl mx-auto">
+    <div className="flex bg-white rounded-xl shadow p-4 m-4 max-w-xl mx-auto">
       {user?.profilePicture ? (
         <Image
           src={`${BASE_URL}${user.profilePicture}`}
@@ -88,21 +88,24 @@ export default function PostInput({ onPost }: Props) {
           onInput={autoResize}
           maxLength={MAX_LENGTH}
           placeholder="What's happening?"
-          className="w-full text-lg font-medium bg-transparent outline-none resize-none min-h-[64px] placeholder-gray-500 focus:border-b focus:border-brand border-b"
+          className="w-full text-xl bg-transparent outline-none resize-none min-h-[72px] placeholder:text-gray-400 placeholder:text-xl"
           rows={1}
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
         <div className="flex items-center justify-between mt-2">
-          <div className="flex gap-4 text-gray-400">
+          <div className="flex gap-3 text-gray-400">
             <button type="button" onClick={triggerFileInput} aria-label="Add image">
               <PhotoIcon className="w-6 h-6 icon-hover-brand" />
+            </button>
+            <button type="button" aria-label="Add poll">
+              <ChartBarIcon className="w-6 h-6 icon-hover-brand" />
             </button>
           </div>
           <button
             onClick={createPost}
             disabled={posting || (!content.trim() && !imageFile)}
-            className="bg-brand text-white font-bold rounded-full px-6 py-2 disabled:opacity-50"
+            className={`font-bold rounded-full px-6 py-2 transition-all active:scale-95 ${content.trim() || imageFile ? 'bg-brand text-white' : 'bg-gray-300 text-white cursor-not-allowed'}`}
           >
             Post
           </button>
