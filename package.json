@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run frontend\" \"npm run server-dev\"",
+    "dev": "concurrently \"npm run frontend\" \"npm run server-dev\" \"npm run live-dev\"",
     "frontend": "next dev",
     "server": "node server/index.js",
     "server-dev": "nodemon server/index.js",
@@ -12,7 +12,9 @@
     "lint": "next lint",
     "test": "jest",
     "clean": "next build && rm -rf .next/cache",
-    "mongo-test": "node mongo-test.mjs"
+    "mongo-test": "node mongo-test.mjs",
+    "live": "node server/live.js",
+    "live-dev": "nodemon server/live.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
