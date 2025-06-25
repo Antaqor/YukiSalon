@@ -9,15 +9,15 @@ module.exports = {
     extend: {
       colors: {
         brand: '#119C99',
-        backgroundDark: '#0F181E',
+        backgroundDark: '#212121',
         surface: '#F5F6F8',
         textPrimary: '#272F36',
         accent: '#FF2C55',
         premium: '#F7B84B',
         link: '#44B2DF',
         supportBorder: '#272F36',
-        primary: '#0F181E',
-        secondary: '#0F181E',
+        primary: '#212121',
+        secondary: '#212121',
         inputBg: '#1E1E1E',
         inputText: '#AFAFAF',
       },

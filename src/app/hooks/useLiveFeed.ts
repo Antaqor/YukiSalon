@@ -1,7 +1,14 @@
 "use client";
 import { useEffect } from "react";
 import { io, Socket } from "socket.io-client";
-import { LIVE_URL } from "../lib/config";
+
+// Determine the Socket.IO server URL.
+// Fallback to localhost in development if no env variable is provided.
+const LIVE_URL =
+  process.env.NEXT_PUBLIC_LIVE_URL ||
+  (typeof window !== "undefined"
+    ? window.location.origin.replace(/3000$/, "5002")
+    : "http://localhost:5002");
 
 let socket: Socket | null = null;
 
