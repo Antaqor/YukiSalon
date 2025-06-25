@@ -354,7 +354,7 @@ export default function HomePage() {
   // UI
   // ────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-secondary text-white">
       {/* Membership banner */}
       {loggedIn && !isPro && (
         <div className="bg-yellow-500 text-white text-center py-2 px-4">
@@ -379,7 +379,7 @@ export default function HomePage() {
         <main>
           {/* Prompt login */}
           {!loggedIn && (
-            <div className="bg-white p-6 text-center space-y-3">
+            <div className="bg-secondary p-6 text-center space-y-3">
               <p>Feed үзэхийн тулд нэвтрэх эсвэл бүртгүүлэх шаардлагатай.</p>
               <Link href="/login" className="text-blue-600 underline">
                 Нэвтрэх
@@ -395,7 +395,7 @@ export default function HomePage() {
 
           {/* Subscription gate */}
           {loggedIn && !isPro ? (
-            <div className="bg-white p-6 text-center space-y-3">
+            <div className="bg-secondary p-6 text-center space-y-3">
               <p>Feed үзэхийн тулд гишүүнчлэл идэвхжүүлнэ үү.</p>
               <Link href="/subscription" className="text-blue-600 underline">
                 Subscribe
@@ -430,7 +430,7 @@ export default function HomePage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.02 }}
-                    className="bg-white p-6 grid gap-4 border-b border-gray-200"
+                    className="bg-[#2a2a2a] text-white p-6 grid gap-4 border-b border-gray-700"
                   >
                     {/* Header */}
                     <div className="grid grid-cols-[auto,1fr] gap-5 group">
@@ -501,16 +501,16 @@ export default function HomePage() {
                                 </svg>
                               </button>
                               {openMenus[post._id] && (
-                                <div className="absolute right-0 mt-1 bg-white border rounded shadow">
+                                <div className="absolute right-0 mt-1 bg-[#333] text-white border border-gray-700 rounded shadow">
                                   <button
                                     onClick={() => handleEdit(post)}
-                                    className="block px-3 py-1 text-sm hover:bg-gray-100 w-full text-left"
+                                    className="block px-3 py-1 text-sm hover:bg-gray-600 w-full text-left"
                                   >
                                     Edit
                                   </button>
                                   <button
                                     onClick={() => handleDelete(post._id)}
-                                    className="block px-3 py-1 text-sm hover:bg-gray-100 w-full text-left text-red-500"
+                                    className="block px-3 py-1 text-sm hover:bg-gray-600 w-full text-left text-red-400"
                                   >
                                     Delete
                                   </button>
