@@ -7,6 +7,7 @@ import {
     PlusCircleIcon,
     BellIcon,
     AcademicCapIcon,
+    ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
 import AddPostModal from "./AddPostModal";
 import { useNotifications } from "../context/NotificationContext";
@@ -36,8 +37,8 @@ const BottomNav: React.FC = () => {
     return (
         <>
         <nav
-            className={`fixed bottom-0 left-0 w-full md:hidden transition-all backdrop-blur-xl border-t border-supportBorder shadow-lg ${
-                scrolledDown ? "bg-gradient-to-br from-white/40 via-white/20 to-white/10" : "bg-gradient-to-br from-white/30 via-white/10 to-white/5"
+            className={`fixed bottom-0 left-0 w-full md:hidden transition-all border-t border-supportBorder shadow-lg bg-surface ${
+                scrolledDown ? "" : ""
             }`}
         >
             <div
@@ -73,6 +74,15 @@ const BottomNav: React.FC = () => {
                             {unreadCount}
                         </span>
                     )}
+                </button>
+
+                {/* CHAT */}
+                <button
+                    onClick={() => router.push("/chat")}
+                    aria-label="Chat"
+                    className="p-1 text-black hover:text-brand"
+                >
+                    <ChatBubbleLeftRightIcon className="h-7 w-7 icon-hover-brand" />
                 </button>
 
                 {/* CLASSROOM */}

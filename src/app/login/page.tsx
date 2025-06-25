@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
@@ -39,6 +40,7 @@ export default function LoginPage() {
             if (res.status === 200 && res.data.token) {
                 const { user, token } = res.data;
                 login(user, token);
+                document.cookie = `token=${token}; path=/`;
                 if (remember) {
                     localStorage.setItem("rememberUsername", username);
                     localStorage.setItem("rememberPassword", password);
@@ -56,7 +58,12 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen bg-white text-black flex items-center justify-center px-4">
-            <div className="w-full max-w-md space-y-6">
+            <motion.div
+                whileHover={{ opacity: 0.9 }}
+                transition={{ duration: 0.1, ease: "easeOut" }}
+                className="w-full max-w-md space-y-6"
+            >
+                <p className="text-center mb-10">AI Social Network Манай Network нэмэгдсэнээр хамгийн сүүлийн үеийн мэдээллэл AI skills эзэмшинэ</p>
                 <h1 className="text-3xl font-bold text-black">Нэвтрэх</h1>
                 {error && <p className="text-red-600">{error}</p>}
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -117,7 +124,7 @@ export default function LoginPage() {
                 >
                     Бүртгүүлэх
                 </button>
-            </div>
+            </motion.div>
         </div>
     );
 }
