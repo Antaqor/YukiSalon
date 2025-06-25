@@ -8,6 +8,8 @@ const Post = require("../models/Post");
 const authenticateToken = require("../middleware/authMiddleware");
 const User = require("../models/User");
 const Notification = require("../models/Notification");
+const Redis = require("ioredis");
+const pub = new Redis(process.env.REDIS_URL);
 
 // ---------------------------------------------------------------------------
 //  Upload setup
@@ -188,6 +190,12 @@ router.post("/", authenticateToken, upload.single("image"), async (req, res) => 
 
     await User.findByIdAndUpdate(req.user._id, { $inc: { rating: 1 } });
     await newPost.populate("user", "username profilePicture");
+
+    try {
+      await pub.publish("posts", JSON.stringify(newPost));
+    } catch (e) {
+      console.error("Redis publish error", e);
+    }
 
     res.status(201).json({ message: "Post created", post: newPost });
   } catch (err) {
