@@ -8,10 +8,16 @@ let socket: Socket | null = null;
 export default function useLiveFeed(topic: string, addPost: (post: any) => void) {
   useEffect(() => {
     if (!socket) {
-      socket = io(LIVE_URL);
+      socket = io(LIVE_URL, { autoConnect: true });
+
+      socket.on("connect_error", () => {
+        setTimeout(() => socket?.connect(), 2000);
+      });
     }
+
     socket.emit("join", topic);
     socket.on("new-post", addPost);
+
     return () => {
       socket?.off("new-post", addPost);
     };

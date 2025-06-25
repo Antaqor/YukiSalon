@@ -41,6 +41,29 @@ bun dev
 - `VAPID_PRIVATE_KEY` – Web-Push нууц түлхүүр
 - `VAPID_EMAIL` – Харицах имэйл хаяг
 
+## Real-time feed (Change Streams)
+
+`server/live-mongo.js` файл нь MongoDB-ийн Change Stream ашиглан `posts` коллекци дээрх шинэ нэмэлтүүдийг Socket.IO-оор дамжуулан илгээдэг. `server/.env`-д дараах хувьсагчууд шаардана:
+
+- `MONGODB_URI`
+- `LIVE_PORT`
+
+Запуск:
+
+```bash
+node server/live-mongo.js
+```
+
+Next.js талд `useLiveFeed` хук нь автомат дахин холболттой. Socket тасарсан тохиолдолд 2 секундийн дараа дахин холбогдоно.
+
+M0 Atlas бүлэглэл Change Streams дэмждэггүй тул энэхүү фийд ажиллахгүй. M2 эсвэл M5 түвшин рүү шинэчлэхийг зөвлөж байна.
+
+PM2/Nginx байршуулах зөвлөмж:
+
+- `pm2 start server/index.js`
+- `pm2 start server/live-mongo.js`
+- Nginx reverse proxy to port `5001` for API and `5002` for Socket.IO
+
 ## Бүтээгдэхүүний удирдлага
 
 Админууд `/dashboard/products` хуудсаар дамжуулан дэлгүүрийн барааг удирдах боломжтой. Энэ хуудсаар зураг оруулж, үнэ засварлах боломжтой.

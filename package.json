@@ -14,7 +14,8 @@
     "clean": "next build && rm -rf .next/cache",
     "mongo-test": "node mongo-test.mjs",
     "live": "node server/live.js",
-    "live-dev": "nodemon server/live.js"
+    "live-dev": "nodemon server/live.js",
+    "live-mongo": "node server/live-mongo.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
