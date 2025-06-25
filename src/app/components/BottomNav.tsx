@@ -47,27 +47,27 @@ const BottomNav: React.FC = () => {
                 <button
                     onClick={() => router.push("/")}
                     aria-label="Home"
-                    className="p-1 text-black"
+                    className="p-1 text-black hover:text-brand"
                 >
-                    <HomeIcon className="h-7 w-7" />
+                    <HomeIcon className="h-7 w-7 icon-hover-brand" />
                 </button>
 
                 {/* NEW POST */}
                 <button
                     onClick={() => setShowModal(true)}
                     aria-label="New Post"
-                    className="p-1 text-black"
+                    className="p-1 text-black hover:text-brand"
                 >
-                    <PlusCircleIcon className="h-8 w-8" />
+                    <PlusCircleIcon className="h-8 w-8 icon-hover-brand" />
                 </button>
 
                 {/* NOTIFICATIONS */}
                 <button
                     onClick={() => router.push("/notifications")}
                     aria-label="Notifications"
-                    className="relative p-1 text-black"
+                    className="relative p-1 text-black hover:text-brand"
                 >
-                    <BellIcon className="h-7 w-7" />
+                    <BellIcon className="h-7 w-7 icon-hover-brand" />
                     {unreadCount > 0 && (
                         <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
                             {unreadCount}
@@ -79,9 +79,9 @@ const BottomNav: React.FC = () => {
                 <button
                     onClick={() => router.push("/classroom")}
                     aria-label="Classroom"
-                    className="p-1 text-black"
+                    className="p-1 text-black hover:text-brand"
                 >
-                    <AcademicCapIcon className="h-7 w-7" />
+                    <AcademicCapIcon className="h-7 w-7 icon-hover-brand" />
                 </button>
 
             </div>

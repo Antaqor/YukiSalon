@@ -2,13 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import Image from "next/image";
-import {
-  PhotoIcon,
-  FaceSmileIcon,
-  ChartBarIcon,
-  CalendarIcon,
-  MapPinIcon,
-} from "@heroicons/react/24/outline";
+import { PhotoIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { BASE_URL } from "../lib/config";
@@ -102,19 +96,7 @@ export default function PostInput({ onPost }: Props) {
         <div className="flex items-center justify-between mt-2">
           <div className="flex gap-4 text-gray-400">
             <button type="button" onClick={triggerFileInput} aria-label="Add image">
-              <PhotoIcon className="w-6 h-6 hover:text-brand" />
-            </button>
-            <button type="button" aria-label="Add emoji">
-              <FaceSmileIcon className="w-6 h-6 hover:text-brand" />
-            </button>
-            <button type="button" aria-label="Add poll">
-              <ChartBarIcon className="w-6 h-6 hover:text-brand" />
-            </button>
-            <button type="button" aria-label="Schedule">
-              <CalendarIcon className="w-6 h-6 hover:text-brand" />
-            </button>
-            <button type="button" aria-label="Add location">
-              <MapPinIcon className="w-6 h-6 hover:text-brand" />
+              <PhotoIcon className="w-6 h-6 icon-hover-brand" />
             </button>
           </div>
           <button

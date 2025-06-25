@@ -18,7 +18,7 @@ const Timeline: React.FC<TimelineProps> = ({ posts = [] }) => {
     return (
         <div className="relative container mx-auto px-4 py-8">
             {/* Vertical line */}
-            <div className="absolute left-6 top-0 bottom-0 w-1 bg-[#0055FF]" />
+            <div className="absolute left-6 top-0 bottom-0 w-1 bg-brand" />
 
             <ul className="space-y-12 relative">
                 {posts.map((post, index) => (
@@ -32,7 +32,7 @@ const Timeline: React.FC<TimelineProps> = ({ posts = [] }) => {
                     >
                         {/* Icon container */}
                         <div className="flex-shrink-0 relative z-10">
-                            <div className="w-12 h-12 flex items-center justify-center bg-[#0055FF] text-white rounded-md shadow-lg">
+                            <div className="w-12 h-12 flex items-center justify-center bg-brand text-white rounded-md shadow-lg">
                                 {post.imageUrl ? (
                                     <Image
                                         src={post.imageUrl}
