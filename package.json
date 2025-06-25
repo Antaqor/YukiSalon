@@ -11,7 +11,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "clean": "next build && rm -rf .next/cache"
+    "clean": "next build && rm -rf .next/cache",
+    "mongo-test": "node mongo-test.mjs"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

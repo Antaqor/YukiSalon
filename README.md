@@ -24,6 +24,7 @@ bun dev
 
 1. `server/.env.example` файлыг `server/.env` болгон хуулж, `MONGODB_URI`-д өгөгдлийн сангийн холбоосоо бичнэ.
 2. API серверийг `npm run server` (эсвэл `npm run server-dev` автоматаар дахин ачаалуулах) командаар эхлүүлнэ.
+3. MongoDB холболтыг шалгахын тулд `npm run mongo-test` командыг ажиллуулна.
 
 Дараах орчны хувьсагчуудыг `server/.env` файлд тохируулна:
 

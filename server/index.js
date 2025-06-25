@@ -58,10 +58,19 @@ app.use("/uploads",      express.static(UPLOAD_DIR));
 app.use("/api/uploads",  express.static(UPLOAD_DIR));
 
 // ── MongoDB ────────────────────────────────────────────
+const mongoUri = process.env.MONGODB_URI;
+if (!mongoUri) {
+  console.error("❌  MONGODB_URI environment variable is not set. Check server/.env");
+  process.exit(1);
+}
+
 mongoose
-  .connect(process.env.MONGODB_URI)
+  .connect(mongoUri)
   .then(() => console.log("✅  Connected to MongoDB"))
-  .catch((err) => console.error("❌  MongoDB connection error:", err));
+  .catch((err) => {
+    console.error("❌  MongoDB connection error:", err);
+    process.exit(1);
+  });
 
 // ── route mounting ────────────────────────────────────
 app.use("/api/auth",     authRoutes);
