@@ -35,7 +35,7 @@ export default function YoutubePage() {
       <button
         onClick={transcribe}
         disabled={loading}
-        className="bg-brandCyan text-black px-4 py-2 rounded"
+        className="bg-brand text-white px-4 py-2 rounded"
       >
         {loading ? "Transcribing..." : "Transcribe"}
       </button>

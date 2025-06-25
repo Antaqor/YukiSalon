@@ -465,7 +465,7 @@ export default function HomePage() {
                               ) : (
                                 <button
                                   onClick={() => handleFollow(postUser._id)}
-                                  className="text-brandCyan text-xs"
+                                  className="text-brand text-xs"
                                 >
                                   Follow
                                 </button>

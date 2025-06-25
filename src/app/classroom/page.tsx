@@ -184,7 +184,7 @@ export default function ClassroomPage() {
             />
             <button
               onClick={editingId !== null ? saveLesson : addLesson}
-              className="w-full bg-brandCyan text-black py-1 rounded"
+              className="w-full bg-brand text-white py-1 rounded"
             >
               {editingId !== null ? 'Save Lesson' : 'Add Lesson'}
             </button>

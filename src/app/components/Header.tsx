@@ -30,7 +30,7 @@ export default function Header() {
             >
                 {/* NAV BAR */}
                 <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center">
-                    <Link href="/" className="flex items-center text-2xl font-bold text-brandCyan" aria-label="Home">
+                    <Link href="/" className="flex items-center text-2xl font-bold text-brand" aria-label="Home">
                         Vone
                     </Link>
                     <div className="ml-auto flex items-center space-x-4">
@@ -59,35 +59,35 @@ export default function Header() {
                                     {!isPro && (
                                         <Link
                                             href="/subscription"
-                                            className="relative group text-gray-700 hover:text-brandCyan"
+                                            className="relative group text-gray-700 hover:text-brand"
                                         >
                                             Subscription
-                                            <span className="absolute left-0 bottom-0 w-full h-0.5 bg-brandCyan scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                                              <span className="absolute left-0 bottom-0 w-full h-0.5 bg-brand scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                                         </Link>
                                     )}
                                     <button
                                         onClick={logout}
-                                        className="relative group text-gray-700 hover:text-brandCyan"
+                                        className="relative group text-gray-700 hover:text-brand"
                                     >
                                         Гарах
-                                        <span className="absolute left-0 bottom-0 w-full h-0.5 bg-brandCyan scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                                        <span className="absolute left-0 bottom-0 w-full h-0.5 bg-brand scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                                     </button>
                                 </>
                             ) : (
                                 <>
                                     <Link
                                         href="/login"
-                                    className="relative group text-gray-700 hover:text-brandCyan"
+                                    className="relative group text-gray-700 hover:text-brand"
                                 >
                                     Нэвтрэх
-                                    <span className="absolute left-0 bottom-0 w-full h-0.5 bg-brandCyan scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                                    <span className="absolute left-0 bottom-0 w-full h-0.5 bg-brand scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                                 </Link>
                                 <Link
                                     href="/register"
-                                    className="relative group text-gray-700 hover:text-brandCyan bg-yellow-300 text-black px-2 rounded"
+                                    className="relative group text-gray-700 hover:text-brand bg-yellow-300 text-black px-2 rounded"
                                 >
                                     Бүртгүүлэх
-                                    <span className="absolute left-0 bottom-0 w-full h-0.5 bg-brandCyan scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                                    <span className="absolute left-0 bottom-0 w-full h-0.5 bg-brand scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                                 </Link>
                             </>
                         )}
@@ -144,7 +144,7 @@ export default function Header() {
                                                 <Link
                                                     href="/subscription"
                                                     onClick={() => setIsMenuOpen(false)}
-                                                    className="block text-xl font-medium text-gray-800 hover:text-brandCyan"
+                                                    className="block text-xl font-medium text-gray-800 hover:text-brand"
                                                 >
                                                     Subscription
                                                 </Link>
@@ -156,7 +156,7 @@ export default function Header() {
                                                     logout();
                                                     setIsMenuOpen(false);
                                                 }}
-                                                className="block text-left w-full text-xl font-medium text-gray-800 hover:text-brandCyan"
+                                                className="block text-left w-full text-xl font-medium text-gray-800 hover:text-brand"
                                             >
                                                 Гарах
                                             </button>
@@ -168,7 +168,7 @@ export default function Header() {
                                             <Link
                                                 href="/login"
                                                 onClick={() => setIsMenuOpen(false)}
-                                                className="block text-xl font-medium text-gray-800 hover:text-brandCyan"
+                                                className="block text-xl font-medium text-gray-800 hover:text-brand"
                                             >
                                                 Нэвтрэх
                                             </Link>
@@ -177,7 +177,7 @@ export default function Header() {
                                             <Link
                                                 href="/register"
                                                 onClick={() => setIsMenuOpen(false)}
-                                                className="block text-xl font-medium text-gray-800 hover:text-brandCyan bg-yellow-300 text-black px-2 rounded"
+                                                className="block text-xl font-medium text-gray-800 hover:text-brand bg-yellow-300 text-black px-2 rounded"
                                             >
                                                 Бүртгүүлэх
                                             </Link>
@@ -193,7 +193,7 @@ export default function Header() {
                                         <Link
                                             href="/"
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="flex items-center gap-2 hover:text-brandCyan"
+                                            className="flex items-center gap-2 hover:text-brand"
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -217,7 +217,7 @@ export default function Header() {
                                         <Link
                                             href="/subscription"
                                             onClick={() => setIsMenuOpen(false)}
-                                                className="flex items-center gap-2 hover:text-brandCyan"
+                                                className="flex items-center gap-2 hover:text-brand"
                                             >
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -241,7 +241,7 @@ export default function Header() {
                                         <Link
                                             href="/users"
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="flex items-center gap-2 hover:text-brandCyan"
+                                            className="flex items-center gap-2 hover:text-brand"
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -264,7 +264,7 @@ export default function Header() {
                                         <Link
                                             href="/classroom"
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="flex items-center gap-2 hover:text-brandCyan"
+                                            className="flex items-center gap-2 hover:text-brand"
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"

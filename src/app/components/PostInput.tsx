@@ -75,7 +75,7 @@ export default function PostInput({ onPost }: Props) {
           alt="Avatar"
           width={48}
           height={48}
-          className="w-12 h-12 rounded-full mr-4 object-cover ring-2 ring-brandCyan"
+          className="w-12 h-12 rounded-full mr-4 object-cover ring-2 ring-brand"
         />
       ) : (
         <div className="w-12 h-12 rounded-full mr-4 bg-gray-200" />
@@ -94,7 +94,7 @@ export default function PostInput({ onPost }: Props) {
           onInput={autoResize}
           maxLength={MAX_LENGTH}
           placeholder="What's happening?"
-          className="w-full text-lg font-medium bg-transparent outline-none resize-none min-h-[64px] placeholder-gray-500 focus:border-b focus:border-brandCyan border-b"
+          className="w-full text-lg font-medium bg-transparent outline-none resize-none min-h-[64px] placeholder-gray-500 focus:border-b focus:border-brand border-b"
           rows={1}
           value={content}
           onChange={(e) => setContent(e.target.value)}
@@ -102,25 +102,25 @@ export default function PostInput({ onPost }: Props) {
         <div className="flex items-center justify-between mt-2">
           <div className="flex gap-4 text-gray-400">
             <button type="button" onClick={triggerFileInput} aria-label="Add image">
-              <PhotoIcon className="w-6 h-6 hover:text-brandCyan" />
+              <PhotoIcon className="w-6 h-6 hover:text-brand" />
             </button>
             <button type="button" aria-label="Add emoji">
-              <FaceSmileIcon className="w-6 h-6 hover:text-brandCyan" />
+              <FaceSmileIcon className="w-6 h-6 hover:text-brand" />
             </button>
             <button type="button" aria-label="Add poll">
-              <ChartBarIcon className="w-6 h-6 hover:text-brandCyan" />
+              <ChartBarIcon className="w-6 h-6 hover:text-brand" />
             </button>
             <button type="button" aria-label="Schedule">
-              <CalendarIcon className="w-6 h-6 hover:text-brandCyan" />
+              <CalendarIcon className="w-6 h-6 hover:text-brand" />
             </button>
             <button type="button" aria-label="Add location">
-              <MapPinIcon className="w-6 h-6 hover:text-brandCyan" />
+              <MapPinIcon className="w-6 h-6 hover:text-brand" />
             </button>
           </div>
           <button
             onClick={createPost}
             disabled={posting || (!content.trim() && !imageFile)}
-            className="bg-brandCyan text-black font-bold rounded-full px-6 py-2 disabled:opacity-50"
+            className="bg-brand text-white font-bold rounded-full px-6 py-2 disabled:opacity-50"
           >
             Post
           </button>

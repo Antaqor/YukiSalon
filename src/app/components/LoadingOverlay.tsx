@@ -10,7 +10,7 @@ export default function LoadingOverlay() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <div className="w-10 h-10 border-2 border-brandCyan border-t-transparent rounded-full animate-spin" />
+      <div className="w-10 h-10 border-2 border-brand border-t-transparent rounded-full animate-spin" />
     </motion.div>
   );
 }

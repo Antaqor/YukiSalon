@@ -34,7 +34,7 @@ export default function TopActiveMembers() {
   return (
     <div className="p-4 transition-shadow duration-200 hover:shadow-md">
       <h2 className="flex items-center font-semibold mb-3">
-        <UserIcon className="w-5 h-5 mr-2 text-brandCyan" />
+        <UserIcon className="w-5 h-5 mr-2 text-brand" />
         Top Members
       </h2>
       <ul className="space-y-2 text-sm">
@@ -46,10 +46,10 @@ export default function TopActiveMembers() {
                 alt={m.username}
                 width={32}
                 height={32}
-                className="w-8 h-8 rounded-full object-cover border border-brandCyan"
+                className="w-8 h-8 rounded-full object-cover border border-brand"
               />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-gray-300 border border-brandCyan" />
+              <div className="w-8 h-8 rounded-full bg-gray-300 border border-brand" />
             )}
             <span className="truncate">{m.username}</span>
             <span className="ml-auto text-xs text-gray-500">{m.rating || 0}pt</span>

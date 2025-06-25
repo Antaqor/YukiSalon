@@ -21,9 +21,9 @@ function NotificationNavItem() {
     <li>
       <Link
         href="/notifications"
-        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 transition-smooth focus:outline-none hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
+        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 transition-smooth focus:outline-none hover:text-brand focus:ring-2 focus:ring-brand"
       >
-        <BellIcon className="w-6 h-6 group-hover:text-brandCyan" />
+        <BellIcon className="w-6 h-6 group-hover:text-brand" />
         <span className="flex items-center">
           Notifications
           {unreadCount > 0 && (
@@ -71,11 +71,11 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                     <li>
                       <Link
                         href="/"
-                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 transition-smooth focus:outline-none hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
+                        className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 transition-smooth focus:outline-none hover:text-brand focus:ring-2 focus:ring-brand"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className="w-6 h-6 group-hover:text-brandCyan"
+                          className="w-6 h-6 group-hover:text-brand"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -93,11 +93,11 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                   <li>
                     <Link
                       href="/users"
-                      className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 transition-smooth focus:outline-none hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
+                      className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 transition-smooth focus:outline-none hover:text-brand focus:ring-2 focus:ring-brand"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="w-6 h-6 group-hover:text-brandCyan"
+                        className="w-6 h-6 group-hover:text-brand"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -110,11 +110,11 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                   <li>
                     <Link
                       href="/classroom"
-                      className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 transition-smooth focus:outline-none hover:text-brandCyan focus:ring-2 focus:ring-brandCyan"
+                      className="group flex items-center gap-2 p-4 pl-0 text-xl font-semibold text-gray-700 transition-smooth focus:outline-none hover:text-brand focus:ring-2 focus:ring-brand"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="w-6 h-6 group-hover:text-brandCyan"
+                        className="w-6 h-6 group-hover:text-brand"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"

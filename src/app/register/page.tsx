@@ -233,7 +233,7 @@ export default function RegisterMultiStepPage() {
         return `w-full rounded-md px-3 py-2 text-black bg-white focus:outline-none focus:ring-2 ${
             fieldErrors[fieldName]
                 ? "border border-red-500 focus:ring-red-500"
-                : "border border-gray-300 focus:ring-blue-500"
+                : "border border-gray-300 focus:ring-brand"
         }`;
     };
 
@@ -346,7 +346,7 @@ export default function RegisterMultiStepPage() {
                         <button
                             type="button"
                             onClick={handleNext}
-                            className="w-full bg-blue-500 text-white font-semibold py-3 rounded-md hover:bg-blue-600 transition"
+                            className="w-full bg-brand text-white font-semibold py-3 rounded-md hover:opacity-90 transition"
                         >
                             Next
                         </button>
@@ -359,7 +359,7 @@ export default function RegisterMultiStepPage() {
 
                         {/* LOGIN PASSWORD */}
                         <div>
-                            <label className="block text-sm font-medium text-blue-500 mb-1">
+                            <label className="block text-sm font-medium text-brand mb-1">
                                 Login Password
                             </label>
                             <input
@@ -437,7 +437,7 @@ export default function RegisterMultiStepPage() {
                             </button>
                             <button
                                 type="submit"
-                                className="flex-1 bg-blue-500 text-white py-3 rounded-md font-semibold hover:bg-blue-600 transition"
+                                className="flex-1 bg-brand text-white py-3 rounded-md font-semibold hover:opacity-90 transition"
                             >
                                 Бүртгүүлэх
                             </button>
