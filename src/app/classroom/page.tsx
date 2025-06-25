@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CheckIcon } from '@heroicons/react/24/outline';
-import { AcademicCapIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { CheckIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { BookOpenIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { useAuth } from '../context/AuthContext';
 
 interface Lesson {
@@ -31,6 +31,7 @@ export default function ClassroomPage() {
   const [newUrl, setNewUrl] = useState('');
   const [newDesc, setNewDesc] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem('lessons');
@@ -108,10 +109,32 @@ export default function ClassroomPage() {
     : 0;
 
   return (
-    <div className="flex flex-col md:flex-row h-full w-full min-h-screen">
-      <aside className="w-full md:w-80 md:min-w-64 bg-white p-6 flex flex-col border-b md:border-b-0 md:border-r border-gray-200 text-black overflow-y-auto md:h-screen md:sticky md:top-0">
+    <div className="flex flex-col md:flex-row h-full w-full min-h-screen relative">
+      <button
+        className="md:hidden absolute top-2 left-2 z-20 p-2 bg-white rounded-full shadow"
+        onClick={() => setSidebarOpen(true)}
+        aria-label="Open lessons"
+      >
+        <Bars3Icon className="w-6 h-6 text-gray-600" />
+      </button>
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-40 z-10 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      <aside
+        className={`bg-white p-6 flex flex-col border-b md:border-b-0 md:border-r border-gray-200 text-black overflow-y-auto md:h-screen md:sticky md:top-0 fixed md:relative inset-y-0 left-0 z-20 w-64 md:w-80 md:min-w-64 transform transition-transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
+      >
+        <button
+          className="md:hidden absolute top-2 right-2 p-1"
+          onClick={() => setSidebarOpen(false)}
+          aria-label="Close lessons"
+        >
+          <XMarkIcon className="w-5 h-5 text-gray-600" />
+        </button>
         <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-          <AcademicCapIcon className="w-6 h-6" /> Classroom
+          <BookOpenIcon className="w-6 h-6" /> Classroom
         </h2>
         <div className="flex items-center mb-2">
           <div className="flex-1 h-2 bg-gray-200 rounded">
