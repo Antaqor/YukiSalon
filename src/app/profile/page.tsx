@@ -1,10 +1,11 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { FaCheckCircle } from "react-icons/fa";
+import { CameraIcon } from "@heroicons/react/24/solid";
 import PostCard from "../components/PostCard";
 import { BASE_URL } from "../lib/config";
 import { getImageUrl } from "../lib/getImageUrl";
@@ -30,6 +31,8 @@ export default function MyOwnProfilePage() {
     const [loadingProfile, setLoadingProfile] = useState(true);
     const [loadingPosts, setLoadingPosts] = useState(false);
     const [error, setError] = useState("");
+    const avatarInputRef = useRef<HTMLInputElement>(null);
+    const coverInputRef = useRef<HTMLInputElement>(null);
 
     const getToken = () => typeof window !== "undefined" ? localStorage.getItem("token") || "" : "";
 
@@ -48,6 +51,44 @@ export default function MyOwnProfilePage() {
 
     const handleShareAdd = (newPost: Post) => {
         setUserPosts((prev) => [newPost, ...prev]);
+    };
+
+    const handleProfilePictureChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const token = getToken();
+        if (!token) return;
+        const formData = new FormData();
+        formData.append("profilePicture", file);
+        try {
+            const { data } = await axios.put(`${BASE_URL}/api/users/me`, formData, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (data.profilePicture) {
+                setUserData((prev) => prev ? { ...prev, profilePicture: data.profilePicture } : prev);
+            }
+        } catch (err) {
+            console.error("Profile picture update error", err);
+        }
+    };
+
+    const handleCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const token = getToken();
+        if (!token) return;
+        const formData = new FormData();
+        formData.append("coverImage", file);
+        try {
+            const { data } = await axios.put(`${BASE_URL}/api/users/me`, formData, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (data.coverImage) {
+                setUserData((prev) => prev ? { ...prev, coverImage: data.coverImage } : prev);
+            }
+        } catch (err) {
+            console.error("Cover image update error", err);
+        }
     };
 
     // Fetch the logged-in user's profile
@@ -131,7 +172,7 @@ export default function MyOwnProfilePage() {
             </div>
 
             {/* Banner */}
-            <div className="h-40 bg-[#0d0d0d] relative mt-12">
+            <div className="h-40 bg-[#0d0d0d] relative mt-12 group">
                 {userData.coverImage && (
                     <Image
                         src={getImageUrl(userData.coverImage)}
@@ -141,16 +182,44 @@ export default function MyOwnProfilePage() {
                         className="absolute inset-0 w-full h-full object-cover"
                     />
                 )}
-                <div className="absolute -bottom-16 left-4 w-32 h-32 rounded-full border-4 border-[#0d0d0d] overflow-hidden bg-gray-200">
+                <input
+                    ref={coverInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleCoverChange}
+                />
+                <button
+                    onClick={() => coverInputRef.current?.click()}
+                    className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition"
+                    aria-label="Change cover"
+                >
+                    <CameraIcon className="w-6 h-6 text-white" />
+                </button>
+                <div className="absolute -bottom-16 left-4 w-32 h-32 rounded-full border-4 border-[#0d0d0d] overflow-hidden bg-gray-200 group">
                     {userData.profilePicture ? (
-                    <Image
-                        src={getImageUrl(userData.profilePicture)}
-                        alt="avatar"
-                        width={128}
-                        height={128}
-                        className="w-full h-full object-cover"
-                    />
+                        <Image
+                            src={getImageUrl(userData.profilePicture)}
+                            alt="avatar"
+                            width={128}
+                            height={128}
+                            className="w-full h-full object-cover"
+                        />
                     ) : null}
+                    <input
+                        ref={avatarInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleProfilePictureChange}
+                    />
+                    <button
+                        onClick={() => avatarInputRef.current?.click()}
+                        className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition"
+                        aria-label="Change avatar"
+                    >
+                        <CameraIcon className="w-5 h-5 text-white" />
+                    </button>
                 </div>
             </div>
 

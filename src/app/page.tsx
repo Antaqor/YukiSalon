@@ -556,13 +556,13 @@ export default function HomePage() {
                         whileTap={{ scale: 0.8 }}
                         onClick={() => handleLike(post._id)}
                         disabled={!loggedIn}
-                        className="flex items-center justify-center gap-1 hover:text-gray-800"
+                        className="flex items-center justify-center gap-1 hover:text-brand"
                         aria-label={`Like (${post.likes.length})`}
                       >
                         {likedPosts.includes(post._id) ? (
-                          <HeartSolid className="w-4 h-4 text-red-500" />
+                          <HeartSolid className="w-4 h-4 text-brand icon-hover-brand" />
                         ) : (
-                          <HeartOutline className="w-4 h-4" />
+                          <HeartOutline className="w-4 h-4 icon-hover-brand" />
                         )}
                         <span>{post.likes.length}</span>
                       </motion.button>
@@ -571,10 +571,10 @@ export default function HomePage() {
                       <button
                         onClick={() => toggleComments(post._id)}
                         disabled={!loggedIn}
-                        className="flex items-center justify-center gap-1 hover:text-gray-800"
+                        className="flex items-center justify-center gap-1 hover:text-brand"
                         aria-label={`Comment (${post.comments?.length || 0})`}
                       >
-                        <ChatBubbleOvalLeftIcon className="w-4 h-4" />
+                        <ChatBubbleOvalLeftIcon className="w-4 h-4 icon-hover-brand" />
                         <span>{post.comments?.length || 0}</span>
                       </button>
 
@@ -583,12 +583,12 @@ export default function HomePage() {
                         whileTap={{ scale: 0.8 }}
                         onClick={() => handleShare(post._id)}
                         disabled={!loggedIn}
-                        className="flex items-center justify-center gap-1 hover:text-gray-800"
+                        className="flex items-center justify-center gap-1 hover:text-brand"
                         aria-label={`Share (${post.shares || 0})`}
                       >
                         <ArrowUpTrayIcon
                           className={`w-4 h-4 ${
-                            sharedPosts.includes(post._id) ? "text-green-500" : ""
+                            sharedPosts.includes(post._id) ? "text-brand icon-hover-brand" : "icon-hover-brand"
                           }`}
                         />
                         <span>{post.shares || 0}</span>

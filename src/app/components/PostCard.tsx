@@ -197,13 +197,13 @@ export default function PostCard({ post, user, onDelete, onShare }: Props) {
             <motion.button
               whileTap={{ scale: 0.8 }}
               onClick={handleLike}
-              className="flex items-center justify-center gap-1 hover:text-gray-700"
+              className="flex items-center justify-center gap-1 hover:text-brand"
               aria-label="Like"
             >
               {liked ? (
-                <HeartSolid className="w-4 h-4 text-red-500" />
+                <HeartSolid className="w-4 h-4 text-brand icon-hover-brand" />
               ) : (
-                <HeartOutline className="w-4 h-4" />
+                <HeartOutline className="w-4 h-4 icon-hover-brand" />
               )}
               <span>{likes}</span>
             </motion.button>
@@ -213,11 +213,11 @@ export default function PostCard({ post, user, onDelete, onShare }: Props) {
             <motion.button
               whileTap={{ scale: 0.8 }}
               onClick={handleShare}
-              className="flex items-center justify-center gap-1 hover:text-gray-700"
+              className="flex items-center justify-center gap-1 hover:text-brand"
               aria-label="Share"
             >
               <ArrowUpTrayIcon
-                className={shared ? "w-4 h-4 text-green-500" : "w-4 h-4"}
+                className={shared ? "w-4 h-4 text-brand icon-hover-brand" : "w-4 h-4 icon-hover-brand"}
               />
               <span>{shares}</span>
             </motion.button>
