@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { PhotoIcon, ChartBarIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "../context/AuthContext";
@@ -15,9 +15,20 @@ export default function PostInput({ onPost }: Props) {
   const { user } = useAuth();
   const [content, setContent] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [posting, setPosting] = useState(false);
   const MAX_LENGTH = 500;
+  const [focused, setFocused] = useState(false);
+
+  useEffect(() => {
+    if (imageFile) {
+      const url = URL.createObjectURL(imageFile);
+      setPreviewUrl(url);
+      return () => URL.revokeObjectURL(url);
+    }
+    setPreviewUrl(null);
+  }, [imageFile]);
 
   const triggerFileInput = () => fileInputRef.current?.click();
 
@@ -48,7 +59,6 @@ export default function PostInput({ onPost }: Props) {
       const { data } = await axios.post(`${BASE_URL}/api/posts`, formData, {
         headers: {
           Authorization: `Bearer ${user.accessToken}`,
-          "Content-Type": "multipart/form-data",
         },
       });
       setContent("");
@@ -86,6 +96,8 @@ export default function PostInput({ onPost }: Props) {
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
           onInput={autoResize}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           maxLength={MAX_LENGTH}
           placeholder="What's happening?"
           className="w-full text-xl bg-transparent outline-none resize-none min-h-[72px] placeholder:text-gray-400 placeholder:text-xl"
@@ -93,7 +105,19 @@ export default function PostInput({ onPost }: Props) {
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
-        <div className="flex items-center justify-between mt-2">
+        {previewUrl && (
+          <div className="relative mt-2">
+            <img src={previewUrl} alt="preview" className="rounded-lg w-full" />
+            <button
+              type="button"
+              onClick={() => setImageFile(null)}
+              className="absolute top-1 right-1 bg-black bg-opacity-60 text-white rounded-full p-1"
+            >
+              &times;
+            </button>
+          </div>
+        )}
+        <div className={`flex items-center justify-between mt-2 ${focused || content || imageFile ? '' : 'hidden'}`}>
           <div className="flex gap-3 text-gray-400">
             <button type="button" onClick={triggerFileInput} aria-label="Add image">
               <PhotoIcon className="w-6 h-6 icon-hover-brand" />
@@ -102,13 +126,16 @@ export default function PostInput({ onPost }: Props) {
               <ChartBarIcon className="w-6 h-6 icon-hover-brand" />
             </button>
           </div>
-          <button
-            onClick={createPost}
-            disabled={posting || (!content.trim() && !imageFile)}
-            className={`font-bold rounded-full px-6 py-2 transition-all active:scale-95 ${content.trim() || imageFile ? 'bg-brand text-white' : 'bg-gray-300 text-white cursor-not-allowed'}`}
-          >
-            Post
-          </button>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-400">{content.length}/{MAX_LENGTH}</span>
+            <button
+              onClick={createPost}
+              disabled={posting || (!content.trim() && !imageFile)}
+              className={`font-bold rounded-full px-6 py-2 transition-all active:scale-95 ${content.trim() || imageFile ? 'bg-brand text-white' : 'bg-gray-300 text-white cursor-not-allowed'}`}
+            >
+              Post
+            </button>
+          </div>
         </div>
       </div>
     </div>
