@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { FaCheckCircle } from "react-icons/fa";
 import HomeFeedPost from "../../components/HomeFeedPost";
 import axios from "axios";
@@ -150,12 +151,12 @@ export default function PublicProfilePage() {
                     </p>
                 )}
                 <div className="flex gap-6 mt-2 text-sm">
-                    <span>
+                    <Link href={`/profile/${userId}/followers`} className="hover:underline">
                         {userData.followers ? userData.followers.length : 0} Followers
-                    </span>
-                    <span>
+                    </Link>
+                    <Link href={`/profile/${userId}/following`} className="hover:underline">
                         {userData.following ? userData.following.length : 0} Following
-                    </span>
+                    </Link>
                 </div>
             </div>
 
