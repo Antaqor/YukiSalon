@@ -12,9 +12,11 @@ export interface ChatMessage {
 }
 
 let socket: Socket | null = null;
+let typingTimeout: ReturnType<typeof setTimeout> | null = null;
 
 export default function useChat(room: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [typing, setTyping] = useState(false);
 
   useEffect(() => {
     const token = typeof window !== "undefined" ? localStorage.getItem("token") || "" : "";
@@ -41,10 +43,28 @@ export default function useChat(room: string) {
     };
   }, [room]);
 
+  useEffect(() => {
+    if (!socket) return;
+    const handleTyping = () => {
+      setTyping(true);
+      if (typingTimeout) clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(() => setTyping(false), 2000);
+    };
+    socket.on("typing", handleTyping);
+    return () => {
+      socket.off("typing", handleTyping);
+    };
+  }, [room]);
+
   const sendMessage = (text: string, sender: string) => {
     if (!socket) return;
     socket.emit("chat-message", { room, text, sender });
   };
 
-  return { messages, sendMessage };
+  const startTyping = (sender: string) => {
+    if (!socket) return;
+    socket.emit("typing", { room, sender });
+  };
+
+  return { messages, sendMessage, startTyping, typing };
 }

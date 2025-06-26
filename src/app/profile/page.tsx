@@ -7,6 +7,8 @@ import Link from "next/link";
 import { FaCheckCircle } from "react-icons/fa";
 import { CameraIcon } from "@heroicons/react/24/solid";
 import HomeFeedPost from "../components/HomeFeedPost";
+import ChatList, { Conversation } from "../components/chat/ChatList";
+import ChatWindow from "../components/chat/ChatWindow";
 import { BASE_URL } from "../lib/config";
 import { getImageUrl } from "../lib/getImageUrl";
 import type { Post } from "@/types/Post";
@@ -31,6 +33,23 @@ export default function MyOwnProfilePage() {
     const [loadingProfile, setLoadingProfile] = useState(true);
     const [loadingPosts, setLoadingPosts] = useState(false);
     const [error, setError] = useState("");
+    const demoConversations: Conversation[] = [
+        {
+            id: "u1",
+            user: { id: "u1", name: "John Doe", avatar: "/img/default-avatar.png", online: true },
+            lastMessage: "Hey there!",
+            timestamp: new Date().toISOString(),
+            unread: 1,
+        },
+        {
+            id: "u2",
+            user: { id: "u2", name: "Jane", avatar: "/img/default-avatar.png", online: false },
+            lastMessage: "See you soon.",
+            timestamp: new Date().toISOString(),
+            unread: 0,
+        },
+    ];
+    const [activeChat, setActiveChat] = useState<string | null>(demoConversations[0].id);
     const avatarInputRef = useRef<HTMLInputElement>(null);
     const coverInputRef = useRef<HTMLInputElement>(null);
 
@@ -272,6 +291,23 @@ export default function MyOwnProfilePage() {
                 ) : (
                     <p className="text-gray-400">Таны нийтэлсэн пост одоогоор алга.</p>
                 )}
+            </div>
+            <div className="max-w-xl mx-auto px-4 mt-8">
+                <h3 className="text-xl font-bold mb-3">Мессеж</h3>
+                <div className="border rounded h-96 flex flex-col md:flex-row overflow-hidden">
+                    <div className="md:w-1/3 border-r">
+                        <ChatList conversations={demoConversations} activeId={activeChat || undefined} onSelect={setActiveChat} />
+                    </div>
+                    <div className="flex-1">
+                        {activeChat && (
+                            <ChatWindow
+                                chatId={activeChat}
+                                user={demoConversations.find(c => c.id === activeChat)!.user}
+                                onBack={() => setActiveChat(null)}
+                            />
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );
