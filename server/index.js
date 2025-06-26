@@ -18,7 +18,6 @@ const cartRoutes    = require("./routes/cartRoutes"); // ← feature branch win
 const notificationRoutes = require("./routes/notification");
 const pushRoutes    = require("./routes/push");const webpush       = require("web-push");
 const chatRoutes    = require("./routes/chat");
-const mp3Routes     = require("./routes/mp3");
 
 const app  = express();
 const PORT = process.env.PORT || 5001;
@@ -83,7 +82,6 @@ app.use("/api/cart",     cartRoutes); // ← now live
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/push",     pushRoutes);
 app.use("/api/chat",    chatRoutes);
-app.use("/api/mp3",     mp3Routes);
 
 // ── heartbeat ─────────────────────────────────────────
 app.get("/", (_, res) => res.send("Server is working!"));
