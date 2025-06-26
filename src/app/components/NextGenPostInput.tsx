@@ -38,11 +38,6 @@ export default function NextGenPostInput({ onPost }: Props) {
     if (e.target.files?.[0]) setImageFile(e.target.files[0]);
   };
 
-  const autoResize = (e: React.FormEvent<HTMLTextAreaElement>) => {
-    const ta = e.currentTarget;
-    ta.style.height = "auto";
-    ta.style.height = `${ta.scrollHeight}px`;
-  };
 
   const createPost = async () => {
     if (!content.trim() && !imageFile) {
@@ -84,14 +79,6 @@ export default function NextGenPostInput({ onPost }: Props) {
     createPost();
   };
 
-  const handleClickPost = () => {
-    if (!content.trim() && !imageFile) {
-      setShowTooltip(true);
-      return;
-    }
-    setRipple(true);
-    createPost();
-  };
 
   useEffect(() => {
     if (ripple) {
@@ -112,7 +99,7 @@ export default function NextGenPostInput({ onPost }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className={`relative bg-white dark:bg-primary flex gap-3 items-start w-full p-2 border-l border-t transition-colors ${
+      className={`relative bg-white dark:bg-primary flex gap-3 items-start w-full px-4 py-3 border-l border-t transition-colors ${
         focused ? "border-[#1aaeca]" : "border-[#30c9e8]"
       }`}
     >
@@ -135,13 +122,13 @@ export default function NextGenPostInput({ onPost }: Props) {
           className="hidden"
           onChange={handleFileChange}
         />
-        <textarea
+        <input
+          type="text"
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          onInput={autoResize}
           maxLength={MAX_LENGTH}
           placeholder="What's happening?"
-          className="w-full bg-transparent outline-none resize-none min-h-[72px] text-xl placeholder-gray-400"
+          className="w-full bg-transparent outline-none text-xl placeholder-gray-400 py-2"
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
@@ -157,13 +144,7 @@ export default function NextGenPostInput({ onPost }: Props) {
             </button>
           </div>
         )}
-        <div
-          className={`flex items-center justify-between mt-2 transition-all duration-200 ${
-            focused || content || imageFile
-              ? "opacity-100"
-              : "opacity-0 pointer-events-none"
-          }`}
-        >
+        <div className="flex items-center justify-between mt-2">
           <div className="flex gap-3 text-gray-400">
             <button
               type="button"
@@ -176,7 +157,7 @@ export default function NextGenPostInput({ onPost }: Props) {
               <ChartBarIcon className="w-6 h-6 icon-hover-brand" />
             </button>
           </div>
-          <div className="hidden md:flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <button
               type="submit"
               onClick={() => setRipple(true)}
@@ -197,17 +178,6 @@ export default function NextGenPostInput({ onPost }: Props) {
           {content.length}/{MAX_LENGTH}
         </div>
       )}
-      {/* Floating Post button for mobile */}
-      <button
-        type="button"
-        onClick={handleClickPost}
-        disabled={disabled}
-        className={`md:hidden fixed bottom-4 right-4 z-20 rounded-full p-4 shadow-lg text-white transition-all ${
-          disabled ? "bg-gray-300" : "bg-brand ripple-effect"
-        } ${ripple ? "ripple-active" : ""}`}
-      >
-        Post
-      </button>
       {showTooltip && (
         <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs rounded px-2 py-1">
           Add text or media first!

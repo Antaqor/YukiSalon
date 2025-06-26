@@ -36,16 +36,10 @@ export default function PostInput({ onPost }: Props) {
     if (e.target.files?.[0]) setImageFile(e.target.files[0]);
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLTextAreaElement>) => {
+  const handleDrop = (e: React.DragEvent<HTMLInputElement>) => {
     e.preventDefault();
     const file = e.dataTransfer.files?.[0];
     if (file && file.type.startsWith("image/")) setImageFile(file);
-  };
-
-  const autoResize = (e: React.FormEvent<HTMLTextAreaElement>) => {
-    const ta = e.currentTarget;
-    ta.style.height = "auto";
-    ta.style.height = `${ta.scrollHeight}px`;
   };
 
   const createPost = async () => {
@@ -78,7 +72,7 @@ export default function PostInput({ onPost }: Props) {
         e.preventDefault();
         createPost();
       }}
-      className="flex bg-white rounded-xl shadow p-4 m-4 max-w-xl mx-auto"
+      className="flex bg-white rounded-xl shadow px-4 py-5 m-4 max-w-xl mx-auto"
     >
       {user?.profilePicture ? (
         <Image
@@ -99,16 +93,15 @@ export default function PostInput({ onPost }: Props) {
           accept="image/*"
           onChange={handleFileChange}
         />
-        <textarea
+        <input
+          type="text"
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
-          onInput={autoResize}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           maxLength={MAX_LENGTH}
           placeholder="What's happening?"
-          className="w-full text-xl bg-transparent outline-none resize-none min-h-[72px] placeholder:text-gray-400 placeholder:text-xl"
-          rows={1}
+          className="w-full text-xl bg-transparent outline-none placeholder:text-gray-400 py-2"
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
@@ -124,7 +117,7 @@ export default function PostInput({ onPost }: Props) {
             </button>
           </div>
         )}
-        <div className={`flex items-center justify-between mt-2 ${focused || content || imageFile ? '' : 'hidden'}`}>
+        <div className="flex items-center justify-between mt-2">
           <div className="flex gap-3 text-gray-400">
             <button type="button" onClick={triggerFileInput} aria-label="Add image">
               <PhotoIcon className="w-6 h-6 icon-hover-brand" />
