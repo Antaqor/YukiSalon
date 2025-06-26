@@ -5,6 +5,7 @@ const express = require('express');
 const { Server } = require('socket.io');
 const mongoose = require('mongoose');
 const ChatMessage = require('./models/ChatMessage');
+const Chat = require('./models/Chat');
 
 const app = express();
 const http = createServer(app);
@@ -36,6 +37,11 @@ io.on('connection', socket => {
     } catch (err) {
       console.error('Chat message error', err);
     }
+  });
+
+  socket.on('typing', ({ room }) => {
+    if (!room) return;
+    socket.to(room).emit('typing');
   });
 });
 

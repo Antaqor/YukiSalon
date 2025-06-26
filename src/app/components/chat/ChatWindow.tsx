@@ -17,7 +17,7 @@ interface ChatWindowProps {
 }
 
 export default function ChatWindow({ chatId, user, onBack }: ChatWindowProps) {
-  const { messages, sendMessage, startTyping, typing } = useChat(chatId);
+  const { messages, sendMessage, startTyping, typing, loading } = useChat(chatId);
   const [text, setText] = useState("");
   const endRef = useRef<HTMLDivElement | null>(null);
 
@@ -64,7 +64,12 @@ export default function ChatWindow({ chatId, user, onBack }: ChatWindowProps) {
         {user.online && <span className="w-2 h-2 rounded-full bg-green-500" />}
       </div>
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
-        {messages.map((msg: ChatMessage) => (
+        {loading && (
+          <div className="flex justify-center py-4">
+            <div className="w-6 h-6 border-2 border-brand border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
+        {!loading && messages.map((msg: ChatMessage) => (
           <div
             key={msg._id}
             className={`flex ${msg.sender._id === me ? "justify-end" : "justify-start"}`}

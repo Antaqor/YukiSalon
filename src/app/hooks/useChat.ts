@@ -17,13 +17,16 @@ let typingTimeout: ReturnType<typeof setTimeout> | null = null;
 export default function useChat(room: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [typing, setTyping] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = typeof window !== "undefined" ? localStorage.getItem("token") || "" : "";
-    fetch(`${API_URL}/chat/${room}`, { headers: { Authorization: `Bearer ${token}` } })
+    setLoading(true);
+    fetch(`${API_URL}/chat/${room}/messages`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => res.json())
       .then((data: ChatMessage[]) => setMessages(data))
-      .catch(err => console.error("Fetch messages error", err));
+      .catch(err => console.error("Fetch messages error", err))
+      .finally(() => setLoading(false));
   }, [room]);
 
   useEffect(() => {
@@ -66,5 +69,5 @@ export default function useChat(room: string) {
     socket.emit("typing", { room, sender });
   };
 
-  return { messages, sendMessage, startTyping, typing };
+  return { messages, sendMessage, startTyping, typing, loading };
 }
