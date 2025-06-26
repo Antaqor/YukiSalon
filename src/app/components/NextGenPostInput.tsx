@@ -114,7 +114,7 @@ export default function NextGenPostInput({ onPost }: Props) {
       ) : (
         <div className="w-12 h-12 rounded-full bg-gray-200" />
       )}
-      <div className="flex-1">
+      <div className="flex-1 relative pb-5">
         <input
           ref={fileInputRef}
           type="file"
@@ -128,10 +128,15 @@ export default function NextGenPostInput({ onPost }: Props) {
           onBlur={() => setFocused(false)}
           maxLength={MAX_LENGTH}
           placeholder="What's happening?"
-          className="w-full bg-transparent outline-none text-xl placeholder-gray-400 py-2"
+          className={`w-full bg-transparent outline-none text-xl placeholder-gray-400 transition-all duration-200 ${focused ? 'py-3' : 'py-2'}`}
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
+        <div
+          className={`absolute bottom-0 right-2 text-xs text-gray-400 transition-opacity duration-200 ${content ? 'opacity-100' : 'opacity-0'}`}
+        >
+          {content.length}/{MAX_LENGTH}
+        </div>
         {previewUrl && (
           <div className="relative mt-2">
             <img src={previewUrl} alt="preview" className="rounded-lg w-full" />
@@ -173,11 +178,6 @@ export default function NextGenPostInput({ onPost }: Props) {
           </div>
         </div>
       </div>
-      {content && (
-        <div className="w-full text-right text-xs text-gray-400 pr-2 mt-1">
-          {content.length}/{MAX_LENGTH}
-        </div>
-      )}
       {showTooltip && (
         <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs rounded px-2 py-1">
           Add text or media first!
