@@ -14,34 +14,49 @@ export default function Mp3Page() {
     setDownloadLink('');
 
     try {
-      // Validate and encode URL
       const trimmedUrl = url.trim();
       if (!trimmedUrl) {
         throw new Error('YouTube линк оруулна уу');
       }
 
-      // Encode only if not already encoded
-      const processedUrl = trimmedUrl.startsWith('http') 
-        ? encodeURIComponent(trimmedUrl)
-        : encodeURIComponent(`https://${trimmedUrl}`);
-
+      // Simply send the URL without encoding
       const res = await fetch('/api/mp3/convert', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ videoUrl: processedUrl }),
+        body: JSON.stringify({ 
+          videoUrl: trimmedUrl.startsWith('http') 
+            ? trimmedUrl 
+            : `https://${trimmedUrl}`
+        }),
       });
+
+      // Handle non-JSON responses
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await res.text();
+        throw new Error(`Серверийн алдаа: ${text.slice(0, 100)}`);
+      }
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Алдаа гарлаа');
 
       setStatus('Аудио бэлэн боллоо!');
-      setDownloadLink(`/api/mp3/download/${data.filename}`);
+      setDownloadLink(data.filePath); // Use filePath from server
     } catch (err) {
-      setStatus(
-        err instanceof Error 
-          ? err.message 
-          : 'Алдаа гарлаа. Дахин оролдоно уу'
-      );
+      let errorMessage = 'Алдаа гарлаа. Дахин оролдоно уу';
+      
+      if (err instanceof Error) {
+        // Handle specific error cases
+        if (err.message.includes('Серверийн алдаа')) {
+          errorMessage = err.message;
+        } else if (err.message.includes('validation failed')) {
+          errorMessage = 'Буруу YouTube линк';
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      
+      setStatus(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -72,18 +87,18 @@ export default function Mp3Page() {
         </button>
       </form>
 
-      {/* Status Message */}
       {status && (
         <div className={`mt-4 p-3 rounded ${
-          status.includes('Алдаа') 
+          status.includes('Алдаа') || status.includes('буруу')
             ? 'bg-red-100 text-red-800' 
-            : 'bg-green-100 text-green-800'
+            : status.includes('бэлэн') 
+              ? 'bg-green-100 text-green-800'
+              : 'bg-yellow-100 text-yellow-800'
         }`}>
           {status}
         </div>
       )}
 
-      {/* Download Link */}
       {downloadLink && (
         <div className="mt-4 text-center">
           <a
@@ -93,6 +108,9 @@ export default function Mp3Page() {
           >
             ↓ MP3 ТАТАХ ↓
           </a>
+          <p className="mt-2 text-sm text-gray-500">
+            Файл 24 цагийн дараа автоматаар устгагдах болно
+          </p>
         </div>
       )}
     </div>
