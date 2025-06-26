@@ -1,84 +1,122 @@
-'use client';
-import { useState } from 'react';
+const express = require('express');
+const router = express.Router();
+const { exec } = require('child_process');
+const path = require('path');
+const fs = require('fs');
+const util = require('util');
+const rateLimit = require('express-rate-limit');
 
-export default function Mp3Page() {
-  const [url, setUrl] = useState('');
-  const [status, setStatus] = useState('');
-  const [downloadLink, setDownloadLink] = useState('');
+const execPromise = util.promisify(exec);
+const UPLOADS_DIR = path.join(__dirname, '../uploads/mp3');
+const YT_DLP_PATH = '/usr/local/bin/yt-dlp';
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatus('Татаж байна...');
-    setDownloadLink('');
-
-    try {
-      const res = await fetch('/api/mp3/convert', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ videoUrl: url }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Алдаа гарлаа');
-      }
-
-      setStatus('Бэлэн боллоо!');
-      setDownloadLink(`/api/mp3/download/${data.filename}`);
-    } catch (err) {
-      // Proper error type handling
-      if (err instanceof Error) {
-        setStatus(err.message);
-      } else if (typeof err === 'string') {
-        setStatus(err);
-      } else {
-        setStatus('Алдаа гарлаа');
-      }
-      console.error('Conversion error:', err);
-    }
-  };
-
-  return (
-    <div className="p-4 max-w-md mx-auto">
-      <h1 className="text-xl font-bold mb-4">YouTube MP3 татагч</h1>
-      <form onSubmit={handleSubmit} className="flex gap-2 mb-4">
-        <input
-          type="url"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="YouTube линк"
-          className="border px-3 py-2 flex-1 rounded"
-          required
-        />
-        <button 
-          type="submit" 
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          disabled={status === 'Татаж байна...'}
-        >
-          {status === 'Татаж байна...' ? 'Ажиллаж байна...' : 'Татах'}
-        </button>
-      </form>
-      
-      {status && (
-        <div className={`p-3 rounded ${
-          status.includes('Алдаа') ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
-        }`}>
-          {status}
-        </div>
-      )}
-
-      {downloadLink && (
-        <div className="mt-4">
-          <a 
-            href={downloadLink} 
-            download
-            className="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-          >
-            MP3 татах
-          </a>
-        </div>
-      )}
-    </div>
-  );
+// Ensure uploads directory exists
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+  fs.chmodSync(UPLOADS_DIR, 0o777);
 }
+
+// Rate limiting (5 requests per 15 minutes)
+const convertLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { success: false, error: 'Хэт олон хүсэлт. Түр хүлээнэ үү' }
+});
+
+router.post('/convert', convertLimiter, async (req, res) => {
+  try {
+    let { videoUrl } = req.body;
+
+    // Decode URL if encoded by frontend
+    try {
+      videoUrl = decodeURIComponent(videoUrl);
+    } catch (e) {
+      console.log('URL was not encoded, using as-is');
+    }
+
+    // Validate ALL YouTube URL formats
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})(\S*)$/;
+    if (!videoUrl || !youtubeRegex.test(videoUrl)) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'Зөв YouTube линк оруулна уу'
+      });
+    }
+
+    // Extract video ID
+    const videoId = videoUrl.match(youtubeRegex)[5];
+    const filename = `conversion_${Date.now()}_${videoId}.mp3`;
+    const outputFile = path.join(UPLOADS_DIR, filename);
+
+    console.log(`Processing: ${videoUrl}`);
+
+    // Execute yt-dlp (handles timestamps automatically)
+    const command = `${YT_DLP_PATH} --no-warnings -x --audio-format mp3 --audio-quality 2 -o "${outputFile}" "${videoUrl}"`;
+    const { stderr } = await execPromise(command);
+
+    // Verify output
+    if (!fs.existsSync(outputFile)) {
+      console.error('Conversion failed. yt-dlp output:', stderr);
+      return res.status(500).json({
+        success: false,
+        error: 'Аудио хувиргах боломжгүй (YouTube хязгаарлалт эсвэл алдаа)'
+      });
+    }
+
+    // Set file permissions
+    fs.chmodSync(outputFile, 0o644);
+
+    res.json({
+      success: true,
+      filePath: `/uploads/mp3/${filename}`,
+      filename: filename
+    });
+
+  } catch (error) {
+    console.error('SERVER ERROR:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Серверийн алдаа'
+    });
+  }
+});
+
+// File download endpoint
+router.get('/download/:filename', (req, res) => {
+  try {
+    const { filename } = req.params;
+    if (!filename.endsWith('.mp3')) {
+      return res.status(400).json({ error: 'Буруй файлын төрөл' });
+    }
+
+    const filePath = path.join(UPLOADS_DIR, filename);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: 'Файл олдсонгүй' });
+    }
+
+    res.download(filePath);
+  } catch (error) {
+    console.error('Download error:', error);
+    res.status(500).json({ error: 'Татахад алдаа гарлаа' });
+  }
+});
+
+// Cleanup old files (runs every 6 hours)
+const cleanupOldFiles = () => {
+  const now = Date.now();
+  const maxAgeMs = 24 * 60 * 60 * 1000; // 24 hours
+
+  fs.readdirSync(UPLOADS_DIR).forEach(file => {
+    const filePath = path.join(UPLOADS_DIR, file);
+    const stats = fs.statSync(filePath);
+    if (now - stats.birthtimeMs > maxAgeMs) {
+      fs.unlinkSync(filePath);
+      console.log(`Deleted old file: ${file}`);
+    }
+  });
+};
+
+setInterval(cleanupOldFiles, 6 * 60 * 60 * 1000);
+cleanupOldFiles(); // Run on startup
+
+module.exports = router;
