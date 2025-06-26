@@ -63,6 +63,7 @@ export default function PostInput({ onPost }: Props) {
       });
       setContent("");
       setImageFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
       onPost?.(data.post);
     } catch (err) {
       console.error("Create post error", err);
@@ -72,7 +73,13 @@ export default function PostInput({ onPost }: Props) {
   };
 
   return (
-    <div className="flex bg-white rounded-xl shadow p-4 m-4 max-w-xl mx-auto">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        createPost();
+      }}
+      className="flex bg-white rounded-xl shadow p-4 m-4 max-w-xl mx-auto"
+    >
       {user?.profilePicture ? (
         <Image
           src={`${BASE_URL}${user.profilePicture}`}
@@ -129,7 +136,7 @@ export default function PostInput({ onPost }: Props) {
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-400">{content.length}/{MAX_LENGTH}</span>
             <button
-              onClick={createPost}
+              type="submit"
               disabled={posting || (!content.trim() && !imageFile)}
               className={`font-bold rounded-full px-6 py-2 transition-all active:scale-95 ${content.trim() || imageFile ? 'bg-brand text-white' : 'bg-gray-300 text-white cursor-not-allowed'}`}
             >
@@ -138,6 +145,6 @@ export default function PostInput({ onPost }: Props) {
           </div>
         </div>
       </div>
-    </div>
+    </form>
   );
 }
