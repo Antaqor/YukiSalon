@@ -17,8 +17,7 @@
     "live-dev": "nodemon server/live.js",
     "live-mongo": "node server/live-mongo.js",
     "chat": "node server/chat.js",
-    "chat-dev": "nodemon server/chat.js",
-    "download-mp3": "node tools/mp3/download.js"
+    "chat-dev": "nodemon server/chat.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -64,7 +63,8 @@
     "ioredis": "^5.3.2",
     "ytdl-core": "^4.11.3",
     "fluent-ffmpeg": "^2.1.2",
-    "ffmpeg-static": "^5.1.0"
+    "ffmpeg-static": "^5.1.0",
+    "yt-dlp-exec": "^1.0.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
