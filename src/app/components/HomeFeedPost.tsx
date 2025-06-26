@@ -155,42 +155,7 @@ export default function HomeFeedPost({ post, onDelete, onShareAdd }: Props) {
     }
   };
 
-  const handleFollow = async (targetId: string) => {
-    if (!user?.accessToken) return;
-    try {
-      await axios.post(
-        `${BASE_URL}/api/users/${targetId}/follow`,
-        {},
-        { headers: { Authorization: `Bearer ${user.accessToken}` } }
-      );
-      login(
-        { ...user, following: [...(user.following || []), targetId] },
-        user.accessToken
-      );
-    } catch (err) {
-      console.error("Follow error:", err);
-    }
-  };
-
-  const handleUnfollow = async (targetId: string) => {
-    if (!user?.accessToken) return;
-    try {
-      await axios.post(
-        `${BASE_URL}/api/users/${targetId}/unfollow`,
-        {},
-        { headers: { Authorization: `Bearer ${user.accessToken}` } }
-      );
-      login(
-        {
-          ...user,
-          following: (user.following || []).filter((id) => id !== targetId),
-        },
-        user.accessToken
-      );
-    } catch (err) {
-      console.error("Unfollow error:", err);
-    }
-  };
+  // follow/unfollow logic moved to profile page
 
   const postUser = postState.user;
   const isOwner = user?._id === postUser?._id;
@@ -225,25 +190,7 @@ export default function HomeFeedPost({ post, onDelete, onShareAdd }: Props) {
                 {postUser?.username || "Unknown User"}
               </span>
             </Link>
-            {!isOwner && postUser && user && (
-              <div>
-                {user.following?.includes(postUser._id) ? (
-                  <button
-                    onClick={() => handleUnfollow(postUser._id)}
-                    className="text-green-600 text-xs"
-                  >
-                    Unfollow
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleFollow(postUser._id)}
-                    className="text-brand text-xs"
-                  >
-                    Follow
-                  </button>
-                )}
-              </div>
-            )}
+            {/* Follow button removed - only available on profile page */}
             {isOwner && (
               <div className="ml-auto relative">
                 <button

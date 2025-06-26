@@ -8,6 +8,7 @@ import HomeFeedPost from "../../components/HomeFeedPost";
 import axios from "axios";
 import { BASE_URL } from "../../lib/config";
 import { getImageUrl } from "../../lib/getImageUrl";
+import { useAuth } from "../../context/AuthContext";
 import type { Post } from "@/types/Post";
 
 interface UserData {
@@ -26,6 +27,7 @@ export default function PublicProfilePage() {
     const router = useRouter();
     const params = useParams();
     const userId = params.id as string;
+    const { user: viewer, loggedIn, login } = useAuth();
 
     const [userData, setUserData] = useState<UserData | null>(null);
     const [userPosts, setUserPosts] = useState<Post[]>([]);
@@ -36,6 +38,43 @@ export default function PublicProfilePage() {
     // Share handler
     const handleShareAdd = (newPost: Post) => {
         setUserPosts((prev) => [newPost, ...prev]);
+    };
+
+    const handleFollow = async () => {
+        if (!viewer?.accessToken) return;
+        try {
+            await axios.post(
+                `${BASE_URL}/api/users/${userId}/follow`,
+                {},
+                { headers: { Authorization: `Bearer ${viewer.accessToken}` } }
+            );
+            login(
+                { ...viewer, following: [...(viewer.following || []), userId] },
+                viewer.accessToken!
+            );
+        } catch (err) {
+            console.error("Follow error:", err);
+        }
+    };
+
+    const handleUnfollow = async () => {
+        if (!viewer?.accessToken) return;
+        try {
+            await axios.post(
+                `${BASE_URL}/api/users/${userId}/unfollow`,
+                {},
+                { headers: { Authorization: `Bearer ${viewer.accessToken}` } }
+            );
+            login(
+                {
+                    ...viewer,
+                    following: (viewer.following || []).filter((id) => id !== userId),
+                },
+                viewer.accessToken!
+            );
+        } catch (err) {
+            console.error("Unfollow error:", err);
+        }
     };
 
     // Fetch user data
@@ -93,6 +132,7 @@ export default function PublicProfilePage() {
     const isPro = userData.subscriptionExpiresAt
         ? new Date(userData.subscriptionExpiresAt) > new Date()
         : false;
+    const isOwnProfile = viewer?._id === userId;
 
     return (
         <div className="min-h-screen bg-white text-black font-sans">
@@ -136,9 +176,21 @@ export default function PublicProfilePage() {
 
             {/* Meta */}
             <div className="pt-20 px-4">
-                <div className="flex items-center gap-2">
-                    <h1 className="text-2xl font-bold">{userData.username}</h1>
-                    {isPro && <FaCheckCircle className="text-brand" />}
+                <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                        <h1 className="text-2xl font-bold">{userData.username}</h1>
+                        {isPro && <FaCheckCircle className="text-brand" />}
+                    </div>
+                    {loggedIn && !isOwnProfile && (
+                        <div className="flex gap-2">
+                            {viewer?.following?.includes(userId) ? (
+                                <button onClick={handleUnfollow} className="text-sm px-3 py-1 rounded border border-brand text-brand">Following</button>
+                            ) : (
+                                <button onClick={handleFollow} className="text-sm px-3 py-1 rounded border border-brand text-brand">Follow</button>
+                            )}
+                            <Link href={`/chat?user=${userId}`} className="text-sm px-3 py-1 rounded bg-brand text-white">Message</Link>
+                        </div>
+                    )}
                 </div>
                 {userData.rating && (
                     <p className="text-sm text-gray-400">
@@ -180,14 +232,6 @@ export default function PublicProfilePage() {
                         />
                     ))}
                 </div>
-            </div>
-            <div className="max-w-xl mx-auto px-4 mt-8 text-center">
-                <Link
-                    href={`/chat?user=${userId}`}
-                    className="inline-block bg-brand text-white px-4 py-2 rounded"
-                >
-                    Мессеж
-                </Link>
             </div>
         </div>
     );
