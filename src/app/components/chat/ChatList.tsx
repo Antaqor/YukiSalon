@@ -27,17 +27,23 @@ export default function ChatList({ conversations, activeId, onSelect }: ChatList
           }`}
         >
           <Link href={`/profile/${conv.user.id}`} target="_blank" className="shrink-0">
-            <Image
-              src={conv.user.avatar || "/img/default-avatar.png"}
-              alt={conv.user.name}
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
+            {conv.user.avatar ? (
+              <Image
+                src={conv.user.avatar}
+                alt={conv.user.name}
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center text-lg">
+                {conv.user.name.charAt(0).toUpperCase()}
+              </div>
+            )}
           </Link>
           <div className="flex-1 min-w-0">
             <div className="flex justify-between items-center">
-              <span className="font-medium truncate">{conv.user.name}</span>
+              <span className="font-medium">{conv.user.name}</span>
               <span className="text-xs text-gray-500 whitespace-nowrap">
                 {new Date(conv.timestamp).toLocaleTimeString()}
               </span>
