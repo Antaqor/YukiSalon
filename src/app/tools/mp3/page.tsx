@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { API_URL, UPLOADS_URL } from '../../lib/config';
 
 export default function Mp3Page() {
   const [url, setUrl] = useState('');
@@ -11,7 +12,7 @@ export default function Mp3Page() {
     setStatus('Downloading...');
     setLink(null);
     try {
-      const res = await fetch('/api/mp3', {
+      const res = await fetch(`${API_URL}/mp3`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url }),
@@ -19,7 +20,7 @@ export default function Mp3Page() {
       const data = await res.json();
       if (res.ok) {
         setStatus('Saved ' + data.filename);
-        setLink('/mp3/' + data.filename);
+        setLink(`${UPLOADS_URL}/mp3/` + data.filename);
       } else {
         setStatus(data.error || 'Error');
       }
