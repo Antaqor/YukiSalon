@@ -52,7 +52,7 @@ export default function useChat(room: string) {
     };
     socket.on("typing", handleTyping);
     return () => {
-      socket.off("typing", handleTyping);
+      socket?.off("typing", handleTyping);
     };
   }, [room]);
 
