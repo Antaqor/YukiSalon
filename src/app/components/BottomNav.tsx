@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
     HomeIcon,
-    PlusCircleIcon,
     BellIcon,
     AcademicCapIcon,
     ChatBubbleLeftRightIcon,
@@ -51,14 +50,6 @@ const BottomNav: React.FC = () => {
                     <HomeIcon className="h-7 w-7 icon-hover-brand" />
                 </button>
 
-                {/* NEW POST */}
-                <button
-                    onClick={() => router.push('/new-post')}
-                    aria-label="New Post"
-                    className="p-1 text-white hover:text-brand"
-                >
-                    <PlusCircleIcon className="h-8 w-8 icon-hover-brand" />
-                </button>
 
                 {/* NOTIFICATIONS */}
                 <button
