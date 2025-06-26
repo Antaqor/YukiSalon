@@ -4,10 +4,12 @@ import { useState } from 'react';
 export default function Mp3Page() {
   const [url, setUrl] = useState('');
   const [status, setStatus] = useState('');
+  const [link, setLink] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('Downloading...');
+    setLink(null);
     try {
       const res = await fetch('/api/mp3', {
         method: 'POST',
@@ -17,6 +19,7 @@ export default function Mp3Page() {
       const data = await res.json();
       if (res.ok) {
         setStatus('Saved ' + data.filename);
+        setLink('/mp3/' + data.filename);
       } else {
         setStatus(data.error || 'Error');
       }
@@ -42,6 +45,13 @@ export default function Mp3Page() {
         </button>
       </form>
       {status && <p className="mt-4">{status}</p>}
+      {link && (
+        <p className="mt-2">
+          <a href={link} download className="text-blue-600 underline">
+            MP3 татах
+          </a>
+        </p>
+      )}
     </div>
   );
 }
