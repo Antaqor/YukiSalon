@@ -357,7 +357,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-secondary text-white">
       {/* Membership banner */}
       {loggedIn && !isPro && (
-        <div className="bg-yellow-500 text-white text-center py-2 px-4">
+        <div className="bg-brand text-white text-center py-2 px-4">
           <Link href="/subscription" className="font-semibold underline">
             Гишүүн болох – Онцгой боломжуудыг нээх
           </Link>
@@ -386,7 +386,7 @@ export default function HomePage() {
               </Link>
               <Link
                 href="/register"
-                className="block bg-yellow-300 text-black px-3 py-1 rounded w-fit mx-auto"
+                className="block bg-brand text-white px-3 py-1 rounded w-fit mx-auto"
               >
                 Бүртгүүлэх
               </Link>

@@ -57,7 +57,7 @@ export default function Header() {
                             </Link>
                         ) : (
                             <Link href="/login" aria-label="Login">
-                                <UserCircleIcon className="w-8 h-8 text-yellow-400" />
+                                <UserCircleIcon className="w-8 h-8 text-brand" />
                             </Link>
                         )}
                         <div className="hidden md:flex items-center space-x-8 font-medium">
@@ -91,7 +91,7 @@ export default function Header() {
                                 </Link>
                                 <Link
                                     href="/register"
-                                    className="relative group text-gray-700 hover:text-brand bg-yellow-300 text-black px-2 rounded"
+                                    className="relative group text-gray-700 hover:text-brand bg-brand text-white px-2 rounded"
                                 >
                                     Бүртгүүлэх
                                     <span className="absolute left-0 bottom-0 w-full h-0.5 bg-brand scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
@@ -184,7 +184,7 @@ export default function Header() {
                                             <Link
                                                 href="/register"
                                                 onClick={() => setIsMenuOpen(false)}
-                                                className="block text-xl font-medium text-gray-800 hover:text-brand bg-yellow-300 text-black px-2 rounded"
+                                                className="block text-xl font-medium text-gray-800 hover:text-brand bg-brand text-white px-2 rounded"
                                             >
                                                 Бүртгүүлэх
                                             </Link>

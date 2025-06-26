@@ -13,7 +13,7 @@ module.exports = {
         surface: '#F5F6F8',
         textPrimary: '#272F36',
         accent: '#FF2C55',
-        premium: '#F7B84B',
+        premium: '#119C99',
         link: '#44B2DF',
         supportBorder: '#272F36',
         primary: '#212121',

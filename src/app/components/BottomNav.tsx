@@ -37,7 +37,7 @@ const BottomNav: React.FC = () => {
     return (
         <>
         <nav
-            className={`fixed bottom-0 left-0 w-full md:hidden transition-all border-t border-supportBorder shadow-lg bg-surface ${
+            className={`fixed bottom-0 left-0 w-full md:hidden transition-all border-t border-supportBorder shadow-lg bg-[#212121] text-white ${
                 scrolledDown ? "" : ""
             }`}
         >
@@ -48,7 +48,7 @@ const BottomNav: React.FC = () => {
                 <button
                     onClick={() => router.push("/")}
                     aria-label="Home"
-                    className="p-1 text-black hover:text-brand"
+                    className="p-1 text-white hover:text-brand"
                 >
                     <HomeIcon className="h-7 w-7 icon-hover-brand" />
                 </button>
@@ -57,7 +57,7 @@ const BottomNav: React.FC = () => {
                 <button
                     onClick={() => setShowModal(true)}
                     aria-label="New Post"
-                    className="p-1 text-black hover:text-brand"
+                    className="p-1 text-white hover:text-brand"
                 >
                     <PlusCircleIcon className="h-8 w-8 icon-hover-brand" />
                 </button>
@@ -66,7 +66,7 @@ const BottomNav: React.FC = () => {
                 <button
                     onClick={() => router.push("/notifications")}
                     aria-label="Notifications"
-                    className="relative p-1 text-black hover:text-brand"
+                    className="relative p-1 text-white hover:text-brand"
                 >
                     <BellIcon className="h-7 w-7 icon-hover-brand" />
                     {unreadCount > 0 && (
@@ -80,7 +80,7 @@ const BottomNav: React.FC = () => {
                 <button
                     onClick={() => router.push("/chat")}
                     aria-label="Chat"
-                    className="p-1 text-black hover:text-brand"
+                    className="p-1 text-white hover:text-brand"
                 >
                     <ChatBubbleLeftRightIcon className="h-7 w-7 icon-hover-brand" />
                 </button>
@@ -89,7 +89,7 @@ const BottomNav: React.FC = () => {
                 <button
                     onClick={() => router.push("/classroom")}
                     aria-label="Classroom"
-                    className="p-1 text-black hover:text-brand"
+                    className="p-1 text-white hover:text-brand"
                 >
                     <AcademicCapIcon className="h-7 w-7 icon-hover-brand" />
                 </button>

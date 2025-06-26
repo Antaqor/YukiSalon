@@ -149,7 +149,7 @@ export default function ClassroomPage() {
           {lessons.map((lesson) => (
             <li
               key={lesson.id}
-              className={`flex items-center px-3 py-2 rounded cursor-pointer mb-1 ${lesson.completed ? 'bg-green-50' : 'bg-yellow-50'} ${selected && selected.id === lesson.id ? 'border-l-4 border-cyan-400 bg-cyan-50' : ''}`}
+              className={`flex items-center px-3 py-2 rounded cursor-pointer mb-1 ${lesson.completed ? 'bg-green-50' : 'bg-brand/10'} ${selected && selected.id === lesson.id ? 'border-l-4 border-cyan-400 bg-cyan-50' : ''}`}
               onClick={() => setSelected(lesson)}
             >
               <CheckIcon

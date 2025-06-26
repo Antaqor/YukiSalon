@@ -239,7 +239,7 @@ export default function RegisterMultiStepPage() {
 
     return (
         <div className="min-h-screen bg-white text-black flex items-center justify-center px-4">
-            <div className="w-full max-w-md space-y-6">
+            <div className="w-full max-w-md space-y-6 bg-surface p-6 rounded-lg shadow">
                 {error && <p className="text-red-600">{error}</p>}
                 {success && <p className="text-green-600">{success}</p>}
 

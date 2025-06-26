@@ -126,7 +126,7 @@ export default function PostCard({ post, user, onDelete, onShare }: Props) {
         <div className="flex-1">
           <div className="flex items-center gap-1 text-sm">
             <span className="font-bold text-black">{user.username}</span>
-            {isPro && <FaCheckCircle className="text-yellow-400 w-3 h-3" />}
+            {isPro && <FaCheckCircle className="text-brand w-3 h-3" />}
             <span className="text-gray-400 ml-1 text-xs">
               {formatPostDate(post.createdAt)}
             </span>
