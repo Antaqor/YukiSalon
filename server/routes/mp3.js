@@ -23,6 +23,13 @@ const convertLimiter = rateLimit({
   message: { success: false, error: 'Хэт олон хүсэлт. Түр хүлээнэ үү' }
 });
 
+// Middleware to increase timeout
+router.use((req, res, next) => {
+  req.setTimeout(300000); // 5 minutes timeout
+  res.setTimeout(300000);
+  next();
+});
+
 router.post('/convert', convertLimiter, async (req, res) => {
   try {
     let { videoUrl } = req.body;
@@ -51,28 +58,42 @@ router.post('/convert', convertLimiter, async (req, res) => {
 
     console.log(`Starting conversion: ${videoUrl}`);
     
-    // NEW: Use cookies and user-agent to avoid restrictions
+    // Use cookies and user-agent to avoid restrictions
     const command = `${YT_DLP_PATH} --no-warnings \
-      --cookies-from-browser firefox \
       --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" \
       -x --audio-format mp3 --audio-quality 2 \
       -o "${outputFile}" "${videoUrl}"`;
 
+    // NEW: Execute with timeout handling
+    const timeout = 240000; // 4 minutes
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+    }, timeout);
+
     try {
-      const { stdout, stderr } = await execPromise(command);
+      const { stdout, stderr } = await execPromise(command, {
+        signal: controller.signal,
+        timeout: timeout
+      });
+      
+      clearTimeout(timeoutId);
       console.log('Conversion stdout:', stdout);
       if (stderr) console.warn('Conversion stderr:', stderr);
     } catch (execError) {
+      clearTimeout(timeoutId);
       console.error('FULL EXEC ERROR:', execError);
       
-      // NEW: Handle specific YouTube errors
+      // Handle specific YouTube errors
       let errorMessage = 'Аудио хувиргах боломжгүй (YouTube хязгаарлалт эсвэл алдаа)';
       
-      if (execError.stderr.includes('age restricted')) {
+      if (execError.signal === 'SIGABRT') {
+        errorMessage = 'Хувиргах хугацаа дууссан';
+      } else if (execError.stderr && execError.stderr.includes('age restricted')) {
         errorMessage = 'Энэ видео насны хязгаарлалттай байна';
-      } else if (execError.stderr.includes('copyright')) {
+      } else if (execError.stderr && execError.stderr.includes('copyright')) {
         errorMessage = 'Энэ видео хуулахыг хориглосон';
-      } else if (execError.stderr.includes('unavailable')) {
+      } else if (execError.stderr && execError.stderr.includes('unavailable')) {
         errorMessage = 'Энэ видео одоогоор боломжгүй байна';
       }
       
@@ -113,4 +134,7 @@ router.post('/convert', convertLimiter, async (req, res) => {
   }
 });
 
-// Rest of the code remains same...
+// File download endpoint remains the same
+// Cleanup code remains the same
+
+module.exports = router;
