@@ -1,66 +1,102 @@
 const express = require('express');
+const router = express.Router();
 const { exec } = require('child_process');
 const path = require('path');
 const fs = require('fs');
-const ffmpegPath = require('ffmpeg-static');
+const util = require('util');
+const rateLimit = require('express-rate-limit');
+const cors = require('cors');
 
-const router = express.Router();
+const execPromise = util.promisify(exec);
+router.use(cors());
 
-// Folder to store downloaded MP3 files
-const mp3Dir = path.join(__dirname, '../uploads/mp3');
-if (!fs.existsSync(mp3Dir)) {
-  fs.mkdirSync(mp3Dir, { recursive: true });
+const UPLOADS_DIR = path.join(__dirname, '../uploads/mp3');
+const YT_DLP_PATH = '/usr/local/bin/yt-dlp';
+
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 }
 
-function sanitize(name) {
-  return name.replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '_');
-}
+const convertLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: 'Too many conversion requests, please try again later',
+});
 
-function run(cmd) {
-  return new Promise((resolve, reject) => {
-    exec(cmd, (err, stdout, stderr) => {
-      if (err) return reject(err);
-      if (stderr) console.warn(stderr);
-      resolve(stdout.trim());
+router.post('/convert', convertLimiter, async (req, res) => {
+  try {
+    const { videoUrl } = req.body;
+
+    if (!videoUrl || !videoUrl.includes('youtube.com/watch?v=')) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please provide a valid YouTube URL',
+      });
+    }
+
+    const timestamp = Date.now();
+    const outputFile = path.join(UPLOADS_DIR, `conversion_${timestamp}.mp3`);
+
+    const command = `${YT_DLP_PATH} -x --audio-format mp3 --audio-quality 2 -o "${outputFile}" "${videoUrl}"`;
+    const { stderr } = await execPromise(command);
+
+    if (!fs.existsSync(outputFile)) {
+      console.error('Output file not created:', stderr);
+      return res.status(500).json({
+        success: false,
+        error: 'Conversion failed',
+      });
+    }
+
+    const stats = fs.statSync(outputFile);
+    res.json({
+      success: true,
+      filePath: `/uploads/mp3/${path.basename(outputFile)}`,
+      fileSize: `${(stats.size / (1024 * 1024)).toFixed(2)} MB`,
     });
+  } catch (error) {
+    console.error('Conversion error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+    });
+  }
+});
+
+router.get('/download/:filename', (req, res) => {
+  try {
+    const filename = req.params.filename;
+    if (!filename.endsWith('.mp3')) {
+      return res.status(400).json({ error: 'Invalid file type' });
+    }
+
+    const filePath = path.join(UPLOADS_DIR, filename);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+
+    res.download(filePath);
+  } catch (error) {
+    console.error('Download error:', error);
+    res.status(500).json({ error: 'Download failed' });
+  }
+});
+
+const cleanupOldFiles = (maxAgeHours = 24) => {
+  const now = Date.now();
+  const maxAgeMs = maxAgeHours * 60 * 60 * 1000;
+
+  fs.readdirSync(UPLOADS_DIR).forEach((file) => {
+    const filePath = path.join(UPLOADS_DIR, file);
+    const stats = fs.statSync(filePath);
+    if (now - stats.birthtimeMs > maxAgeMs) {
+      fs.unlinkSync(filePath);
+      console.log(`Cleaned up: ${file}`);
+    }
   });
-}
+};
 
-async function downloadMP3(url) {
-  // Get the video title first to create a clean filename
-  const rawTitle = await run(`yt-dlp --get-title "${url}"`);
-  const title = sanitize(rawTitle);
-  const output = path.join(mp3Dir, `${title}.mp3`);
-  const cmd = `yt-dlp -x --audio-format mp3 --ffmpeg-location "${ffmpegPath}" -o "${output}" "${url}"`;
-  await run(cmd);
-  return output;
-}
-
-router.post('/', async (req, res) => {
-  const { url } = req.body;
-  if (!url) return res.status(400).json({ error: 'Missing url' });
-
-  try {
-    const out = await downloadMP3(url);
-    const filename = path.basename(out);
-    res.json({ success: true, filename });
-  } catch (err) {
-    console.error('MP3 download error:', err);
-    res.status(500).json({ error: err.message || 'Download failed' });
-  }
-});
-
-router.get('/', async (req, res) => {
-  const url = req.query.url;
-  if (!url) return res.status(400).json({ error: 'Missing url' });
-
-  try {
-    const out = await downloadMP3(url);
-    res.download(out, path.basename(out));
-  } catch (err) {
-    console.error('MP3 download error:', err);
-    res.status(500).json({ error: err.message || 'Download failed' });
-  }
-});
+setInterval(cleanupOldFiles, 6 * 60 * 60 * 1000);
+cleanupOldFiles();
 
 module.exports = router;

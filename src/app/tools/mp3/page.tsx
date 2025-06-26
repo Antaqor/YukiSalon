@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { API_URL, UPLOADS_URL } from '../../lib/config';
+import { API_URL, BASE_URL } from '../../lib/config';
 
 export default function Mp3Page() {
   const [url, setUrl] = useState('');
@@ -12,15 +12,15 @@ export default function Mp3Page() {
     setStatus('Downloading...');
     setLink(null);
     try {
-      const res = await fetch(`${API_URL}/mp3`, {
+      const res = await fetch(`${API_URL}/mp3/convert`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ videoUrl: url }),
       });
       const data = await res.json();
       if (res.ok) {
-        setStatus('Saved ' + data.filename);
-        setLink(`${UPLOADS_URL}/mp3/` + data.filename);
+        setStatus('Ready');
+        setLink(BASE_URL + data.filePath);
       } else {
         setStatus(data.error || 'Error');
       }
