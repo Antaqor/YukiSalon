@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import path from 'path';
-const { downloadMP3 } = require(path.join(process.cwd(), 'tools/mp3/downloader'));
+import { downloadMP3 } from '../../../../tools/mp3/downloader';
 
 export async function POST(request: Request) {
   const { url } = await request.json();
