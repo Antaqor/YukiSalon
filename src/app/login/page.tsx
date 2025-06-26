@@ -57,25 +57,25 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-white text-black flex items-center justify-center px-4">
+        <div className="min-h-screen flex items-center justify-center bg-[#171717] text-black dark:text-white px-4 py-8">
             <motion.div
-                whileHover={{ opacity: 0.9 }}
+                whileHover={{ opacity: 0.97 }}
                 transition={{ duration: 0.1, ease: "easeOut" }}
-                className="w-full max-w-md space-y-6 bg-surface p-6 rounded-lg shadow"
+                className="w-full max-w-md space-y-6 bg-white text-black dark:bg-[#1B1B1B] dark:text-white p-8 rounded-xl shadow-lg border border-black/10"
             >
-                <p className="text-center mb-8 text-xl text-brand font-semibold tracking-wider">
-                    AI Social Network – AI мэдлэгийг овсгоотой эзэмш
-                </p>
-                <h1 className="text-3xl font-bold text-black">Нэвтрэх</h1>
-                {error && <p className="text-red-600">{error}</p>}
+                <div className="text-center space-y-1 mb-4">
+                    <h2 className="text-2xl font-bold">AI Social Network</h2>
+                    <p className="text-sm text-gray-500">AI мэдлэгийг овсгоотой эзэмш</p>
+                </div>
+                <h1 className="text-3xl font-bold">Нэвтрэх</h1>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label className="block text-sm font-medium text-black mb-1">
+                        <label className="block text-sm font-medium text-black dark:text-white mb-1">
                             Хэрэглэгчийн нэр
                         </label>
                         <input
                             type="text"
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-black bg-white focus:outline-none focus:ring-2 focus:ring-brand"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black bg-white focus:outline-none focus:ring-2 focus:ring-[#30c9e8] placeholder-gray-400"
                             placeholder="Хэрэглэгчийн нэр"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
@@ -83,20 +83,20 @@ export default function LoginPage() {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-black mb-1">
+                        <label className="block text-sm font-medium text-black dark:text-white mb-1">
                             Нууц үг
                         </label>
                         <input
                             type="password"
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-black bg-white focus:outline-none focus:ring-2 focus:ring-brand"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black bg-white focus:outline-none focus:ring-2 focus:ring-[#30c9e8] placeholder-gray-400"
                             placeholder="Нууц үг"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
                     </div>
-                    <div className="flex items-center justify-between text-sm text-gray-700">
-                        <label className="flex items-center text-black">
+                    <div className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300">
+                        <label className="flex items-center text-black dark:text-white">
                             <input
                                 type="checkbox"
                                 className="h-4 w-4 mr-2"
@@ -113,18 +113,24 @@ export default function LoginPage() {
                             Нууц үгээ мартсан?
                         </button>
                     </div>
+                    {error && <p className="text-red-600 text-sm" role="alert">{error}</p>}
                     <button
                         type="submit"
-                        className="w-full bg-brand text-white py-3 rounded-md font-semibold hover:opacity-90 transition"
+                        className="w-full bg-[#30c9e8] text-white py-3 rounded-lg font-semibold hover:bg-[#28b6d3] active:bg-[#239bb3] transition-colors"
                     >
                         Нэвтрэх
                     </button>
                 </form>
+                <div className="flex items-center my-2">
+                    <div className="flex-grow border-t border-gray-300" />
+                    <span className="mx-2 text-gray-500 text-sm">Эсвэл</span>
+                    <div className="flex-grow border-t border-gray-300" />
+                </div>
                 <button
                     onClick={() => router.push("/register")}
-                    className="mt-6 block text-sm text-gray-500 underline hover:text-brand"
+                    className="block w-full text-sm font-medium text-brand underline hover:text-[#28b6d3]"
                 >
-                    Бүртгүүлэх
+                    Шинээр бүртгүүлэх
                 </button>
             </motion.div>
         </div>
