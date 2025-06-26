@@ -3,6 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import { downloadMP3 } from '../../../../tools/mp3/downloader';
 
+export const runtime = 'nodejs';
+
 export async function POST(request: Request) {
   const { url } = await request.json();
   if (!url) {
