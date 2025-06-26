@@ -93,5 +93,3 @@ npm run download-mp3 -- <youtube-ийн-url>
 ```
 
 Үүний үр дүнд MP3 файл `tools/mp3` хавтсанд үүснэ.
-
-Мөн хялбар формоор татахыг хүсвэл [http://localhost:3000/tools/mp3](http://localhost:3000/tools/mp3) хуудаснаас линкээ оруулж татаж болно.
