@@ -33,6 +33,7 @@ io.on('connection', socket => {
     try {
       const msg = await ChatMessage.create({ room, text, sender });
       const full = await msg.populate('sender', 'username profilePicture');
+      await Chat.findByIdAndUpdate(room, { updatedAt: Date.now() });
       io.to(room).emit('chat-message', full);
     } catch (err) {
       console.error('Chat message error', err);

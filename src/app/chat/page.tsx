@@ -25,8 +25,8 @@ export default function ChatPage() {
           return {
             id: c._id,
             user: { id: other._id, name: other.username, avatar: other.profilePicture },
-            lastMessage: "",
-            timestamp: c.updatedAt,
+            lastMessage: c.lastMessage || "",
+            timestamp: c.lastMessageAt || c.updatedAt,
             unread: 0,
           };
         });
@@ -46,8 +46,8 @@ export default function ChatPage() {
         const conv: Conversation = {
           id: chat._id,
           user: { id: other._id, name: other.username, avatar: other.profilePicture },
-          lastMessage: "",
-          timestamp: chat.updatedAt,
+          lastMessage: chat.lastMessage || "",
+          timestamp: chat.lastMessageAt || chat.updatedAt,
           unread: 0,
         };
         setActive(chat._id);

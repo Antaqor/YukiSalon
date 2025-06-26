@@ -12,8 +12,23 @@ router.get('/', authenticateToken, async (req, res) => {
       .populate({
         path: 'participants',
         select: 'username profilePicture',
-      });
-    res.json(chats);
+      })
+      .lean();
+
+    const withLast = await Promise.all(
+      chats.map(async (c) => {
+        const last = await ChatMessage.findOne({ room: c._id })
+          .sort({ createdAt: -1 })
+          .lean();
+        return {
+          ...c,
+          lastMessage: last ? last.text : '',
+          lastMessageAt: last ? last.createdAt : c.updatedAt,
+        };
+      })
+    );
+
+    res.json(withLast);
   } catch (err) {
     console.error('Chat list error', err);
     res.status(500).json({ error: 'Failed to fetch chats' });
@@ -33,7 +48,14 @@ router.post('/with/:userId', authenticateToken, async (req, res) => {
       path: 'participants',
       select: 'username profilePicture',
     });
-    res.json(chat);
+    const last = await ChatMessage.findOne({ room: chat._id })
+      .sort({ createdAt: -1 })
+      .lean();
+    res.json({
+      ...chat.toObject(),
+      lastMessage: last ? last.text : '',
+      lastMessageAt: last ? last.createdAt : chat.updatedAt,
+    });
   } catch (err) {
     console.error('Chat create error', err);
     res.status(500).json({ error: 'Failed to create chat' });
@@ -61,6 +83,7 @@ router.post('/:chatId/messages', authenticateToken, async (req, res) => {
     const { text } = req.body;
     const msg = await ChatMessage.create({ room: chatId, text, sender: req.user._id });
     const full = await msg.populate('sender', 'username profilePicture');
+    await Chat.findByIdAndUpdate(chatId, { updatedAt: Date.now() });
     res.json(full);
   } catch (err) {
     console.error('Chat send error', err);

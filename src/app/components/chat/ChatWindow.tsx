@@ -52,13 +52,19 @@ export default function ChatWindow({ chatId, user, onBack }: ChatWindowProps) {
           </button>
         )}
         <Link href={`/profile/${user.id}`} target="_blank" className="mr-2">
-          <Image
-            src={user.avatar || "/img/default-avatar.png"}
-            alt={user.name}
-            width={32}
-            height={32}
-            className="rounded-full"
-          />
+          {user.avatar ? (
+            <Image
+              src={user.avatar}
+              alt={user.name}
+              width={32}
+              height={32}
+              className="rounded-full"
+            />
+          ) : (
+            <div className="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center text-sm">
+              {user.name.charAt(0).toUpperCase()}
+            </div>
+          )}
         </Link>
         <span className="font-medium mr-2">{user.name}</span>
         {user.online && <span className="w-2 h-2 rounded-full bg-green-500" />}
@@ -68,6 +74,9 @@ export default function ChatWindow({ chatId, user, onBack }: ChatWindowProps) {
           <div className="flex justify-center py-4">
             <div className="w-6 h-6 border-2 border-brand border-t-transparent rounded-full animate-spin" />
           </div>
+        )}
+        {!loading && messages.length === 0 && (
+          <div className="text-center text-gray-500 py-4">No messages yet</div>
         )}
         {!loading && messages.map((msg: ChatMessage) => (
           <div
