@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { BASE_URL } from "../lib/config";
@@ -230,26 +231,28 @@ export default function RegisterMultiStepPage() {
 
     // ---------- Utility: conditional className for inputs/selects ----------
     const getInputClass = (fieldName: string) => {
-        return `w-full rounded-md px-3 py-2 text-black bg-white focus:outline-none focus:ring-2 ${
+        return `w-full border rounded-lg px-4 py-3 text-white bg-black placeholder-gray-500 focus:outline-none focus:ring-2 ${
             fieldErrors[fieldName]
-                ? "border border-red-500 focus:ring-red-500"
-                : "border border-gray-300 focus:ring-brand"
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-[#30c9e8]"
         }`;
     };
 
     return (
-        <div className="min-h-screen bg-white text-black flex items-center justify-center px-4">
-            <div className="w-full max-w-md space-y-6 bg-surface p-6 rounded-lg shadow">
-                {error && <p className="text-red-600">{error}</p>}
-                {success && <p className="text-green-600">{success}</p>}
+        <div className="min-h-screen flex items-center justify-center bg-[#171717] text-black dark:text-white px-4 py-8">
+            <motion.div
+                whileHover={{ opacity: 0.97 }}
+                transition={{ duration: 0.1, ease: "easeOut" }}
+                className="w-full max-w-md space-y-6 bg-white text-black dark:bg-[#1B1B1B] dark:text-white p-8 rounded-xl shadow-lg border border-black/10"
+            >
 
                 {step === 1 && (
                     <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
-                        <h1 className="text-3xl font-bold text-black">Create your account</h1>
+                        <h1 className="text-3xl font-bold text-[#30c9e8]">Create your account</h1>
 
                         {/* USERNAME */}
                         <div>
-                            <label className="block font-medium text-black mb-1">Username</label>
+                            <label className="block text-sm font-medium text-black dark:text-white mb-1">Username</label>
                             <input
                                 type="text"
                                 className={getInputClass("username")}
@@ -264,7 +267,7 @@ export default function RegisterMultiStepPage() {
 
                         {/* PHONE NUMBER */}
                         <div>
-                            <label className="block font-medium text-black mb-1">Phone number</label>
+                            <label className="block text-sm font-medium text-black dark:text-white mb-1">Phone number</label>
                             <input
                                 type="text"
                                 className={getInputClass("phoneNumber")}
@@ -279,60 +282,93 @@ export default function RegisterMultiStepPage() {
 
                         {/* DATE OF BIRTH */}
                         <div>
-                            <label className="block font-medium text-black mb-1">Date of birth</label>
+                            <label className="block text-sm font-medium text-black dark:text-white mb-1">Date of birth</label>
                             <p className="text-xs text-gray-500 mb-2">
                                 This will not be shown publicly. Confirm your own age.
                             </p>
                             <div className="flex space-x-2">
-                                <select
-                                    className={getInputClass("birthMonth")}
-                                    value={birthMonth}
-                                    onChange={(e) => setBirthMonth(e.target.value)}
-                                >
-                                    <option value="">Month</option>
-                                    {[
-                                        "January",
-                                        "February",
-                                        "March",
-                                        "April",
-                                        "May",
-                                        "June",
-                                        "July",
-                                        "August",
-                                        "September",
-                                        "October",
-                                        "November",
-                                        "December",
-                                    ].map((m) => (
-                                        <option key={m} value={m}>
-                                            {m}
-                                        </option>
-                                    ))}
-                                </select>
-                                <select
-                                    className={getInputClass("birthDay")}
-                                    value={birthDay}
-                                    onChange={(e) => setBirthDay(e.target.value)}
-                                >
-                                    <option value="">Day</option>
-                                    {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
-                                        <option key={d} value={d}>
-                                            {d}
-                                        </option>
-                                    ))}
-                                </select>
-                                <select
-                                    className={getInputClass("birthYear")}
-                                    value={birthYear}
-                                    onChange={(e) => setBirthYear(e.target.value)}
-                                >
-                                    <option value="">Year</option>
-                                    {Array.from({ length: 70 }, (_, i) => 2025 - i).map((y) => (
-                                        <option key={y} value={y}>
-                                            {y}
-                                        </option>
-                                    ))}
-                                </select>
+                                <div className="relative flex-1">
+                                    <select
+                                        className={`${getInputClass("birthMonth")} appearance-none pr-8`}
+                                        value={birthMonth}
+                                        onChange={(e) => setBirthMonth(e.target.value)}
+                                    >
+                                        <option value="">Month</option>
+                                        {[
+                                            "January",
+                                            "February",
+                                            "March",
+                                            "April",
+                                            "May",
+                                            "June",
+                                            "July",
+                                            "August",
+                                            "September",
+                                            "October",
+                                            "November",
+                                            "December",
+                                        ].map((m) => (
+                                            <option key={m} value={m}>
+                                                {m}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <svg
+                                        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                                <div className="relative flex-1">
+                                    <select
+                                        className={`${getInputClass("birthDay")} appearance-none pr-8`}
+                                        value={birthDay}
+                                        onChange={(e) => setBirthDay(e.target.value)}
+                                    >
+                                        <option value="">Day</option>
+                                        {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
+                                            <option key={d} value={d}>
+                                                {d}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <svg
+                                        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                                <div className="relative flex-1">
+                                    <select
+                                        className={`${getInputClass("birthYear")} appearance-none pr-8`}
+                                        value={birthYear}
+                                        onChange={(e) => setBirthYear(e.target.value)}
+                                    >
+                                        <option value="">Year</option>
+                                        {Array.from({ length: 70 }, (_, i) => 2025 - i).map((y) => (
+                                            <option key={y} value={y}>
+                                                {y}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <svg
+                                        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
                             </div>
                             {(fieldErrors.birthMonth ||
                                 fieldErrors.birthDay ||
@@ -343,10 +379,13 @@ export default function RegisterMultiStepPage() {
                             )}
                         </div>
 
+                        {error && (
+                            <p className="text-[#30c9e8] text-sm text-center">{error}</p>
+                        )}
                         <button
                             type="button"
                             onClick={handleNext}
-                            className="w-full bg-brand text-white font-semibold py-3 rounded-md hover:opacity-90 transition"
+                            className="w-full bg-[#30c9e8] text-white font-semibold py-3 rounded-lg hover:bg-[#28b6d3] active:bg-[#239bb3] transition-colors"
                         >
                             Next
                         </button>
@@ -355,11 +394,11 @@ export default function RegisterMultiStepPage() {
 
                 {step === 2 && (
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        <h1 className="text-3xl font-bold text-black">Additional Details</h1>
+                        <h1 className="text-3xl font-bold text-[#30c9e8]">Additional Details</h1>
 
                         {/* LOGIN PASSWORD */}
                         <div>
-                            <label className="block text-sm font-medium text-brand mb-1">
+                            <label className="block text-sm font-medium text-black dark:text-white mb-1">
                                 Login Password
                             </label>
                             <input
@@ -376,7 +415,7 @@ export default function RegisterMultiStepPage() {
 
                         {/* GENDER */}
                         <div>
-                            <label className="block text-sm font-medium text-black mb-1">Хүйс</label>
+                            <label className="block text-sm font-medium text-black dark:text-white mb-1">Хүйс</label>
                             <select
                                 className={getInputClass("gender")}
                                 value={gender}
@@ -393,7 +432,7 @@ export default function RegisterMultiStepPage() {
 
                         {/* LOCATION */}
                         <div>
-                            <label className="block text-sm font-medium text-black mb-1">
+                            <label className="block text-sm font-medium text-black dark:text-white mb-1">
                                 Байршил
                             </label>
                             <input
@@ -410,7 +449,7 @@ export default function RegisterMultiStepPage() {
 
                         {/* PROFILE PICTURE + LOCAL SIZE CHECK */}
                         <div>
-                            <label className="block text-sm font-medium text-black mb-1">
+                            <label className="block text-sm font-medium text-black dark:text-white mb-1">
                                 Профайл зураг
                             </label>
                             <input
@@ -426,25 +465,33 @@ export default function RegisterMultiStepPage() {
                             )}
                         </div>
 
-                        {/* BUTTONS */}
+                        {error && (
+                            <p className="text-[#30c9e8] text-sm text-center mb-2">{error}</p>
+                        )}
                         <div className="flex space-x-4">
                             <button
                                 type="button"
                                 onClick={() => setStep(1)}
-                                className="flex-1 bg-gray-200 text-black py-3 rounded-md font-semibold hover:bg-gray-300 transition"
+                                className="flex-1 bg-gray-200 text-black py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
                             >
                                 Буцах
                             </button>
                             <button
                                 type="submit"
-                                className="flex-1 bg-brand text-white py-3 rounded-md font-semibold hover:opacity-90 transition"
+                                className="flex-1 bg-[#30c9e8] text-white py-3 rounded-lg font-semibold hover:bg-[#28b6d3] active:bg-[#239bb3] transition-colors"
                             >
                                 Бүртгүүлэх
                             </button>
                         </div>
                     </form>
                 )}
-            </div>
+            </motion.div>
+            <p className="text-center mt-4 text-sm">
+                Already have an account?{' '}
+                <a href="/login" className="text-[#30c9e8] underline hover:text-[#28b6d3]">
+                    Login
+                </a>
+            </p>
         </div>
     );
 }
