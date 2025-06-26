@@ -195,6 +195,7 @@ export default function PostCard({ post, user, onDelete, onShare }: Props) {
           </div>
           <div className="grid grid-cols-3 items-center text-gray-500 text-xs mt-3">
             <motion.button
+              type="button"
               whileTap={{ scale: 0.8 }}
               onClick={handleLike}
               className="flex items-center justify-center gap-1 hover:text-brand"
@@ -211,6 +212,7 @@ export default function PostCard({ post, user, onDelete, onShare }: Props) {
               {post.comments?.length || 0} Comments
             </span>
             <motion.button
+              type="button"
               whileTap={{ scale: 0.8 }}
               onClick={handleShare}
               className="flex items-center justify-center gap-1 hover:text-brand"

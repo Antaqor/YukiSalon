@@ -9,7 +9,7 @@ export default function NewPostPage() {
   return (
     <div className="min-h-screen bg-white flex items-start justify-center p-4">
       <div className="w-full max-w-xl">
-        <PostInput onPost={() => router.push("/")} />
+        <PostInput onPost={() => router.replace("/")} />
       </div>
     </div>
   );
