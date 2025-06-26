@@ -1,3 +1,4 @@
+// download.js
 const ytdl = require('ytdl-core');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('ffmpeg-static');
@@ -11,17 +12,23 @@ async function main() {
   }
 
   try {
+    // Get video info for a safe filename
     const info = await ytdl.getInfo(url);
     const title = info.videoDetails.title
-      .replace(/[\\/:*?"<>|]/g, '')
-      .replace(/\s+/g, '_');
+      .replace(/[\\/:*?"<>|]/g, '')  // scrub illegal chars
+      .replace(/\s+/g, '_')          // spaces → underscores
+      .substring(0, 100);            // keep filename sane
+
     const output = path.join(__dirname, `${title}.mp3`);
 
+    // Download + transcode in one pass
     await new Promise((resolve, reject) => {
-      ffmpeg(ytdl(url, { filter: 'audioonly', quality: 'highestaudio' }))
+      ffmpeg(
+        ytdl(url, { filter: 'audioonly', quality: 'highestaudio' })
+      )
         .setFfmpegPath(ffmpegPath)
-        .format('mp3')
         .audioBitrate(128)
+        .format('mp3')
         .on('error', reject)
         .on('end', resolve)
         .save(output);
