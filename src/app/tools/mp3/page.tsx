@@ -1,4 +1,3 @@
-// Mp3Page.tsx
 'use client';
 import { useState } from 'react';
 
@@ -28,7 +27,14 @@ export default function Mp3Page() {
       setStatus('Бэлэн боллоо!');
       setDownloadLink(`/api/mp3/download/${data.filename}`);
     } catch (err) {
-      setStatus(err.message || 'Алдаа гарлаа');
+      // Proper error type handling
+      if (err instanceof Error) {
+        setStatus(err.message);
+      } else if (typeof err === 'string') {
+        setStatus(err);
+      } else {
+        setStatus('Алдаа гарлаа');
+      }
       console.error('Conversion error:', err);
     }
   };
