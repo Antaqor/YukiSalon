@@ -3,11 +3,11 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-    HomeIcon,
-    BellIcon,
-    AcademicCapIcon,
-    ChatBubbleLeftRightIcon,
-} from "@heroicons/react/24/outline";
+  TbHome,
+  TbBell,
+  TbMessageCircle,
+  TbBook2,
+} from "react-icons/tb";
 import { useNotifications } from "../context/NotificationContext";
 
 const BottomNav: React.FC = () => {
@@ -34,30 +34,27 @@ const BottomNav: React.FC = () => {
     return (
         <>
         <nav
-            className={`fixed bottom-0 left-0 w-full md:hidden transition-all border-t border-supportBorder shadow-lg bg-[#212121] text-white ${
+            className={`fixed bottom-0 left-0 w-full md:hidden transition-all border-t border-supportBorder bg-[#171717] text-white ${
                 scrolledDown ? "" : ""
             }`}
         >
             <div
                 className="flex justify-around items-center py-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]"
             >
-                {/* HOME */}
                 <button
                     onClick={() => router.push("/")}
                     aria-label="Home"
-                    className="p-1 text-white hover:text-brand"
+                    className="p-1 text-white/60 hover:text-[#30c9e8]"
                 >
-                    <HomeIcon className="h-7 w-7 icon-hover-brand" />
+                    <TbHome size={24} />
                 </button>
 
-
-                {/* NOTIFICATIONS */}
                 <button
                     onClick={() => router.push("/notifications")}
                     aria-label="Notifications"
-                    className="relative p-1 text-white hover:text-brand"
+                    className="relative p-1 text-white/60 hover:text-[#30c9e8]"
                 >
-                    <BellIcon className="h-7 w-7 icon-hover-brand" />
+                    <TbBell size={24} />
                     {unreadCount > 0 && (
                         <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
                             {unreadCount}
@@ -65,22 +62,20 @@ const BottomNav: React.FC = () => {
                     )}
                 </button>
 
-                {/* CHAT */}
                 <button
                     onClick={() => router.push("/chat")}
                     aria-label="Chat"
-                    className="p-1 text-white hover:text-brand"
+                    className="p-1 text-white/60 hover:text-[#30c9e8]"
                 >
-                    <ChatBubbleLeftRightIcon className="h-7 w-7 icon-hover-brand" />
+                    <TbMessageCircle size={24} />
                 </button>
 
-                {/* CLASSROOM */}
                 <button
                     onClick={() => router.push("/classroom")}
                     aria-label="Classroom"
-                    className="p-1 text-white hover:text-brand"
+                    className="p-1 text-white/60 hover:text-[#30c9e8]"
                 >
-                    <AcademicCapIcon className="h-7 w-7 icon-hover-brand" />
+                    <TbBook2 size={24} />
                 </button>
 
             </div>
