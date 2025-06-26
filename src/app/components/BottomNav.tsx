@@ -9,13 +9,11 @@ import {
     AcademicCapIcon,
     ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
-import AddPostModal from "./AddPostModal";
 import { useNotifications } from "../context/NotificationContext";
 
 const BottomNav: React.FC = () => {
     const router = useRouter();
     const [scrolledDown, setScrolledDown] = useState(false);
-    const [showModal, setShowModal] = useState(false);
     const { unreadCount } = useNotifications();
 
     useEffect(() => {
@@ -55,7 +53,7 @@ const BottomNav: React.FC = () => {
 
                 {/* NEW POST */}
                 <button
-                    onClick={() => setShowModal(true)}
+                    onClick={() => router.push('/new-post')}
                     aria-label="New Post"
                     className="p-1 text-white hover:text-brand"
                 >
@@ -96,15 +94,6 @@ const BottomNav: React.FC = () => {
 
             </div>
         </nav>
-        {showModal && (
-            <AddPostModal
-                onClose={() => setShowModal(false)}
-                onPost={() => {
-                    setShowModal(false);
-                    router.refresh();
-                }}
-            />
-        )}
         </>
     );
 };

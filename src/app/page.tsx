@@ -20,6 +20,7 @@ import {
   ChatBubbleOvalLeftIcon,
   ArrowUpTrayIcon,
   ArrowPathIcon,
+  PlusCircleIcon,
 } from "@heroicons/react/24/outline";
 import LoadingSpinner from "./components/LoadingSpinner";
 import PostInput from "./components/PostInput";
@@ -404,7 +405,21 @@ export default function HomePage() {
           ) : (
             <>
               {/* Create post */}
-              {loggedIn && <PostInput onPost={refreshPosts} />}
+              {loggedIn && (
+                <>
+                  <PostInput onPost={refreshPosts} />
+                  {/* Mobile sticky bar */}
+                  <div className="md:hidden sticky top-[68px] z-30 bg-white border-b border-gray-200">
+                    <button
+                      onClick={() => router.push('/new-post')}
+                      className="flex items-center gap-2 w-full p-3"
+                    >
+                      <PlusCircleIcon className="w-6 h-6 text-brand" />
+                      <span className="font-semibold text-brand">New Post</span>
+                    </button>
+                  </div>
+                </>
+              )}
 
               <div className="flex justify-end p-4">
                 <button

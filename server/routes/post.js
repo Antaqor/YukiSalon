@@ -175,8 +175,11 @@ router.get("/", async (req, res) => {
 // ---------------------------------------------------------------------------
 router.post("/", authenticateToken, upload.single("image"), async (req, res) => {
   try {
-    const { content } = req.body;
-    if (!content) return res.status(400).json({ error: "Content required" });
+    const { content = "" } = req.body;
+    if (!content.trim() && !req.file)
+      return res
+        .status(400)
+        .json({ error: "Content or image required" });
     if (content.length > 500)
       return res.status(400).json({ error: "Content exceeds 500 characters" });
 
