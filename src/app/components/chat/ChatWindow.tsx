@@ -29,7 +29,7 @@ export default function ChatWindow({ chatId, user, onBack }: ChatWindowProps) {
 
   const handleSend = () => {
     if (text.trim()) {
-      sendMessage(text, me);
+      sendMessage(text);
       setText("");
     }
   };

@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
-import { io, Socket } from "socket.io-client";
-import { CHAT_URL, API_URL } from "../lib/config";
+import { Socket } from "socket.io-client";
+import { API_URL } from "../lib/config";
+import { getSocket } from "./socket";
 
 export interface ChatMessage {
   _id: string;
@@ -11,7 +12,6 @@ export interface ChatMessage {
   sender: { _id: string; username: string; profilePicture?: string };
 }
 
-let socket: Socket | null = null;
 let typingTimeout: ReturnType<typeof setTimeout> | null = null;
 
 export default function useChat(room: string) {
@@ -27,13 +27,11 @@ export default function useChat(room: string) {
       .then((data: ChatMessage[]) => setMessages(data))
       .catch(err => console.error("Fetch messages error", err))
       .finally(() => setLoading(false));
+    fetch(`${API_URL}/chat/${room}/read`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } }).catch(() => {});
   }, [room]);
 
   useEffect(() => {
-    if (!socket) {
-      socket = io(CHAT_URL, { autoConnect: true });
-    }
-
+    const socket = getSocket();
     socket.emit("join", room);
     const handler = (msg: ChatMessage) => {
       if (msg.room === room) {
@@ -42,12 +40,12 @@ export default function useChat(room: string) {
     };
     socket.on("chat-message", handler);
     return () => {
-      socket?.off("chat-message", handler);
+      socket.off("chat-message", handler);
     };
   }, [room]);
 
   useEffect(() => {
-    if (!socket) return;
+    const socket = getSocket();
     const handleTyping = () => {
       setTyping(true);
       if (typingTimeout) clearTimeout(typingTimeout);
@@ -55,17 +53,27 @@ export default function useChat(room: string) {
     };
     socket.on("typing", handleTyping);
     return () => {
-      socket?.off("typing", handleTyping);
+      socket.off("typing", handleTyping);
     };
   }, [room]);
 
-  const sendMessage = (text: string, sender: string) => {
-    if (!socket) return;
-    socket.emit("chat-message", { room, text, sender });
+  const sendMessage = async (text: string) => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") || "" : "";
+    try {
+      const res = await fetch(`${API_URL}/chat/${room}/messages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ text }),
+      });
+      const msg: ChatMessage = await res.json();
+      setMessages(m => [...m, msg]);
+    } catch (err) {
+      console.error("Send message error", err);
+    }
   };
 
   const startTyping = (sender: string) => {
-    if (!socket) return;
+    const socket = getSocket();
     socket.emit("typing", { room, sender });
   };
 
