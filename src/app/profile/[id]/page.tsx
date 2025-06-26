@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
 import { FaCheckCircle } from "react-icons/fa";
-import PostCard from "../../components/PostCard";
+import HomeFeedPost from "../../components/HomeFeedPost";
 import axios from "axios";
 import { BASE_URL } from "../../lib/config";
 import { getImageUrl } from "../../lib/getImageUrl";
@@ -172,11 +172,10 @@ export default function PublicProfilePage() {
                 )}
                 <div className="space-y-4">
                     {userPosts.map((post) => (
-                        <PostCard
+                        <HomeFeedPost
                             key={post._id}
                             post={post}
-                            user={userData}
-                            onShare={handleShareAdd}
+                            onShareAdd={handleShareAdd}
                         />
                     ))}
                 </div>
