@@ -112,8 +112,8 @@ export default function NextGenPostInput({ onPost }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className={`relative bg-white dark:bg-primary rounded-xl transition-shadow p-4 flex gap-3 max-w-xl w-full mx-auto mt-0 ${
-        focused ? "shadow-lg ring-2 ring-brand" : "shadow"
+      className={`relative bg-white dark:bg-primary flex gap-3 items-start w-full p-2 border-l border-t transition-colors ${
+        focused ? "border-[#1aaeca]" : "border-[#30c9e8]"
       }`}
     >
       {user?.profilePicture ? (
@@ -159,11 +159,17 @@ export default function NextGenPostInput({ onPost }: Props) {
         )}
         <div
           className={`flex items-center justify-between mt-2 transition-all duration-200 ${
-            focused || content || imageFile ? "opacity-100" : "opacity-0 pointer-events-none"
+            focused || content || imageFile
+              ? "opacity-100"
+              : "opacity-0 pointer-events-none"
           }`}
         >
           <div className="flex gap-3 text-gray-400">
-            <button type="button" onClick={triggerFileInput} aria-label="Add image">
+            <button
+              type="button"
+              onClick={triggerFileInput}
+              aria-label="Add image"
+            >
               <PhotoIcon className="w-6 h-6 icon-hover-brand" />
             </button>
             <button type="button" aria-label="Add poll">
@@ -171,15 +177,14 @@ export default function NextGenPostInput({ onPost }: Props) {
             </button>
           </div>
           <div className="hidden md:flex items-center gap-2">
-            <span className="text-xs text-gray-400">
-              {content.length}/{MAX_LENGTH}
-            </span>
             <button
               type="submit"
               onClick={() => setRipple(true)}
               disabled={disabled}
               className={`relative overflow-hidden font-bold rounded-full px-6 py-2 transition-all active:scale-95 focus:outline-none ${
-                disabled ? "bg-gray-300 cursor-not-allowed" : "bg-brand text-white ripple-effect"
+                disabled
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-brand text-white ripple-effect"
               } ${ripple ? "ripple-active" : ""}`}
             >
               Post
@@ -187,6 +192,11 @@ export default function NextGenPostInput({ onPost }: Props) {
           </div>
         </div>
       </div>
+      {content && (
+        <div className="w-full text-right text-xs text-gray-400 pr-2 mt-1">
+          {content.length}/{MAX_LENGTH}
+        </div>
+      )}
       {/* Floating Post button for mobile */}
       <button
         type="button"
@@ -206,4 +216,3 @@ export default function NextGenPostInput({ onPost }: Props) {
     </form>
   );
 }
-
