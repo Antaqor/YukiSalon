@@ -64,6 +64,10 @@ export default function NextGenPostInput({ onPost }: Props) {
       setImageFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
       onPost?.(data.post);
+      // Reload the page to ensure the newsfeed refreshes
+      if (typeof window !== "undefined") {
+        window.location.reload();
+      }
     } catch (err) {
       console.error("Create post error", err);
     } finally {
@@ -108,7 +112,7 @@ export default function NextGenPostInput({ onPost }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className={`relative bg-white dark:bg-primary rounded-xl border transition-shadow p-4 flex gap-3 max-w-xl w-full mx-auto ${
+      className={`relative bg-white dark:bg-primary rounded-xl transition-shadow p-4 flex gap-3 max-w-xl w-full mx-auto mt-0 ${
         focused ? "shadow-lg ring-2 ring-brand" : "shadow"
       }`}
     >
