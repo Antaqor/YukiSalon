@@ -22,7 +22,7 @@ import {
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import LoadingSpinner from "./components/LoadingSpinner";
-import PostInput from "./components/PostInput";
+import NextGenPostInput from "./components/NextGenPostInput";
 import { motion } from "framer-motion";
 import { formatPostDate } from "./lib/formatDate";
 import useLiveFeed from "./hooks/useLiveFeed";
@@ -411,7 +411,7 @@ export default function HomePage() {
             <>
               {/* Create post */}
               {loggedIn && (
-                <PostInput onPost={addNewPost} />
+                <NextGenPostInput onPost={addNewPost} />
               )}
 
               <div className="flex justify-end p-4">
