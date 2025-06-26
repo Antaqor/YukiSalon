@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaCheckCircle } from "react-icons/fa";
 import { CameraIcon } from "@heroicons/react/24/solid";
-import PostCard from "../components/PostCard";
+import HomeFeedPost from "../components/HomeFeedPost";
 import { BASE_URL } from "../lib/config";
 import { getImageUrl } from "../lib/getImageUrl";
 import type { Post } from "@/types/Post";
@@ -257,12 +257,11 @@ export default function MyOwnProfilePage() {
                 ) : userPosts.length > 0 ? (
                     <div className="space-y-4">
                         {userPosts.map((post) => (
-                            <PostCard
+                            <HomeFeedPost
                                 key={post._id}
                                 post={post}
-                                user={userData}
                                 onDelete={handleDelete}
-                                onShare={handleShareAdd}
+                                onShareAdd={handleShareAdd}
                             />
                         ))}
                     </div>
