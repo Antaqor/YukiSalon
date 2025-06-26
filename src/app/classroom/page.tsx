@@ -1,22 +1,34 @@
 'use client';
 
+/*
+  Permission check: we treat the user with username "Antaqor" as the admin.
+  The `isAdmin` variable below handles this. To support multiple admins later,
+  fetch roles from your backend and check against an array of admin usernames.
+*/
+
 import { useState, useEffect } from 'react';
-import { CheckIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import { BookOpenIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
+import axios from 'axios';
+import {
+  Bars3Icon,
+  XMarkIcon,
+  PencilSquareIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline';
+import { CheckIcon, BookOpenIcon } from '@heroicons/react/24/solid';
 import { useAuth } from '../context/AuthContext';
+import { BASE_URL } from '../lib/config';
 
 interface Lesson {
-  id: number;
+  _id: string;
   url: string;
   title: string;
   description?: string;
-  duration?: string;
-  completed: boolean;
+  completed?: boolean;
+  author?: { username: string };
 }
 
-
 function extractVideoId(url: string) {
-  const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([A-Za-z0-9_-]{11})/;
+  const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?|shorts)|.*[?&]v=)|youtu\.be\/)([A-Za-z0-9_-]{11})/;
   const match = url.match(regex);
   return match ? match[1] : '';
 }
@@ -30,86 +42,89 @@ export default function ClassroomPage() {
   const [newTitle, setNewTitle] = useState('');
   const [newUrl, setNewUrl] = useState('');
   const [newDesc, setNewDesc] = useState('');
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editing, setEditing] = useState<Lesson | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // Fetch lessons
   useEffect(() => {
-    const stored = localStorage.getItem('lessons');
-    if (stored) {
+    const fetchLessons = async () => {
       try {
-        const parsed = JSON.parse(stored) as Lesson[];
-        setLessons(parsed);
-        if (parsed.length) setSelected(parsed[0]);
-      } catch {}
-    }
+        const { data } = await axios.get<Lesson[]>(`${BASE_URL}/api/lessons`);
+        const withCompletion = data.map((l) => ({ ...l, completed: false }));
+        setLessons(withCompletion);
+        if (withCompletion.length) setSelected(withCompletion[0]);
+      } catch (err) {
+        console.error('Lesson fetch error:', err);
+      }
+    };
+    fetchLessons();
   }, []);
 
-  useEffect(() => {
-    if (lessons.length) {
-      localStorage.setItem('lessons', JSON.stringify(lessons));
-    }
-  }, [lessons]);
+  const validForm = newUrl.trim() && newTitle.trim() && newDesc.trim();
+  const progress = (['url', 'title', 'desc'] as const).reduce((acc, field) => {
+    if (field === 'url' && newUrl.trim()) return acc + 1;
+    if (field === 'title' && newTitle.trim()) return acc + 1;
+    if (field === 'desc' && newDesc.trim()) return acc + 1;
+    return acc;
+  }, 0);
+  const progressPct = (progress / 3) * 100;
 
-  const addLesson = () => {
-    const id = Date.now();
-    const newLesson: Lesson = {
-      id,
-      url: newUrl,
-      title: newTitle,
-      description: newDesc,
-      completed: false,
-    };
-    setLessons((prev) => [...prev, newLesson]);
-    setNewTitle('');
-    setNewUrl('');
-    setNewDesc('');
-    if (!selected) setSelected(newLesson);
-  };
-
-  const toggleCompleted = (id: number) => {
-    setLessons((prev) =>
-      prev.map((l) => (l.id === id ? { ...l, completed: !l.completed } : l))
-    );
-  };
-
-  const startEditLesson = (lesson: Lesson) => {
-    setEditingId(lesson.id);
-    setNewTitle(lesson.title);
-    setNewUrl(lesson.url);
-    setNewDesc(lesson.description || '');
-  };
-
-  const saveLesson = () => {
-    if (editingId === null) return;
-    setLessons((prev) =>
-      prev.map((l) =>
-        l.id === editingId ? { ...l, title: newTitle, url: newUrl, description: newDesc } : l
-      )
-    );
-    if (selected && selected.id === editingId) {
-      setSelected({ ...selected, title: newTitle, url: newUrl, description: newDesc });
-    }
-    setEditingId(null);
-    setNewTitle('');
-    setNewUrl('');
-    setNewDesc('');
-  };
-
-  const deleteLesson = (id: number) => {
-    setLessons((prev) => prev.filter((l) => l.id !== id));
-    if (selected && selected.id === id) {
-      setSelected(null);
+  const addLesson = async () => {
+    if (!user?.accessToken || !validForm) return;
+    try {
+      const { data } = await axios.post<Lesson>(
+        `${BASE_URL}/api/lessons`,
+        { url: newUrl, title: newTitle, description: newDesc },
+        { headers: { Authorization: `Bearer ${user.accessToken}` } }
+      );
+      setLessons((prev) => [...prev, { ...data, completed: false }]);
+      setNewTitle('');
+      setNewUrl('');
+      setNewDesc('');
+      setSelected(data);
+    } catch (err) {
+      console.error('Add lesson error:', err);
     }
   };
 
-  const progress = lessons.length
-    ? Math.round(
-        (lessons.filter((l) => l.completed).length / lessons.length) * 100
-      )
-    : 0;
+  const saveLesson = async () => {
+    if (!editing || !user?.accessToken || !validForm) return;
+    try {
+      const { data } = await axios.put<Lesson>(
+        `${BASE_URL}/api/lessons/${editing._id}`,
+        { url: newUrl, title: newTitle, description: newDesc },
+        { headers: { Authorization: `Bearer ${user.accessToken}` } }
+      );
+      setLessons((prev) => prev.map((l) => (l._id === data._id ? { ...data, completed: l.completed } : l)));
+      setSelected((s) => (s && s._id === data._id ? { ...data, completed: s.completed } : s));
+      setEditing(null);
+      setNewTitle('');
+      setNewUrl('');
+      setNewDesc('');
+    } catch (err) {
+      console.error('Save lesson error:', err);
+    }
+  };
+
+  const deleteLesson = async (id: string) => {
+    if (!user?.accessToken) return;
+    try {
+      await axios.delete(`${BASE_URL}/api/lessons/${id}`, {
+        headers: { Authorization: `Bearer ${user.accessToken}` },
+      });
+      setLessons((prev) => prev.filter((l) => l._id !== id));
+      setSelected((s) => (s && s._id === id ? null : s));
+    } catch (err) {
+      console.error('Delete lesson error:', err);
+    }
+  };
+
+  const toggleCompleted = (id: string) => {
+    setLessons((prev) => prev.map((l) => (l._id === id ? { ...l, completed: !l.completed } : l)));
+  };
 
   return (
-    <div className="flex flex-col md:flex-row h-full w-full min-h-screen relative">
+    <div className="flex flex-col md:flex-row min-h-screen text-black">
       <button
         className="md:hidden absolute top-2 left-2 z-20 p-2 bg-white rounded-full shadow"
         onClick={() => setSidebarOpen(true)}
@@ -118,13 +133,10 @@ export default function ClassroomPage() {
         <Bars3Icon className="w-6 h-6 text-gray-600" />
       </button>
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-40 z-10 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
+        <div className="fixed inset-0 bg-black/40 z-10 md:hidden" onClick={() => setSidebarOpen(false)} />
       )}
       <aside
-        className={`bg-white p-6 flex flex-col border-b md:border-b-0 md:border-r border-gray-200 text-black overflow-y-auto md:h-screen md:sticky md:top-0 fixed md:relative inset-y-0 left-0 z-20 w-64 md:w-80 md:min-w-64 transform transition-transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
+        className={`bg-white p-4 border-r border-gray-200 overflow-y-auto md:h-screen md:sticky md:top-0 fixed inset-y-0 left-0 z-20 w-72 transform transition-transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
       >
         <button
           className="md:hidden absolute top-2 right-2 p-1"
@@ -136,124 +148,139 @@ export default function ClassroomPage() {
         <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
           <BookOpenIcon className="w-6 h-6" /> Classroom
         </h2>
-        <div className="flex items-center mb-2">
-          <div className="flex-1 h-2 bg-gray-200 rounded">
-            <div
-              className="h-full bg-green-400 rounded"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <span className="ml-2 text-green-600 font-medium">{progress}%</span>
-        </div>
-        <ul>
-          {lessons.map((lesson) => (
-            <li
-              key={lesson.id}
-              className={`flex items-center px-3 py-2 rounded cursor-pointer mb-1 ${lesson.completed ? 'bg-green-50' : 'bg-brand/10'} ${selected && selected.id === lesson.id ? 'border-l-4 border-cyan-400 bg-cyan-50' : ''}`}
-              onClick={() => setSelected(lesson)}
-            >
-              <CheckIcon
-                className={`w-5 h-5 mr-2 ${lesson.completed ? 'text-green-500' : 'text-gray-400'}`}
-              />
-              <span className="font-medium flex-1 truncate">{lesson.title}</span>
-              <input
-                type="checkbox"
-                checked={lesson.completed}
-                onChange={() => toggleCompleted(lesson.id)}
-                className="ml-2"
-              />
-              {isAdmin && (
-                <>
-                  <PencilSquareIcon
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      startEditLesson(lesson);
-                    }}
-                    className="w-5 h-5 ml-2 text-cyan-300 cursor-pointer"
-                  />
-                  <TrashIcon
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteLesson(lesson.id);
-                    }}
-                    className="w-5 h-5 ml-1 text-red-500 cursor-pointer"
-                  />
-                </>
-              )}
-            </li>
-          ))}
-        </ul>
+
         {isAdmin && (
-          <div className="mt-4 space-y-2">
+          <div className="bg-white shadow rounded-lg p-3 mb-4">
+            <div className="h-2 bg-gray-200 rounded mb-3 overflow-hidden">
+              <div
+                className="h-full bg-green-500 transition-all"
+                style={{ width: `${progressPct}%` }}
+              />
+            </div>
             <input
               type="text"
-              placeholder="YouTube URL"
+              placeholder="YouTube video URL"
               value={newUrl}
               onChange={(e) => setNewUrl(e.target.value)}
-              className="w-full border p-1 rounded"
+              className="w-full border p-2 rounded mb-2 focus:ring"
             />
             <input
               type="text"
-              placeholder="Title"
+              placeholder="Lesson title"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              className="w-full border p-1 rounded"
+              className="w-full border p-2 rounded mb-2 focus:ring"
             />
             <textarea
-              placeholder="Description"
+              placeholder="Short description"
               value={newDesc}
               onChange={(e) => setNewDesc(e.target.value)}
-              className="w-full border p-1 rounded"
+              className="w-full border p-2 rounded mb-2 focus:ring"
             />
+            {validForm && (
+              <div className="flex items-center gap-3 mb-2">
+                <img
+                  src={`https://img.youtube.com/vi/${extractVideoId(newUrl)}/hqdefault.jpg`}
+                  alt="thumbnail"
+                  className="w-24 h-16 object-cover rounded"
+                />
+                <div>
+                  <h3 className="font-semibold">{newTitle}</h3>
+                  <p className="text-sm text-gray-600 line-clamp-2">{newDesc}</p>
+                </div>
+              </div>
+            )}
             <button
-              onClick={editingId !== null ? saveLesson : addLesson}
-              className="w-full bg-brand text-white py-1 rounded"
+              onClick={editing ? saveLesson : addLesson}
+              disabled={!validForm}
+              className={`w-full py-2 rounded text-white ${validForm ? 'bg-brand' : 'bg-gray-400 cursor-not-allowed'}`}
             >
-              {editingId !== null ? 'Save Lesson' : 'Add Lesson'}
+              {editing ? 'Save Lesson' : 'Add Lesson'}
             </button>
-            {editingId !== null && (
+            {editing && (
               <button
                 onClick={() => {
-                  setEditingId(null);
+                  setEditing(null);
                   setNewTitle('');
                   setNewUrl('');
                   setNewDesc('');
                 }}
-                className="w-full bg-gray-200 text-black py-1 rounded"
+                className="w-full mt-2 py-2 rounded bg-gray-200"
               >
                 Cancel
               </button>
             )}
           </div>
         )}
+
+        <div className="space-y-2">
+          {lessons.length === 0 && (
+            <p className="text-center text-gray-500">No lessons yet. Start by adding one!</p>
+          )}
+          {lessons.map((lesson) => (
+            <div
+              key={lesson._id}
+              className={`flex items-center p-2 rounded shadow cursor-pointer ${selected && selected._id === lesson._id ? 'bg-cyan-50' : 'bg-white'}`}
+              onClick={() => setSelected(lesson)}
+            >
+              <CheckIcon
+                className={`w-5 h-5 mr-2 ${lesson.completed ? 'text-green-500' : 'text-gray-400'}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleCompleted(lesson._id);
+                }}
+              />
+              <span className="flex-1 truncate font-medium">{lesson.title}</span>
+              {isAdmin && (
+                <div className="flex items-center gap-2">
+                  <PencilSquareIcon
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditing(lesson);
+                      setNewTitle(lesson.title);
+                      setNewUrl(lesson.url);
+                      setNewDesc(lesson.description || '');
+                    }}
+                    className="w-5 h-5 text-cyan-400 cursor-pointer"
+                  />
+                  <TrashIcon
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteLesson(lesson._id);
+                    }}
+                    className="w-5 h-5 text-red-500 cursor-pointer"
+                  />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </aside>
-      <main className="flex-1 bg-white p-4 md:p-10 flex flex-col text-black overflow-y-auto">
+
+      <main className="flex-1 p-4 md:p-10">
         {selected ? (
           <>
-            <h1 className="text-2xl font-bold mb-3">{selected.title}</h1>
-            <div className="w-full max-w-4xl">
+            <h1 className="text-2xl font-bold mb-4">{selected.title}</h1>
+            <div className="w-full max-w-4xl mb-4">
               <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
                 <iframe
                   src={`https://www.youtube.com/embed/${extractVideoId(selected.url)}`}
                   className="absolute top-0 left-0 w-full h-full rounded-xl shadow"
                   allowFullScreen
-                  frameBorder="0"
                 />
               </div>
             </div>
             {selected.description && (
-              <p className="text-lg text-gray-700">
-                {selected.description}
-              </p>
+              <p className="text-lg text-gray-700 mb-2">{selected.description}</p>
             )}
-            {selected.duration && (
-              <div className="mt-4 text-sm text-gray-400">
-                Duration: {selected.duration}
-              </div>
+            {selected.author?.username && (
+              <p className="text-sm text-gray-500">By {selected.author.username}</p>
             )}
           </>
         ) : (
-          <p className="flex items-center justify-center h-full text-gray-400 text-2xl">Select a lesson to get started</p>
+          <p className="flex items-center justify-center h-full text-gray-400 text-2xl">
+            Select a lesson to get started
+          </p>
         )}
       </main>
     </div>
