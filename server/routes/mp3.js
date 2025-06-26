@@ -13,7 +13,7 @@ const YT_DLP_PATH = '/usr/local/bin/yt-dlp';
 // Ensure uploads directory exists
 if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-  fs.chmodSync(UPLOADS_DIR, 0o755); // Changed to 755
+  fs.chmodSync(UPLOADS_DIR, 0o755);
 }
 
 // Rate limiting (5 requests per 15 minutes)
@@ -27,58 +27,70 @@ router.post('/convert', convertLimiter, async (req, res) => {
   try {
     let { videoUrl } = req.body;
 
-    // Decode URL
+    // Log incoming request
+    console.log('Received conversion request:', videoUrl);
+
+    // Decode URL if encoded by frontend
     try {
       videoUrl = decodeURIComponent(videoUrl);
     } catch (e) {
-      console.log('URL decode error, using as-is');
+      console.log('URL was not encoded, using as-is');
     }
 
-    // Validate YouTube URL
+    // FIXED: Improved YouTube URL regex with query parameters support
     const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})(\S*)$/;
+    
+    // Validate YouTube URL
     if (!videoUrl || !youtubeRegex.test(videoUrl)) {
+      console.error('Invalid YouTube URL:', videoUrl);
       return res.status(400).json({ 
         success: false,
         error: 'Зөв YouTube линк оруулна уу'
       });
     }
 
+    // Extract video ID
     const videoId = videoUrl.match(youtubeRegex)[5];
     const filename = `conversion_${Date.now()}_${videoId}.mp3`;
     const outputFile = path.join(UPLOADS_DIR, filename);
 
     console.log(`Processing: ${videoUrl}`);
 
-    // 1. Added --no-check-certificate flag
-    // 2. Removed quotes around output file path
-    // 3. Added error handling for execPromise
-    const command = `${YT_DLP_PATH} --no-check-certificate --no-warnings -x --audio-format mp3 --audio-quality 2 -o ${outputFile} "${videoUrl}"`;
+    // Execute yt-dlp with improved error handling
+    const command = `${YT_DLP_PATH} --no-warnings -x --audio-format mp3 --audio-quality 2 -o "${outputFile}" "${videoUrl}"`;
     
     try {
       const { stdout, stderr } = await execPromise(command);
-      console.log('Conversion stdout:', stdout);
-      console.log('Conversion stderr:', stderr);
+      console.log('yt-dlp stdout:', stdout);
+      if (stderr) console.error('yt-dlp stderr:', stderr);
     } catch (execError) {
       console.error('Execution error:', execError);
+      // Clean up partially created file
+      if (fs.existsSync(outputFile)) {
+        fs.unlinkSync(outputFile);
+      }
       return res.status(500).json({
         success: false,
-        error: 'Аудио хувиргах үед алдаа гарлаа'
+        error: 'Аудио хувиргах боломжгүй (YouTube хязгаарлалт эсвэл алдаа)'
       });
     }
 
+    // Verify output
     if (!fs.existsSync(outputFile)) {
+      console.error('Conversion failed. No output file created');
       return res.status(500).json({
         success: false,
-        error: 'Аудио файл үүсгэхэд алдаа гарлаа'
+        error: 'Аудио хувиргах боломжгүй'
       });
     }
 
     // Set file permissions
-    fs.chmodSync(outputFile, 0o755);
+    fs.chmodSync(outputFile, 0o644);
 
+    console.log(`Conversion successful: ${filename}`);
     res.json({
       success: true,
-      filePath: `/api/mp3/download/${filename}`, // Corrected path
+      filePath: `/api/mp3/download/${filename}`,
       filename: filename
     });
 
@@ -91,21 +103,21 @@ router.post('/convert', convertLimiter, async (req, res) => {
   }
 });
 
-// File download endpoint (unchanged)
+// File download endpoint
 router.get('/download/:filename', (req, res) => {
   try {
     const { filename } = req.params;
+    if (!filename.endsWith('.mp3')) {
+      return res.status(400).json({ error: 'Буруй файлын төрөл' });
+    }
+
     const filePath = path.join(UPLOADS_DIR, filename);
-    
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ error: 'Файл олдсонгүй' });
     }
 
     res.download(filePath, filename, (err) => {
-      if (err) {
-        console.error('Download error:', err);
-        res.status(500).json({ error: 'Татахад алдаа гарлаа' });
-      }
+      if (err) console.error('Download failed:', err);
     });
   } catch (error) {
     console.error('Download error:', error);
@@ -113,4 +125,26 @@ router.get('/download/:filename', (req, res) => {
   }
 });
 
-// Cleanup code remains same
+// Cleanup old files (runs every 6 hours)
+const cleanupOldFiles = () => {
+  const now = Date.now();
+  const maxAgeMs = 24 * 60 * 60 * 1000; // 24 hours
+
+  fs.readdirSync(UPLOADS_DIR).forEach(file => {
+    const filePath = path.join(UPLOADS_DIR, file);
+    try {
+      const stats = fs.statSync(filePath);
+      if (now - stats.birthtimeMs > maxAgeMs) {
+        fs.unlinkSync(filePath);
+        console.log(`Deleted old file: ${file}`);
+      }
+    } catch (e) {
+      console.error('Cleanup error:', e);
+    }
+  });
+};
+
+setInterval(cleanupOldFiles, 6 * 60 * 60 * 1000);
+cleanupOldFiles(); // Run on startup
+
+module.exports = router;
