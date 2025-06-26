@@ -1,55 +1,49 @@
 "use client";
 import { useState } from "react";
-import useChat from "../hooks/useChat";
-import Image from "next/image";
+import ChatList, { Conversation } from "../components/chat/ChatList";
+import ChatWindow from "../components/chat/ChatWindow";
+import { useAuth } from "../context/AuthContext";
+
+const demoConversations: Conversation[] = [
+  {
+    id: "u1",
+    user: { id: "u1", name: "John Doe", avatar: "/img/default-avatar.png", online: true },
+    lastMessage: "Hey there!",
+    timestamp: new Date().toISOString(),
+    unread: 2,
+  },
+  {
+    id: "u2",
+    user: { id: "u2", name: "Jane", avatar: "/img/default-avatar.png", online: false },
+    lastMessage: "Let's meet tomorrow at the cafe to discuss the project details.",
+    timestamp: new Date().toISOString(),
+    unread: 0,
+  },
+];
 
 export default function ChatPage() {
-  const room = "general";
-  const userId = typeof window !== "undefined" ? localStorage.getItem("userId") || "" : "";
-  const { messages, sendMessage } = useChat(room);
-  const [text, setText] = useState("");
+  const { loggedIn } = useAuth();
+  const [active, setActive] = useState<string | null>(demoConversations[0].id);
 
-  const handleSend = () => {
-    if (text.trim()) {
-      sendMessage(text, userId);
-      setText("");
-    }
-  };
+  const activeConv = demoConversations.find((c) => c.id === active)!;
 
   return (
-    <div className="min-h-screen flex flex-col p-4">
-      <div className="flex-1 overflow-y-auto mb-4">
-        {messages.map((msg) => (
-          <div key={msg._id} className="mb-2 flex items-start">
-            {msg.sender?.profilePicture && (
-              <Image
-                src={msg.sender.profilePicture}
-                alt=""
-                width={32}
-                height={32}
-                className="rounded-full mr-2"
-              />
-            )}
-            <div>
-              <div className="font-semibold">{msg.sender?.username}</div>
-              <div>{msg.text}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="flex items-center">
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          className="border flex-1 p-2 mr-2 rounded"
-          placeholder="Type a message..."
-        />
-        <button
-          onClick={handleSend}
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-        >
-          Send
-        </button>
+    <div className="flex h-[calc(100vh-64px)]">
+      <aside className="hidden md:block w-1/3 border-r border-supportBorder">
+        <h2 className="p-3 font-semibold">Мессеж</h2>
+        <ChatList conversations={demoConversations} activeId={active || undefined} onSelect={setActive} />
+      </aside>
+      <div className="flex-1 relative">
+        <div className="md:hidden border-b border-supportBorder p-3 font-semibold">Мессеж</div>
+        <ChatWindow chatId={activeConv.id} user={activeConv.user} onBack={() => setActive(null)} />
+        {loggedIn && (
+          <button
+            className="fixed bottom-4 right-4 bg-brand text-white w-12 h-12 rounded-full shadow-lg"
+            aria-label="New Message"
+          >
+            +
+          </button>
+        )}
       </div>
     </div>
   );
