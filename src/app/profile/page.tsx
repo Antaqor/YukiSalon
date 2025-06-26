@@ -232,8 +232,12 @@ export default function MyOwnProfilePage() {
                 {userData.rating && <p className="text-sm text-gray-400">★ {userData.rating} үнэлгээ</p>}
                 {userData.location && <p className="text-sm text-gray-400">Байршил: {userData.location}</p>}
                 <div className="flex gap-6 mt-2 text-sm">
-                    <span>{userData.followers ? userData.followers.length : 0} Followers</span>
-                    <span>{userData.following ? userData.following.length : 0} Following</span>
+                    <Link href={`/profile/${userData._id}/followers`} className="hover:underline">
+                        {userData.followers ? userData.followers.length : 0} Followers
+                    </Link>
+                    <Link href={`/profile/${userData._id}/following`} className="hover:underline">
+                        {userData.following ? userData.following.length : 0} Following
+                    </Link>
                 </div>
             </div>
 

@@ -40,6 +40,23 @@ router.get("/", async (req, res) => {
     }
 });
 
+// Fetch multiple users by ID list
+router.get("/list", async (req, res) => {
+    try {
+        const ids = (req.query.ids || "").toString().split(",").filter(Boolean);
+        if (ids.length === 0) {
+            return res.status(400).json({ error: "ids query required" });
+        }
+        const users = await User.find({ _id: { $in: ids } }).select(
+            "username profilePicture subscriptionExpiresAt location"
+        );
+        res.json(users);
+    } catch (err) {
+        console.error("Bulk user fetch error:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
 // Follow a user (idempotent)
 router.post("/:id/follow", authenticateToken, async (req, res) => {
     try {
