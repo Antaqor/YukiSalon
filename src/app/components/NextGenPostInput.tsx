@@ -99,8 +99,10 @@ export default function NextGenPostInput({ onPost }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className={`relative bg-white dark:bg-primary flex gap-3 items-start w-full px-4 py-3 border-l border-t transition-colors ${
-        focused ? "border-[#1aaeca]" : "border-[#30c9e8]"
+      className={`relative bg-white dark:bg-primary flex gap-3 items-start w-full px-4 py-3 border-l-[1px] border-t-[1px] transition-colors ${
+        focused
+          ? "border-[#1aaeca]/70 sm:border-[#1aaeca]"
+          : "border-[#30c9e8]/40 sm:border-[#30c9e8]"
       }`}
     >
       {user?.profilePicture ? (
