@@ -99,11 +99,7 @@ export default function NextGenPostInput({ onPost }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className={`relative bg-white dark:bg-primary flex gap-3 items-start w-full px-4 py-3 border-l-[1px] border-t-[1px] transition-colors ${
-        focused
-          ? "border-[#1aaeca]/70 sm:border-[#1aaeca]"
-          : "border-[#30c9e8]/40 sm:border-[#30c9e8]"
-      }`}
+      className="relative bg-white dark:bg-primary flex gap-3 items-start w-full px-4 py-3 border border-gray-200 dark:border-gray-700 transition-colors"
     >
       {user?.profilePicture ? (
         <Image
@@ -169,7 +165,7 @@ export default function NextGenPostInput({ onPost }: Props) {
               type="submit"
               onClick={() => setRipple(true)}
               disabled={disabled}
-              className={`relative overflow-hidden font-bold rounded-full px-6 py-2 transition-all active:scale-95 focus:outline-none ${
+              className={`relative overflow-hidden font-bold rounded-full px-6 pb-2 pt-[10px] transition-all active:scale-95 focus:outline-none ${
                 disabled
                   ? "bg-gray-300 cursor-not-allowed"
                   : "bg-brand text-white ripple-effect"
