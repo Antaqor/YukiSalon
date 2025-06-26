@@ -6,6 +6,8 @@ const express  = require("express");
 const mongoose = require("mongoose");
 const cors     = require("cors");
 const fs       = require("fs");
+const { createServer } = require("http");
+const { Server } = require("socket.io");
 
 // ── routes ─────────────────────────────────────────────
 const authRoutes    = require("./routes/auth");
@@ -19,9 +21,11 @@ const notificationRoutes = require("./routes/notification");
 const pushRoutes    = require("./routes/push");
 const lessonRoutes  = require("./routes/lessonRoutes");
 const webpush       = require("web-push");
-const chatRoutes    = require("./routes/chat");
+const chatRoutesFn  = require("./routes/chat");
 
 const app  = express();
+const http = createServer(app);
+const io = new Server(http, { cors: { origin: '*' } });
 const PORT = process.env.PORT || 5001;
 
 // ── Web Push VAPID setup ───────────────────────────────
@@ -83,13 +87,22 @@ app.use("/api/products", productRoutes);
 app.use("/api/cart",     cartRoutes); // ← now live
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/push",     pushRoutes);
+const chatRoutes = chatRoutesFn(io);
 app.use("/api/chat",    chatRoutes);
 app.use("/api/lessons", lessonRoutes);
 
 // ── heartbeat ─────────────────────────────────────────
 app.get("/", (_, res) => res.send("Server is working!"));
 
+// ── Socket.IO events ──────────────────────────────────
+io.on('connection', socket => {
+  socket.on('join', room => socket.join(room));
+  socket.on('typing', ({ room }) => {
+    if (room) socket.to(room).emit('typing');
+  });
+});
+
 // ── fire it up ────────────────────────────────────────
-app.listen(PORT, () => {
+http.listen(PORT, () => {
   console.log(`⚡️ Server running on port ${PORT}`);
 });

@@ -5,6 +5,8 @@ import ChatList, { Conversation } from "../components/chat/ChatList";
 import ChatWindow from "../components/chat/ChatWindow";
 import { useAuth } from "../context/AuthContext";
 import { API_URL } from "../lib/config";
+import { getSocket } from "../hooks/socket";
+import { ChatMessage } from "../hooks/useChat";
 
 export default function ChatPage() {
   const { loggedIn, user } = useAuth();
@@ -12,6 +14,7 @@ export default function ChatPage() {
   const targetUser = params.get("user");
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [active, setActive] = useState<string | null>(null);
+  const socket = getSocket();
 
   // load chat list
   useEffect(() => {
@@ -27,10 +30,11 @@ export default function ChatPage() {
             user: { id: other._id, name: other.username, avatar: other.profilePicture },
             lastMessage: c.lastMessage || "",
             timestamp: c.lastMessageAt || c.updatedAt,
-            unread: 0,
+            unread: c.unreadCount || 0,
           };
         });
         setConversations(convs);
+        convs.forEach(c => socket.emit("join", c.id));
       })
       .catch(err => console.error("Chat list", err));
   }, [user]);
@@ -48,7 +52,7 @@ export default function ChatPage() {
           user: { id: other._id, name: other.username, avatar: other.profilePicture },
           lastMessage: chat.lastMessage || "",
           timestamp: chat.lastMessageAt || chat.updatedAt,
-          unread: 0,
+          unread: chat.unreadCount || 0,
         };
         setActive(chat._id);
         setConversations((prev) => {
@@ -59,7 +63,40 @@ export default function ChatPage() {
       .catch(err => console.error("Chat open", err));
   }, [targetUser, user]);
 
+  // update conversations when new messages arrive
+  useEffect(() => {
+    const handler = (msg: ChatMessage) => {
+      setConversations(prev => {
+        const conv = prev.find(c => c.id === msg.room);
+        if (!conv) return prev;
+        const updated = prev.map(c =>
+          c.id === msg.room
+            ? {
+                ...c,
+                lastMessage: msg.text,
+                timestamp: msg.createdAt,
+                unread: active === msg.room ? 0 : c.unread + 1,
+              }
+            : c
+        );
+        return updated;
+      });
+    };
+    socket.on("chat-message", handler);
+    return () => {
+      socket.off("chat-message", handler);
+    };
+  }, [socket, active]);
+
   const activeConv = conversations.find(c => c.id === active);
+
+  // reset unread count when opening chat
+  useEffect(() => {
+    if (!active) return;
+    setConversations(prev =>
+      prev.map(c => (c.id === active ? { ...c, unread: 0 } : c))
+    );
+  }, [active]);
 
   return (
     <div className="flex h-[calc(100vh-64px)]">

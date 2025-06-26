@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run frontend\" \"npm run server-dev\" \"npm run live-dev\" \"npm run chat-dev\"",
+    "dev": "concurrently \"npm run frontend\" \"npm run server-dev\" \"npm run live-dev\"",
     "frontend": "next dev",
     "server": "node server/index.js",
     "server-dev": "nodemon server/index.js",
@@ -15,9 +15,7 @@
     "mongo-test": "node mongo-test.mjs",
     "live": "node server/live.js",
     "live-dev": "nodemon server/live.js",
-    "live-mongo": "node server/live-mongo.js",
-    "chat": "node server/chat.js",
-    "chat-dev": "nodemon server/chat.js"
+    "live-mongo": "node server/live-mongo.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
