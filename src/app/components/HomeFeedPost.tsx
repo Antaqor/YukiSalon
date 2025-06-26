@@ -15,6 +15,25 @@ import { BASE_URL, UPLOADS_URL } from "../lib/config";
 import { formatPostDate } from "../lib/formatDate";
 import type { Post } from "@/types/Post";
 
+interface UserData {
+  _id: string;
+  username: string;
+  profilePicture?: string;
+}
+
+interface Reply {
+  _id: string;
+  user?: UserData;
+  content: string;
+}
+
+interface Comment {
+  _id: string;
+  user?: UserData;
+  content: string;
+  replies?: Reply[];
+}
+
 interface Props {
   post: Post;
   onDelete?: (id: string) => void;
@@ -334,7 +353,7 @@ export default function HomeFeedPost({ post, onDelete, onShareAdd }: Props) {
       </div>
       {openComments && (
         <div className="mt-4 space-y-3">
-          {postState.comments?.map((comment) => (
+          {postState.comments?.map((comment: Comment) => (
             <div key={comment._id} className="ml-4">
               <div className="flex items-start gap-2">
                 {comment.user?.profilePicture && (
@@ -349,7 +368,7 @@ export default function HomeFeedPost({ post, onDelete, onShareAdd }: Props) {
                 <div className="flex-1 bg-gray-100 rounded p-2">
                   <p className="text-sm font-semibold">{comment.user?.username}</p>
                   <p className="text-sm">{comment.content}</p>
-                  {comment.replies?.map((reply) => (
+                  {comment.replies?.map((reply: Reply) => (
                     <div key={reply._id} className="ml-4 mt-2 flex gap-2 items-start">
                       {reply.user?.profilePicture && (
                         <Image
