@@ -4,6 +4,7 @@ import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { FaCheckCircle } from "react-icons/fa";
+import { TbUserPlus, TbUserMinus, TbMessageCircle } from "react-icons/tb";
 import HomeFeedPost from "../../components/HomeFeedPost";
 import axios from "axios";
 import { BASE_URL } from "../../lib/config";
@@ -135,101 +136,62 @@ export default function PublicProfilePage() {
     const isOwnProfile = viewer?._id === userId;
 
     return (
-        <div className="min-h-screen bg-white text-black font-sans">
-            {/* Top Navigation */}
-            <div className="fixed top-0 left-0 w-full h-12 flex items-center px-4 backdrop-blur-md z-10 bg-black/60">
-                <button
-                    onClick={() => router.back()}
-                    aria-label="Back"
-                    className="mr-2 text-black"
-                >
-                    &#8592;
-                </button>
-                <h1 className="font-bold flex-1 text-center">
-                    {userData.username}
-                </h1>
-            </div>
-
-            {/* Banner */}
-            <div className="h-40 bg-[#0d0d0d] relative mt-12">
-                {userData.coverImage && (
+        <div className="min-h-screen bg-[#212121] text-white font-sans pt-14">
+            <div className="max-w-xl mx-auto relative bg-[#212121] rounded-xl shadow-lg p-6">
+                {userData.profilePicture && (
                     <Image
-                        src={getImageUrl(userData.coverImage)}
-                        alt="Cover"
-                        width={800}
-                        height={160}
-                        className="absolute inset-0 w-full h-full object-cover"
+                        src={getImageUrl(userData.profilePicture)}
+                        alt="Profile"
+                        width={96}
+                        height={96}
+                        className="absolute -top-12 right-6 w-24 h-24 rounded-full border-2 border-[#171717] object-cover"
                     />
                 )}
-                <div className="absolute -bottom-16 left-4 w-32 h-32 rounded-full border-4 border-[#0d0d0d] overflow-hidden bg-gray-800">
-                    {userData.profilePicture && (
-                        <Image
-                            src={getImageUrl(userData.profilePicture)}
-                            alt="Profile"
-                            width={128}
-                            height={128}
-                            className="w-full h-full object-cover"
-                        />
-                    )}
-                </div>
-            </div>
-
-            {/* Meta */}
-            <div className="pt-20 px-4">
-                <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                        <h1 className="text-2xl font-bold">{userData.username}</h1>
-                        {isPro && <FaCheckCircle className="text-brand" />}
-                    </div>
-                    {loggedIn && !isOwnProfile && (
-                        <div className="flex gap-2">
-                            {viewer?.following?.includes(userId) ? (
-                                <button onClick={handleUnfollow} className="text-sm px-3 py-1 rounded border border-brand text-brand">Following</button>
-                            ) : (
-                                <button onClick={handleFollow} className="text-sm px-3 py-1 rounded border border-brand text-brand">Follow</button>
-                            )}
-                            <Link href={`/chat?user=${userId}`} className="text-sm px-3 py-1 rounded bg-brand text-white">Message</Link>
-                        </div>
-                    )}
-                </div>
-                {userData.rating && (
-                    <p className="text-sm text-gray-400">
-                        ★ {userData.rating} үнэлгээ
-                    </p>
-                )}
+                <h1 className="mt-12 text-2xl font-bold flex items-center gap-1">
+                    {userData.username}
+                    {isPro && <FaCheckCircle className="text-[#30c9e8]" />}
+                </h1>
                 {userData.location && (
-                    <p className="text-sm text-gray-400">
-                        Байршил: {userData.location}
-                    </p>
+                    <p className="text-sm text-white/60">{userData.location}</p>
                 )}
-                <div className="flex gap-6 mt-2 text-sm">
-                    <Link href={`/profile/${userId}/followers`} className="hover:underline">
-                        {userData.followers ? userData.followers.length : 0} Followers
-                    </Link>
-                    <Link href={`/profile/${userId}/following`} className="hover:underline">
-                        {userData.following ? userData.following.length : 0} Following
-                    </Link>
+                <div className="flex gap-4 mt-2 text-xs text-white/60">
+                    <Link href={`/profile/${userId}/followers`}>{userData.followers ? userData.followers.length : 0} Followers</Link>
+                    <Link href={`/profile/${userId}/following`}>{userData.following ? userData.following.length : 0} Following</Link>
                 </div>
+                {loggedIn && !isOwnProfile && (
+                    <div className="absolute top-4 left-4 flex gap-4">
+                        {viewer?.following?.includes(userId) ? (
+                            <button onClick={handleUnfollow} aria-label="Unfollow" className="text-white/60 hover:text-[#30c9e8]">
+                                <TbUserMinus size={20} />
+                            </button>
+                        ) : (
+                            <button onClick={handleFollow} aria-label="Follow" className="text-white/60 hover:text-[#30c9e8]">
+                                <TbUserPlus size={20} />
+                            </button>
+                        )}
+                        <Link href={`/chat?user=${userId}`} aria-label="Message" className="text-white/60 hover:text-[#30c9e8]">
+                            <TbMessageCircle size={20} />
+                        </Link>
+                    </div>
+                )}
             </div>
 
-            {/* Posts Section */}
-            <div className="w-full max-w-xl mt-8 px-4">
-                <h2 className="text-xl font-semibold mb-4">Нийтлэлүүд</h2>
+            <div className="mt-6 flex justify-center border-b border-white/20">
+                <button className="px-4 py-2 text-white border-b-2 border-[#30c9e8]">Threads</button>
+                <button className="px-4 py-2 text-white/60">Replies</button>
+                <button className="px-4 py-2 text-white/60">Media</button>
+            </div>
+
+            <div className="w-full max-w-xl mx-auto mt-6 px-4">
                 {postLoading && (
                     <p className="text-gray-400 mb-2">Ачааллаж байна...</p>
                 )}
                 {!postLoading && userPosts.length === 0 && (
-                    <p className="text-gray-400">
-                        Энэ хэрэглэгч нийтлэлгүй байна.
-                    </p>
+                    <p className="text-gray-400">Энэ хэрэглэгч нийтлэлгүй байна.</p>
                 )}
                 <div className="space-y-4">
                     {userPosts.map((post) => (
-                        <HomeFeedPost
-                            key={post._id}
-                            post={post}
-                            onShareAdd={handleShareAdd}
-                        />
+                        <HomeFeedPost key={post._id} post={post} onShareAdd={handleShareAdd} />
                     ))}
                 </div>
             </div>
