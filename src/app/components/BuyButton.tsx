@@ -41,7 +41,7 @@ export default function BuyButton({ bookId, finalPrice }: BuyButtonProps) {
                         </h2>
                         <p className="text-sm text-gray-300 mb-4">
                             Та {finalPrice.toLocaleString("mn-MN")}₮‐ийг Голомт банк
-                            <span className="text-yellow-400 font-bold"> 3005127815 </span>
+                            <span className="text-brand font-bold"> 3005127815 </span>
                             руу шилжүүлнэ үү. Утга дээр имэйл хаягаа бичээрэй!
                         </p>
                         <p className="text-sm text-gray-400 mb-2">

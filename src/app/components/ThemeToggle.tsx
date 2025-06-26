@@ -11,7 +11,7 @@ export default function ThemeToggle() {
             className="p-2 rounded transition-colors hover:bg-gray-200 dark:hover:bg-gray-700"
         >
             {theme === "dark" ? (
-                <SunIcon className="w-6 h-6 text-yellow-400" />
+                <SunIcon className="w-6 h-6 text-brand" />
             ) : (
                 <MoonIcon className="w-6 h-6 text-gray-800" />
             )}

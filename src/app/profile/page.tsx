@@ -227,7 +227,7 @@ export default function MyOwnProfilePage() {
             <div className="pt-20 px-4">
                 <div className="flex items-center gap-2">
                     <h2 className="text-2xl font-bold">{userData.username}</h2>
-                    {isPro && <FaCheckCircle className="text-yellow-400" />}
+                    {isPro && <FaCheckCircle className="text-brand" />}
                 </div>
                 {userData.rating && <p className="text-sm text-gray-400">★ {userData.rating} үнэлгээ</p>}
                 {userData.location && <p className="text-sm text-gray-400">Байршил: {userData.location}</p>}

@@ -61,9 +61,11 @@ export default function LoginPage() {
             <motion.div
                 whileHover={{ opacity: 0.9 }}
                 transition={{ duration: 0.1, ease: "easeOut" }}
-                className="w-full max-w-md space-y-6"
+                className="w-full max-w-md space-y-6 bg-surface p-6 rounded-lg shadow"
             >
-                <p className="text-center mb-10">AI Social Network Манай Network нэмэгдсэнээр хамгийн сүүлийн үеийн мэдээллэл AI skills эзэмшинэ</p>
+                <p className="text-center mb-8 text-xl text-brand font-semibold tracking-wider">
+                    AI Social Network – AI мэдлэгийг овсгоотой эзэмш
+                </p>
                 <h1 className="text-3xl font-bold text-black">Нэвтрэх</h1>
                 {error && <p className="text-red-600">{error}</p>}
                 <form onSubmit={handleSubmit} className="space-y-6">

@@ -14,7 +14,6 @@ import {
   ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
 import Header from "./Header";
-import TopActiveMembers from "./TopActiveMembers";
 import BottomNav from "./BottomNav";
 import SidebarControl from "./SidebarControl";
 import NavigationLoader from "./NavigationLoader";
@@ -122,11 +121,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
               <aside
                 id="right-sidebar"
                 className="hidden md:block w-full md:w-1/4 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto p-2 fade-in-up"
-              >
-                <div className="space-y-6">
-                  <TopActiveMembers />
-                </div>
-              </aside>
+              ></aside>
             </main>
           </div>
           <BottomNav />
