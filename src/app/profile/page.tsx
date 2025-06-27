@@ -161,77 +161,24 @@ export default function MyOwnProfilePage() {
         : false;
 
     return (
-        <div className="min-h-screen bg-white text-black font-sans">
-            {/* Top Navigation */}
-            <div className="fixed top-0 left-0 w-full h-12 flex items-center px-4 backdrop-blur-md z-10 bg-black/60">
-                <button onClick={() => router.back()} aria-label="Back" className="mr-2 text-black">
-                    &#8592;
-                </button>
-                <h1 className="font-bold flex-1 text-center">{userData.username}</h1>
-                <Link href="/profile/edit" className="text-sm text-blue-400">Edit</Link>
-            </div>
-
-            {/* Banner */}
-            <div className="h-40 bg-[#0d0d0d] relative mt-12 group">
-                {userData.coverImage && (
+        <div className="min-h-screen bg-[#212121] text-white font-sans pt-14">
+            <div className="max-w-xl mx-auto p-6 flex flex-col items-center text-center">
+                {userData.profilePicture && (
                     <Image
-                        src={getImageUrl(userData.coverImage)}
-                        alt="Cover"
-                        width={800}
-                        height={160}
-                        className="absolute inset-0 w-full h-full object-cover"
+                        src={getImageUrl(userData.profilePicture)}
+                        alt="avatar"
+                        width={128}
+                        height={128}
+                        className="w-32 h-32 rounded-full object-cover border-2 border-[#171717]"
                     />
                 )}
-                <input
-                    ref={coverInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleCoverChange}
-                />
-                <button
-                    onClick={() => coverInputRef.current?.click()}
-                    className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition"
-                    aria-label="Change cover"
-                >
-                    <CameraIcon className="w-6 h-6 text-white" />
-                </button>
-                <div className="absolute -bottom-16 left-4 w-32 h-32 rounded-full border-4 border-[#0d0d0d] overflow-hidden bg-gray-200 group">
-                    {userData.profilePicture ? (
-                        <Image
-                            src={getImageUrl(userData.profilePicture)}
-                            alt="avatar"
-                            width={128}
-                            height={128}
-                            className="w-full h-full object-cover"
-                        />
-                    ) : null}
-                    <input
-                        ref={avatarInputRef}
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleProfilePictureChange}
-                    />
-                    <button
-                        onClick={() => avatarInputRef.current?.click()}
-                        className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition"
-                        aria-label="Change avatar"
-                    >
-                        <CameraIcon className="w-5 h-5 text-white" />
-                    </button>
-                </div>
-            </div>
-
-            {/* Meta */}
-            <div className="pt-20 px-4">
-                <div className="flex items-center gap-2">
-                    <h2 className="text-2xl font-bold">{userData.username}</h2>
-                    {isPro && <FaCheckCircle className="text-brand" />}
-                </div>
-                {userData.rating && <p className="text-sm text-gray-400">★ {userData.rating} үнэлгээ</p>}
-                {userData.location && <p className="text-sm text-gray-400">Байршил: {userData.location}</p>}
-                <div className="flex gap-6 mt-2 text-sm">
+                <h2 className="mt-2 text-2xl font-bold">{userData.username}</h2>
+                {isPro && <FaCheckCircle className="text-[#30c9e8]" />}
+                {userData.location && <p className="text-sm text-white/60">Байршил: {userData.location}</p>}
+                <Link href="/profile/edit" className="border border-[#30c9e8] text-[#30c9e8] px-4 py-1 rounded mt-3 hover:bg-[#30c9e8]/20">
+                    Edit profile
+                </Link>
+                <div className="flex gap-6 mt-3 text-sm">
                     <Link href={`/profile/${userData._id}/followers`} className="hover:underline">
                         {userData.followers ? userData.followers.length : 0} Followers
                     </Link>

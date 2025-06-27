@@ -12,13 +12,13 @@ html,
 body {
     padding: 0;
     margin: 0;
-    font-family: "Poppins", sans-serif;
+    font-family: system-ui, sans-serif;
 }
 
 html {
     background-color: #F5F6F8;
     color-scheme: light;
-    --brand-color: #119C99;
+    --brand-color: #30c9e8;
     --support-border: #272F36;
     --background-dark: #0F181E;
     --text-primary: #272F36;
@@ -35,7 +35,7 @@ html.dark {
 }
 
 html.dark body {
-    background-color: #212121;
+    background-color: #171717;
     color: #F5F6F8;
 }
 

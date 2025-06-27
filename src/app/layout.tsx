@@ -1,9 +1,7 @@
 import "./globals.css";
-import { Inter } from "next/font/google";
 import type { Metadata } from "next";
 import LayoutClient from "./components/LayoutClient";
 
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
     metadataBase: new URL("https://www.vone.mn"),
@@ -64,7 +62,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="mn" className="dark">
-            <body className={`${inter.className} flex flex-col min-h-screen bg-surface text-primary`}>
+            <body className="flex flex-col min-h-screen bg-[#171717] text-white font-sans">
                 <LayoutClient>{children}</LayoutClient>
             </body>
         </html>
