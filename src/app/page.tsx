@@ -313,42 +313,7 @@ export default function HomePage() {
   };
 
 
-  const handleFollow = async (targetId: string) => {
-    if (!user?.accessToken) return;
-    try {
-      await axios.post(
-        `${BASE_URL}/api/users/${targetId}/follow`,
-        {},
-        { headers: { Authorization: `Bearer ${user.accessToken}` } }
-      );
-      login(
-        { ...user, following: [...(user.following || []), targetId] },
-        user.accessToken
-      );
-    } catch (err) {
-      console.error("Follow error:", err);
-    }
-  };
 
-  const handleUnfollow = async (targetId: string) => {
-    if (!user?.accessToken) return;
-    try {
-      await axios.post(
-        `${BASE_URL}/api/users/${targetId}/unfollow`,
-        {},
-        { headers: { Authorization: `Bearer ${user.accessToken}` } }
-      );
-      login(
-        {
-          ...user,
-          following: (user.following || []).filter((id) => id !== targetId),
-        },
-        user.accessToken
-      );
-    } catch (err) {
-      console.error("Unfollow error:", err);
-    }
-  };
 
   const toggleComments = (postId: string) =>
     setOpenComments((prev) => ({ ...prev, [postId]: !prev[postId] }));
@@ -467,25 +432,7 @@ export default function HomePage() {
                             </span>
                           </Link>
 
-                          {postUser && user && user._id !== postUser._id && (
-                            <div>
-                              {user.following?.includes(postUser._id) ? (
-                                <button
-                                  onClick={() => handleUnfollow(postUser._id)}
-                                  className="text-green-600 text-xs"
-                                >
-                                  Unfollow
-                                </button>
-                              ) : (
-                                <button
-                                  onClick={() => handleFollow(postUser._id)}
-                                  className="text-brand text-xs"
-                                >
-                                  Follow
-                                </button>
-                              )}
-                            </div>
-                          )}
+                          {/* Follow/Message actions moved to profile page */}
                           {postUser && user && user._id === postUser._id && (
                             <div className="ml-auto relative">
                               <button

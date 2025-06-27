@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        brand: '#119C99',
+        brand: '#30c9e8',
         backgroundDark: '#212121',
         surface: '#F5F6F8',
         textPrimary: '#272F36',
@@ -22,7 +22,7 @@ module.exports = {
         inputText: '#AFAFAF',
       },
       fontFamily: {
-        sans: ['Inter', 'Helvetica', 'Arial', 'sans-serif'], // Minimalistic and clean font stack
+        sans: ['system-ui', 'sans-serif'],
       },
     },
   },

@@ -99,7 +99,7 @@ export default function NextGenPostInput({ onPost }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="relative bg-white dark:bg-primary flex gap-3 items-start w-full px-4 py-3 border border-gray-200 dark:border-gray-700 transition-colors"
+      className="relative bg-[#212121] shadow-sm flex flex-col sm:flex-row items-center gap-3 w-full px-4 py-3"
     >
       {user?.profilePicture ? (
         <Image
@@ -126,7 +126,7 @@ export default function NextGenPostInput({ onPost }: Props) {
           onBlur={() => setFocused(false)}
           maxLength={MAX_LENGTH}
           placeholder="What's happening?"
-          className={`w-full bg-transparent outline-none text-xl placeholder-gray-400 transition-all duration-200 ${focused ? 'py-3' : 'py-2'}`}
+          className={`w-full bg-transparent outline-none text-sm sm:text-base placeholder-gray-400 transition-all duration-200 focus:text-[#30c9e8] ${focused ? 'py-3' : 'py-2'}`}
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
@@ -147,7 +147,7 @@ export default function NextGenPostInput({ onPost }: Props) {
             </button>
           </div>
         )}
-        <div className="flex items-center justify-between mt-2">
+        <div className="flex items-center justify-between mt-2 w-full">
           <div className="flex gap-3 text-gray-400">
             <button
               type="button"
@@ -160,16 +160,13 @@ export default function NextGenPostInput({ onPost }: Props) {
               <ChartBarIcon className="w-6 h-6 icon-hover-brand" />
             </button>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 sm:static absolute right-4 bottom-4">
             <button
               type="submit"
               onClick={() => setRipple(true)}
               disabled={disabled}
-              className={`relative overflow-hidden font-bold rounded-full px-6 pb-2 pt-[10px] transition-all active:scale-95 focus:outline-none ${
-                disabled
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-brand text-white ripple-effect"
-              } ${ripple ? "ripple-active" : ""}`}
+              className={`font-bold rounded-full px-6 py-2 transition active:scale-95 focus:outline-none ${
+                disabled ? "bg-gray-500 cursor-not-allowed" : "bg-[#30c9e8] text-[#171717]"}`}
             >
               Post
             </button>

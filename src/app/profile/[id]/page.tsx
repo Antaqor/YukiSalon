@@ -137,43 +137,48 @@ export default function PublicProfilePage() {
 
     return (
         <div className="min-h-screen bg-[#212121] text-white font-sans pt-14">
-            <div className="max-w-xl mx-auto relative bg-[#212121] rounded-xl shadow-lg p-6">
+            <div className="max-w-xl mx-auto p-6 flex flex-col items-center text-center">
                 {userData.profilePicture && (
                     <Image
                         src={getImageUrl(userData.profilePicture)}
                         alt="Profile"
                         width={96}
                         height={96}
-                        className="absolute -top-12 right-6 w-24 h-24 rounded-full border-2 border-[#171717] object-cover"
+                        className="w-24 h-24 rounded-full object-cover border-2 border-[#171717]"
                     />
                 )}
-                <h1 className="mt-12 text-2xl font-bold flex items-center gap-1">
+                <h1 className="mt-2 text-2xl font-bold flex items-center gap-1">
                     {userData.username}
                     {isPro && <FaCheckCircle className="text-[#30c9e8]" />}
                 </h1>
                 {userData.location && (
                     <p className="text-sm text-white/60">{userData.location}</p>
                 )}
-                <div className="flex gap-4 mt-2 text-xs text-white/60">
-                    <Link href={`/profile/${userId}/followers`}>{userData.followers ? userData.followers.length : 0} Followers</Link>
-                    <Link href={`/profile/${userId}/following`}>{userData.following ? userData.following.length : 0} Following</Link>
-                </div>
                 {loggedIn && !isOwnProfile && (
-                    <div className="absolute top-4 left-4 flex gap-4">
+                    <div className="flex flex-col sm:flex-row gap-2 mt-3">
                         {viewer?.following?.includes(userId) ? (
-                            <button onClick={handleUnfollow} aria-label="Unfollow" className="text-white/60 hover:text-[#30c9e8]">
-                                <TbUserMinus size={20} />
+                            <button onClick={handleUnfollow} className="border border-[#30c9e8] text-[#30c9e8] px-4 py-1 rounded hover:bg-[#30c9e8]/20">
+                                Unfollow
                             </button>
                         ) : (
-                            <button onClick={handleFollow} aria-label="Follow" className="text-white/60 hover:text-[#30c9e8]">
-                                <TbUserPlus size={20} />
+                            <button onClick={handleFollow} className="border border-[#30c9e8] text-[#30c9e8] px-4 py-1 rounded hover:bg-[#30c9e8]/20">
+                                Follow
                             </button>
                         )}
-                        <Link href={`/chat?user=${userId}`} aria-label="Message" className="text-white/60 hover:text-[#30c9e8]">
-                            <TbMessageCircle size={20} />
+                        <Link href={`/chat?user=${userId}`} className="border border-[#30c9e8] text-[#30c9e8] px-4 py-1 rounded hover:bg-[#30c9e8]/20 text-center">
+                            Message
                         </Link>
                     </div>
                 )}
+                {isOwnProfile && (
+                    <Link href="/profile/edit" className="border border-[#30c9e8] text-[#30c9e8] px-4 py-1 rounded mt-3 hover:bg-[#30c9e8]/20">
+                        Edit profile
+                    </Link>
+                )}
+                <div className="flex gap-4 mt-3 text-xs text-white/60">
+                    <Link href={`/profile/${userId}/followers`}>{userData.followers ? userData.followers.length : 0} Followers</Link>
+                    <Link href={`/profile/${userId}/following`}>{userData.following ? userData.following.length : 0} Following</Link>
+                </div>
             </div>
 
             <div className="mt-6 flex justify-center border-b border-white/20">
