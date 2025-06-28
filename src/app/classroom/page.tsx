@@ -9,8 +9,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
-  Bars3Icon,
-  XMarkIcon,
   PencilSquareIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline';
@@ -43,7 +41,6 @@ export default function ClassroomPage() {
   const [newUrl, setNewUrl] = useState('');
   const [newDesc, setNewDesc] = useState('');
   const [editing, setEditing] = useState<Lesson | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Fetch lessons
   useEffect(() => {
@@ -124,30 +121,12 @@ export default function ClassroomPage() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen text-black">
-      <button
-        className="md:hidden absolute top-2 left-2 z-20 p-2 bg-white rounded-full shadow"
-        onClick={() => setSidebarOpen(true)}
-        aria-label="Open lessons"
-      >
-        <Bars3Icon className="w-6 h-6 text-gray-600" />
-      </button>
-      {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/40 z-10 md:hidden" onClick={() => setSidebarOpen(false)} />
-      )}
-      <aside
-        className={`bg-white p-4 border-r border-gray-200 overflow-y-auto md:h-screen md:sticky md:top-0 fixed inset-y-0 left-0 z-20 w-72 transform transition-transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
-      >
-        <button
-          className="md:hidden absolute top-2 right-2 p-1"
-          onClick={() => setSidebarOpen(false)}
-          aria-label="Close lessons"
-        >
-          <XMarkIcon className="w-5 h-5 text-gray-600" />
-        </button>
-        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-          <BookOpenIcon className="w-6 h-6" /> Classroom
-        </h2>
+    <div className="min-h-screen py-4 text-black">
+      <div className="max-w-3xl mx-auto flex flex-col md:flex-row gap-y-6 md:gap-x-8">
+        <aside className="md:flex-1 md:w-1/2 bg-white p-4 border border-gray-200 rounded">
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+            <BookOpenIcon className="w-6 h-6" /> Classroom
+          </h2>
 
         {isAdmin && (
           <div className="bg-white shadow rounded-lg p-3 mb-4">
@@ -162,23 +141,23 @@ export default function ClassroomPage() {
               placeholder="YouTube video URL"
               value={newUrl}
               onChange={(e) => setNewUrl(e.target.value)}
-              className="w-full border p-2 rounded mb-2 focus:ring"
+              className="w-full rounded-lg mb-2 p-2 bg-inputBg text-inputText focus:ring-1 focus:ring-brand focus:outline-none"
             />
             <input
               type="text"
               placeholder="Lesson title"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              className="w-full border p-2 rounded mb-2 focus:ring"
+              className="w-full rounded-lg mb-2 p-2 bg-inputBg text-inputText focus:ring-1 focus:ring-brand focus:outline-none"
             />
             <textarea
               placeholder="Short description"
               value={newDesc}
               onChange={(e) => setNewDesc(e.target.value)}
-              className="w-full border p-2 rounded mb-2 focus:ring"
+              className="w-full rounded-lg mb-2 p-2 bg-inputBg text-inputText focus:ring-1 focus:ring-brand focus:outline-none"
             />
             {validForm && (
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center justify-center gap-3 mb-2">
                 <img
                   src={`https://img.youtube.com/vi/${extractVideoId(newUrl)}/hqdefault.jpg`}
                   alt="thumbnail"
@@ -220,7 +199,7 @@ export default function ClassroomPage() {
           {lessons.map((lesson) => (
             <div
               key={lesson._id}
-              className={`flex items-center p-2 rounded shadow cursor-pointer ${selected && selected._id === lesson._id ? 'bg-cyan-50' : 'bg-white'}`}
+              className={`flex items-center p-2 rounded cursor-pointer ${selected && selected._id === lesson._id ? 'bg-cyan-50' : 'bg-white'}`}
               onClick={() => setSelected(lesson)}
             >
               <CheckIcon

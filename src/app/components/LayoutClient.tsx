@@ -40,8 +40,12 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
             <Header />
             <main className="flex-grow flex flex-col md:flex-row gap-0 pt-16">
               <IconSidebar />
-              <div className="flex-1 flex justify-center md:ml-16">
-                <div className={`w-full md:max-w-xl ${isWidePage ? "md:w-full" : ""} bg-[#212121] shadow-sm p-4`}>{children}</div>
+              <div className="flex-1 flex justify-center md:ml-16 px-3">
+                <div
+                  className={`w-full mx-auto ${isWidePage ? "md:max-w-7xl" : "md:max-w-2xl"} bg-[#212121] p-4`}
+                >
+                  {children}
+                </div>
               </div>
               <aside
                 id="right-sidebar"

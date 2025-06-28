@@ -137,7 +137,7 @@ export default function PublicProfilePage() {
 
     return (
         <div className="min-h-screen bg-[#212121] text-white font-sans pt-14">
-            <div className="max-w-xl mx-auto p-6 flex flex-col items-center text-center">
+            <div className="max-w-2xl mx-auto p-6 flex flex-col items-center text-center">
                 {userData.profilePicture && (
                     <Image
                         src={getImageUrl(userData.profilePicture)}
@@ -187,7 +187,7 @@ export default function PublicProfilePage() {
                 <button className="px-4 py-2 text-white/60">Media</button>
             </div>
 
-            <div className="w-full max-w-xl mx-auto mt-6 px-4">
+            <div className="w-full max-w-2xl mx-auto mt-6 px-4">
                 {postLoading && (
                     <p className="text-gray-400 mb-2">Ачааллаж байна...</p>
                 )}
