@@ -136,7 +136,7 @@ export default function PublicProfilePage() {
     const isOwnProfile = viewer?._id === userId;
 
     return (
-        <div className="min-h-screen bg-[#212121] text-white font-sans pt-14">
+        <div className="min-h-screen text-white font-sans pt-14">
             <div className="px-4 py-6 flex flex-col items-center text-center rounded-none sm:rounded-lg">
                 {userData.profilePicture && (
                     <Image
