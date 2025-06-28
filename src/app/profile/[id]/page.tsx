@@ -194,7 +194,7 @@ export default function PublicProfilePage() {
                 {!postLoading && userPosts.length === 0 && (
                     <p className="text-gray-400">Энэ хэрэглэгч нийтлэлгүй байна.</p>
                 )}
-                <div className="space-y-4">
+                <div className="divide-y divide-gray-700 space-y-0">
                     {userPosts.map((post) => (
                         <HomeFeedPost key={post._id} post={post} onShareAdd={handleShareAdd} />
                     ))}
