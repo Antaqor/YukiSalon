@@ -263,5 +263,6 @@ export default function ClassroomPage() {
         )}
       </main>
     </div>
+  </div>
   );
 }
