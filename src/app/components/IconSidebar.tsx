@@ -23,7 +23,7 @@ export default function IconSidebar() {
   const pathname = usePathname();
   const { unreadCount } = useNotifications();
   return (
-    <aside className="hidden md:flex fixed top-0 left-0 h-full w-16 bg-[#171717] py-6 flex-col items-center space-y-6">
+    <aside id="left-sidebar" className="hidden md:flex w-16 shrink-0 bg-[#171717] py-6 flex-col items-center space-y-6">
       {links.map(({ href, icon: Icon }) => {
         const active = pathname === href;
         if (href === "/notifications") {

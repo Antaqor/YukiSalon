@@ -38,18 +38,18 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
           <div className="max-w-7xl w-full mx-auto md:px-6">
             <SidebarControl />
             <Header />
-            <main className="flex-grow flex flex-col md:flex-row gap-0 pt-16">
+            <main className="flex flex-row min-h-screen pt-16">
               <IconSidebar />
-              <div className="flex-1 flex justify-center md:ml-16 px-3">
+              <div className="flex-1 flex justify-center px-2 md:px-0">
                 <div
-                  className={`w-full mx-auto ${isWidePage ? "md:max-w-7xl" : "md:max-w-2xl"} bg-[#212121] p-4`}
+                  className={`w-full max-w-full mx-auto ${isWidePage ? "md:max-w-7xl" : "md:max-w-2xl"} bg-[#212121] p-4`}
                 >
                   {children}
                 </div>
               </div>
               <aside
                 id="right-sidebar"
-                className="hidden md:block w-1/4 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto p-2 fade-in-up"
+                className="hidden md:block w-1/4 shrink-0 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto p-2 fade-in-up"
               ></aside>
             </main>
           </div>
