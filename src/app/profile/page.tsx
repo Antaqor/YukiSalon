@@ -198,15 +198,15 @@ export default function MyOwnProfilePage() {
 
             {/* My posts */}
             <div className="px-4 mt-4">
-                <h3 className="text-xl font-bold mb-3">Миний нийтлэлүүд</h3>
+                <h3 className="text-xl font-bold mb-4">Миний нийтлэлүүд</h3>
                 {loadingPosts ? (
-                    <div className="space-y-4">
+                    <div>
                         {Array.from({ length: 2 }).map((_, i) => (
                             <div key={i} className="h-32 bg-gray-200 rounded animate-pulse" />
                         ))}
                     </div>
                 ) : userPosts.length > 0 ? (
-                    <div className="space-y-4">
+                    <div className="divide-y divide-gray-700 space-y-0">
                         {userPosts.map((post) => (
                             <HomeFeedPost
                                 key={post._id}
