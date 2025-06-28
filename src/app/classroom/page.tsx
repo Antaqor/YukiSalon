@@ -122,7 +122,7 @@ export default function ClassroomPage() {
 
   return (
     <div className="min-h-screen py-4 text-black">
-      <div className="max-w-3xl mx-auto flex flex-col md:flex-row gap-y-6 md:gap-x-8">
+      <div className="flex flex-col md:flex-row gap-y-6 md:gap-x-8">
         <aside className="md:flex-1 md:w-1/2 bg-white p-4 border border-gray-200 rounded">
           <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
             <BookOpenIcon className="w-6 h-6" /> Classroom

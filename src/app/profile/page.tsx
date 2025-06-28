@@ -162,7 +162,7 @@ export default function MyOwnProfilePage() {
 
     return (
         <div className="min-h-screen bg-[#212121] text-white font-sans pt-14">
-            <div className="w-full max-w-full md:max-w-2xl mx-auto px-4 py-6 flex flex-col items-center text-center rounded-none sm:rounded-lg">
+            <div className="px-4 py-6 flex flex-col items-center text-center rounded-none sm:rounded-lg">
                 {userData.profilePicture && (
                     <Image
                         src={getImageUrl(userData.profilePicture)}
@@ -197,7 +197,7 @@ export default function MyOwnProfilePage() {
             )}
 
             {/* My posts */}
-            <div className="w-full max-w-full md:max-w-2xl mx-auto px-4 mt-4">
+            <div className="px-4 mt-4">
                 <h3 className="text-xl font-bold mb-3">Миний нийтлэлүүд</h3>
                 {loadingPosts ? (
                     <div className="space-y-4">

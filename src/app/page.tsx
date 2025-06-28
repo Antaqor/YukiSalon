@@ -335,9 +335,7 @@ export default function HomePage() {
         </div>
       )}
 
-
-      <div className="w-full max-w-full md:max-w-2xl mx-auto px-2 sm:px-4">
-        <main className="space-y-6">
+      <main className="space-y-6">
           {/* Prompt login */}
           {!loggedIn && (
             <div className="bg-secondary p-6 text-center space-y-3">
@@ -644,7 +642,6 @@ export default function HomePage() {
             </>
         )}
         </main>
-      </div>
     </div>
   );
 }
