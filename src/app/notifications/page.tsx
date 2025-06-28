@@ -66,7 +66,7 @@ export default function NotificationsPage() {
   if (!user) return <div className="p-4">Please login to view notifications.</div>;
 
   return (
-    <div className="max-w-2xl mx-auto p-4 space-y-4">
+    <div className="w-full max-w-full md:max-w-2xl mx-auto px-4 py-4 space-y-4 rounded-none sm:rounded-lg">
       <h1 className="text-2xl font-bold">Notifications</h1>
       {notifications.length === 0 ? (
         <p>No notifications.</p>

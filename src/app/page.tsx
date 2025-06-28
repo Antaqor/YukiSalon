@@ -336,7 +336,7 @@ export default function HomePage() {
       )}
 
 
-      <div className="mx-auto w-full max-w-2xl px-4">
+      <div className="w-full max-w-full md:max-w-2xl mx-auto px-2 sm:px-4">
         <main className="space-y-6">
           {/* Prompt login */}
           {!loggedIn && (
@@ -393,7 +393,7 @@ export default function HomePage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.02 }}
-                    className="bg-white p-6 grid gap-4 border-b-0 sm:border-b sm:border-gray-200 dark:bg-[#2a2a2a] sm:dark:border-gray-700 dark:text-white"
+                    className="bg-white p-6 grid gap-4 border-b-0 sm:border-b sm:border-gray-200 dark:bg-[#2a2a2a] sm:dark:border-gray-700 dark:text-white rounded-none sm:rounded-lg"
                   >
                     {/* Header */}
                     <div className="grid grid-cols-[auto,1fr] gap-5 group">
