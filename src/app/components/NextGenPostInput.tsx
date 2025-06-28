@@ -99,7 +99,7 @@ export default function NextGenPostInput({ onPost }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="relative bg-[#212121] shadow-sm flex flex-col sm:flex-row items-center gap-3 w-full px-4 py-3"
+      className="relative bg-[#212121] flex flex-col sm:flex-row items-center gap-3 w-full px-4 py-3"
     >
       {user?.profilePicture ? (
         <Image

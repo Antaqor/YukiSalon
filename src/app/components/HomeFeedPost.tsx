@@ -164,7 +164,7 @@ export default function HomeFeedPost({ post, onDelete, onShareAdd }: Props) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-[#212121] text-white p-4 grid gap-4 shadow-sm"
+      className="bg-[#212121] text-white p-4 grid gap-4"
     >
       <div className="grid grid-cols-[auto,1fr] gap-5 group">
         {/* Avatar */}
@@ -214,7 +214,7 @@ export default function HomeFeedPost({ post, onDelete, onShareAdd }: Props) {
                   </svg>
                 </button>
                 {menuOpen && (
-                  <div className="absolute right-0 mt-1 bg-[#333] text-white border border-gray-700 rounded shadow">
+                  <div className="absolute right-0 mt-1 bg-[#333] text-white border border-gray-700 rounded">
                     <button
                       onClick={handleEdit}
                       className="block px-3 py-1 text-sm hover:bg-gray-600 w-full text-left"
@@ -336,7 +336,7 @@ export default function HomeFeedPost({ post, onDelete, onShareAdd }: Props) {
                     <input
                       type="text"
                       placeholder="Reply..."
-                      className="flex-1 text-xs border border-gray-300 rounded p-1"
+                      className="flex-1 text-xs rounded p-1 bg-inputBg text-inputText focus:ring-1 focus:ring-brand focus:outline-none"
                       value={replyTexts[comment._id] || ""}
                       onChange={(e) =>
                         setReplyTexts((prev) => ({ ...prev, [comment._id]: e.target.value }))
@@ -357,7 +357,7 @@ export default function HomeFeedPost({ post, onDelete, onShareAdd }: Props) {
             <input
               type="text"
               placeholder="Add a comment..."
-              className="flex-1 text-sm border border-gray-300 rounded p-2"
+              className="flex-1 text-sm rounded p-2 bg-inputBg text-inputText focus:ring-1 focus:ring-brand focus:outline-none"
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
             />

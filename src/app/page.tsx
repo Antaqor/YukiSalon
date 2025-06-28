@@ -336,18 +336,8 @@ export default function HomePage() {
       )}
 
 
-      {/* Outer grid */}
-      <div
-        className="mx-auto max-w-5xl w-full grid"
-        style={{
-          gridTemplateColumns:
-            "var(--barcelona-threadline-column-width) minmax(0, 1fr)",
-        }}
-      >
-
-
-        {/* Main content */}
-        <main>
+      <div className="mx-auto w-full max-w-2xl px-4">
+        <main className="space-y-6">
           {/* Prompt login */}
           {!loggedIn && (
             <div className="bg-secondary p-6 text-center space-y-3">

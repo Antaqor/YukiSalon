@@ -66,7 +66,7 @@ export default function NotificationsPage() {
   if (!user) return <div className="p-4">Please login to view notifications.</div>;
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="max-w-2xl mx-auto p-4 space-y-4">
       <h1 className="text-2xl font-bold">Notifications</h1>
       {notifications.length === 0 ? (
         <p>No notifications.</p>
@@ -75,7 +75,7 @@ export default function NotificationsPage() {
           {notifications.map((n) => (
             <li
               key={n._id}
-              className={`border p-2 rounded ${n.read ? "" : "bg-gray-100 dark:bg-gray-800"}`}
+              className={`p-2 rounded ${n.read ? "" : "bg-gray-100 dark:bg-gray-800"}`}
             >
               {n.type === "like" && (
                 <span>
