@@ -34,7 +34,7 @@ const BottomNav: React.FC = () => {
     return (
         <>
         <nav
-            className={`fixed bottom-0 left-0 w-full md:hidden transition-all border-t border-supportBorder bg-[#171717] text-white ${
+            className={`fixed bottom-0 left-0 w-full sm:hidden transition-all border-t border-supportBorder bg-[#171717] text-white ${
                 scrolledDown ? "" : ""
             }`}
         >

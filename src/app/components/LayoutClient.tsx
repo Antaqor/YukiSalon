@@ -12,12 +12,11 @@ import BottomNav from "./BottomNav";
 import SidebarControl from "./SidebarControl";
 import NavigationLoader from "./NavigationLoader";
 import LoadingOverlay from "./LoadingOverlay";
-import Link from "next/link";
+
 
 export default function LayoutClient({ children }: { children: React.ReactNode }) {
   const [mountLoading, setMountLoading] = useState(true);
   const pathname = usePathname();
-  const isWidePage = pathname.startsWith("/dashboard") || pathname.startsWith("/classroom");
 
   useEffect(() => {
     const timer = setTimeout(() => setMountLoading(false), 500);
@@ -35,24 +34,17 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
               pathname.startsWith("/users") ||
               pathname.startsWith("/profile")) && <LoadingOverlay />}
           <NavigationLoader />
-          <div className="max-w-7xl w-full mx-auto md:px-6">
-            <SidebarControl />
-            <Header />
-            <main className="flex flex-row min-h-screen pt-16">
-              <IconSidebar />
-              <div className="flex-1 flex justify-center items-start">
-                <div
-                  className={`w-full max-w-full px-2 md:px-0 mx-auto ${isWidePage ? "md:max-w-7xl" : "md:max-w-2xl"} bg-[#212121] p-4 rounded-none sm:rounded-lg`}
-                >
-                  {children}
-                </div>
-              </div>
-              <aside
-                id="right-sidebar"
-                className="hidden md:block w-1/4 shrink-0 sticky top-16 h-[calc(100vh-80px)] overflow-y-auto p-2 fade-in-up"
-              ></aside>
-            </main>
-          </div>
+          <SidebarControl />
+          <Header />
+          <aside id="left" className="hidden sm:flex w-16 shrink-0 flex-col items-center bg-[#1a1a1a]">
+            <IconSidebar />
+          </aside>
+          <main id="center" className="flex-1 flex justify-center items-start bg-[#171717] pt-16">
+            <div className="w-full max-w-full sm:max-w-full md:max-w-2xl mx-auto px-2 md:px-0">
+              {children}
+            </div>
+          </main>
+          <aside id="right" className="hidden lg:flex w-16 shrink-0 flex-col items-center bg-[#1a1a1a]" />
           <BottomNav />
           </NotificationProvider>
         </AuthProvider>

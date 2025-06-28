@@ -5,8 +5,8 @@ import { useEffect } from 'react';
 export default function SidebarControl() {
   const pathname = usePathname();
   useEffect(() => {
-    const left = document.getElementById('left-sidebar');
-    const right = document.getElementById('right-sidebar');
+    const left = document.getElementById('left');
+    const right = document.getElementById('right');
     if (!left || !right) return;
     if (pathname.startsWith('/dashboard') || pathname.startsWith('/classroom')) {
       left.style.display = 'none';
