@@ -378,7 +378,7 @@ export default function HomePage() {
               </div>
 
               {/* Posts list */}
-              <div className="m-0 p-0">
+              <div className="m-0 p-0 rounded-none">
               {loadingPosts && pageNum === 1 ? (
                   <LoadingSpinner />
                 ) : (
@@ -391,7 +391,7 @@ export default function HomePage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.02 }}
-                    className="bg-white p-6 grid gap-4 border-b-0 sm:border-b sm:border-gray-200 dark:bg-[#2a2a2a] sm:dark:border-gray-700 dark:text-white rounded-none sm:rounded-lg"
+                    className="bg-white p-6 grid gap-4 border-b-0 sm:border-b sm:border-gray-200 dark:bg-[#2a2a2a] sm:dark:border-gray-700 dark:text-white rounded-none"
                   >
                     {/* Header */}
                     <div className="grid grid-cols-[auto,1fr] gap-5 group">

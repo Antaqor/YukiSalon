@@ -110,7 +110,7 @@ export default function PostCard({ post, user, onDelete, onShare }: Props) {
   };
 
   return (
-    <div className="bg-white p-6 grid gap-4 border-b border-gray-200">
+    <div className="bg-white p-6 grid gap-4 border-b border-gray-200 rounded-none">
       <div className="flex gap-3 group">
         {user.profilePicture ? (
           <Image
@@ -154,7 +154,7 @@ export default function PostCard({ post, user, onDelete, onShare }: Props) {
                   </svg>
                 </button>
                 {menuOpen && (
-                  <div className="absolute right-0 mt-1 bg-white border rounded shadow">
+                  <div className="absolute right-0 mt-1 bg-white border shadow rounded-none">
                     <button
                       onClick={handleEdit}
                       className="block px-3 py-1 text-sm hover:bg-gray-100 w-full text-left"

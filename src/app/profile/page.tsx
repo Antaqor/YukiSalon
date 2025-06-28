@@ -162,7 +162,7 @@ export default function MyOwnProfilePage() {
 
     return (
         <div className="min-h-screen text-white font-sans pt-14">
-            <div className="px-4 py-6 flex flex-col items-center text-center rounded-none sm:rounded-lg">
+            <div className="px-4 py-6 flex flex-col items-center text-center rounded-none">
                 {userData.profilePicture && (
                     <Image
                         src={getImageUrl(userData.profilePicture)}
@@ -206,7 +206,7 @@ export default function MyOwnProfilePage() {
                         ))}
                     </div>
                 ) : userPosts.length > 0 ? (
-                    <div className="divide-y divide-gray-700 space-y-0">
+                    <div className="divide-y divide-gray-700 space-y-0 rounded-none">
                         {userPosts.map((post) => (
                             <HomeFeedPost
                                 key={post._id}
